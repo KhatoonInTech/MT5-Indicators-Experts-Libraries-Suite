@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     NZDCHF (D1)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  0.46085 / 0.46098
+Zone:       0.46634 – 0.46052
+Zone Age:   1518h 3m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 00:00
+Tick Vol:   8127
+Real Vol:   0
+Cumul Vol:  5018170
+ZZ Reversal:0.45673 (chg 65.2 pips)
+Settings:   Lookback: 3000, Deviation: 1.00%, Depth: 15
+Quality:    65/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BULLISH.

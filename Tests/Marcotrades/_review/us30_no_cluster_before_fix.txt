@@ -1,0 +1,12 @@
+FIRST ENTRY BLOCKED 2026.11.12 20:03 IND=Swing POI_BULL_1794495780 bounds=52380.5,52421.5
+INSIDE_ACTIVE_IND 0
+WAIT_READY=1 STRUCTURE_ACTION=0 SOURCE=
+WAIT_EVENT 2026.11.12 20:20 bull=1 known=2026.11.12 20:21
+WAIT_EVENT 2026.11.12 20:32 bull=0 known=2026.11.12 20:33
+IND Demand / Supply_BULL_1794488940 bounds=52365.3,52466.4 qualified=0 touches=0 mitigated=2026.11.12 13:14
+IND Demand / Supply_BULL_1794489840 bounds=52340.4,52356.4 qualified=0 touches=0 mitigated=2026.11.12 13:27
+IND Demand / Supply_BULL_1794490200 bounds=52298.4,52332.3 qualified=0 touches=0 mitigated=2026.11.12 13:36
+IND Demand / Supply_BULL_1794491280 bounds=52269.4,52377.3 qualified=0 touches=1 mitigated=1970.01.01 00:00
+IND Demand / Supply_BULL_1794491460 bounds=52333.3,52372.9 qualified=0 touches=0 mitigated=1970.01.01 00:00
+IND Swing POI_BULL_1794495780 bounds=52380.5,52421.5 qualified=1 touches=11 mitigated=2026.11.12 20:34
+IND Demand / Supply_BULL_1794495780 bounds=52380.5,52421.5 qualified=1 touches=11 mitigated=2026.11.12 20:34

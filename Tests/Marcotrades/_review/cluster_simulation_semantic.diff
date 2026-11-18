@@ -1,0 +1,290 @@
+--- 
++++ 
+@@ -2,8 +2,12 @@
+                                    int InpMinTouches, double InpProximityPips, bool InpStrictOriginPivots,
+                                    bool InpMergeClusteredZones, double InpClusterTolerancePips, bool InpMergeExpandBounds,
+                                    bool InpCheckDemandSupply, bool InpCheckOrderBlocks, bool InpCheckSwingPOIs,
+-                                   bool InpCheckFlipZones, bool InpCheckBreakers)
++                                   bool InpCheckFlipZones, bool InpCheckBreakers, datetime through=0, bool initializeOnly=false, bool prepareOnly=false)
+      {
++      if(m_simComplete) return !m_simFailed;
++      if(m_sim==NULL)
++        {
++         m_sim=new CMarcoSimulationState();
+       SMarcoSymbolUnits symbolUnits;
+       double slBuffer=0.0;
+       if(!CMarcoSymbolUnits::Load(m_symbol, symbolUnits) ||
+@@ -27,8 +31,8 @@
+                        InpCheckDemandSupply, InpCheckOrderBlocks, InpCheckSwingPOIs,
+                        InpCheckFlipZones, InpCheckBreakers, symbolUnits.point,
+                        m_applyEntryPolicyToPreventionExits);
+-      datetime startTime=0;
+-      datetime endTime   = (m_endWindow == 0 || m_endWindow > TimeCurrent()) ? TimeCurrent() : m_endWindow;
++      startTime =0;
++      endTime = (m_endWindow == 0 || m_endWindow > TimeCurrent()) ? TimeCurrent() : m_endWindow;
+       if(m_startWindow >= endTime) return false;
+       if(!CMarcoHistoryContext::ResolveStart(m_symbol,m_startWindow,startTime))
+         {
+@@ -40,10 +44,7 @@
+       // =====================================================================
+       // 1. HTF DATA PREPARATION & CHRONOLOGICAL SIMULATION
+       // =====================================================================
+-      datetime htf_time[];
+-      double   htf_open[], htf_high[], htf_low[], htf_close[];
+-      long     htf_vol[];
+-      int htf_copy = CopyTime(m_symbol, m_tradeTF, startTime, endTime, htf_time);
++      htf_copy = CopyTime(m_symbol, m_tradeTF, startTime, endTime, htf_time);
+       if(htf_copy <= m_zzDepth * 2 || !CMarcoHistoryContext::HasPriorContext(htf_time[0],m_startWindow))
+          return false;
+       if(CopyOpen(m_symbol, m_tradeTF, startTime, endTime, htf_open) != htf_copy ||
+@@ -54,44 +55,32 @@
+          return false;
+       Settings* sHtf = new Settings(m_zzDev, m_zzDepth, clrNONE, true, false, false, false, m_priceDiff);
+       sHtf.draw = false;
+-      ZigZag* zzHtf = newInstance(sHtf);
++      zzHtf = newInstance(sHtf);
+       zzHtf.zoneStartTime = m_startWindow;
+-      CMarketStructure* msHtf = new CMarketStructure();
++      msHtf = new CMarketStructure();
+       msHtf.Init(false, false, m_tradeTF);
+-      CDemandSupplyLogic* dsHtf = new CDemandSupplyLogic();
+-      CSwingPOILogic* spHtf = new CSwingPOILogic();
+-      COrderBlockLogic* obHtf = new COrderBlockLogic();
+-      CFlipZoneLogic* fzHtf = new CFlipZoneLogic();
+-      CBreakerBlockLogic* bbHtf = new CBreakerBlockLogic();
+-      CInducementLogic* indHtf = new CInducementLogic();
++      dsHtf = new CDemandSupplyLogic();
++      spHtf = new CSwingPOILogic();
++      obHtf = new COrderBlockLogic();
++      fzHtf = new CFlipZoneLogic();
++      bbHtf = new CBreakerBlockLogic();
++      indHtf = new CInducementLogic();
+       indHtf.Init(InpMinTouches, InpProximityPips,
+                   InpCheckDemandSupply, InpCheckOrderBlocks, InpCheckSwingPOIs,
+                   InpCheckFlipZones, InpCheckBreakers,
+                   InpStrictOriginPivots, InpMergeClusteredZones, InpClusterTolerancePips, InpMergeExpandBounds);
+-      CLiquidityBlockLogic* lbLogicHtf = new CLiquidityBlockLogic();
++      lbLogicHtf = new CLiquidityBlockLogic();
+       lbLogicHtf.Init(trackSweepsAnywhere, InpTrackPostInducementCHoCH, symbolUnits.point);
+-      double pipSize = symbolUnits.pip;
++      pipSize = symbolUnits.pip;
+       m_htf_lb_count = 0;
+       ArrayResize(m_htf_lbs, 0);
+       ArrayResize(m_pivotConfirmations, 0);
+       // =====================================================================
+       // 2. LTF EXECUTION & BAR-BY-BAR TRADE RESOLUTION
+       // =====================================================================
+-      datetime ltf_time[];
+-      double   ltf_open[], ltf_high[], ltf_low[], ltf_close[];
+-      long     ltf_vol[];
+-      int ltf_copy = CopyTime(m_symbol, m_tpTF, startTime, endTime, ltf_time);
++      ltf_copy = CopyTime(m_symbol, m_tpTF, startTime, endTime, ltf_time);
+       if(ltf_copy <= m_zzDepth * 2 || !CMarcoHistoryContext::HasPriorContext(ltf_time[0],m_startWindow))
+         {
+-         delete zzHtf;
+-         delete msHtf;
+-         delete dsHtf;
+-         delete spHtf;
+-         delete obHtf;
+-         delete fzHtf;
+-         delete bbHtf;
+-         delete indHtf;
+-         delete lbLogicHtf;
+          return false;
+         }
+       if(CopyOpen(m_symbol, m_tpTF, startTime, endTime, ltf_open) != ltf_copy ||
+@@ -100,39 +89,27 @@
+          CopyClose(m_symbol, m_tpTF, startTime, endTime, ltf_close) != ltf_copy ||
+          CopyTickVolume(m_symbol, m_tpTF, startTime, endTime, ltf_vol) != ltf_copy)
+         {
+-         delete zzHtf;
+-         delete msHtf;
+-         delete dsHtf;
+-         delete spHtf;
+-         delete obHtf;
+-         delete fzHtf;
+-         delete bbHtf;
+-         delete indHtf;
+-         delete lbLogicHtf;
+          return false;
+         }
+       Settings* sLtf = new Settings(m_zzDev, m_zzDepth, clrNONE, true, false, false, false, m_priceDiff);
+       sLtf.draw = false;
+-      ZigZag* zzLtf = newInstance(sLtf);
++      zzLtf = newInstance(sLtf);
+       zzLtf.zoneStartTime = m_startWindow;
+-      CMarketStructure* msLtf = new CMarketStructure();
++      msLtf = new CMarketStructure();
+       msLtf.Init(false, false, m_tpTF);
+-      CDemandSupplyLogic* dsLtf = new CDemandSupplyLogic();
+-      CSwingPOILogic* spLtf = new CSwingPOILogic();
+-      COrderBlockLogic* obLtf = new COrderBlockLogic();
+-      CFlipZoneLogic* fzLtf = new CFlipZoneLogic();
+-      CBreakerBlockLogic* bbLtf = new CBreakerBlockLogic();
+-      CInducementLogic* indLtf = new CInducementLogic();
++      dsLtf = new CDemandSupplyLogic();
++      spLtf = new CSwingPOILogic();
++      obLtf = new COrderBlockLogic();
++      fzLtf = new CFlipZoneLogic();
++      bbLtf = new CBreakerBlockLogic();
++      indLtf = new CInducementLogic();
+       indLtf.Init(InpMinTouches, InpProximityPips,
+                   InpCheckDemandSupply, InpCheckOrderBlocks, InpCheckSwingPOIs,
+                   InpCheckFlipZones, InpCheckBreakers,
+                   InpStrictOriginPivots, InpMergeClusteredZones, InpClusterTolerancePips, InpMergeExpandBounds);
+-      CLiquidityBlockLogic* lbLogicLtf = new CLiquidityBlockLogic();
++      lbLogicLtf = new CLiquidityBlockLogic();
+       lbLogicLtf.Init(trackSweepsAnywhere, InpTrackPostInducementCHoCH, symbolUnits.point);
+-      datetime run_time[];
+-      double run_open[], run_high[], run_low[], run_close[];
+-      long run_vol[];
+-      int run_copy = ltf_copy;
++      run_copy = ltf_copy;
+       if(m_entryTF == ENTRY_TF_M1)
+         {
+          MqlRates entryRates[];
+@@ -164,47 +141,36 @@
+          ArrayCopy(run_close, ltf_close);
+          ArrayCopy(run_vol, ltf_vol);
+         }
+-      int digits = (int)SymbolInfoInteger(m_symbol, SYMBOL_DIGITS);
+-      double point = SymbolInfoDouble(m_symbol, SYMBOL_POINT);
++      if(run_copy<=m_zzDepth*2) return false;
++      digits = (int)SymbolInfoInteger(m_symbol, SYMBOL_DIGITS);
++      point = SymbolInfoDouble(m_symbol, SYMBOL_POINT);
+       // Constant spread assumption for this bar-based run; no future candle spread is consulted.
+-      double spreadVal = MathMax(0.0, (double)SymbolInfoInteger(m_symbol, SYMBOL_SPREAD)) * point;
++      spreadVal = MathMax(0.0, (double)SymbolInfoInteger(m_symbol, SYMBOL_SPREAD)) * point;
+       PrintFormat("[SIMULATION] %s %s: closed-candle signals, next-bar bid/ask open, fixed spread=%.8f; commission/swap not modeled.",
+                   m_symbol, EnumToString(m_tradeTF), spreadVal);
+-      MqlRates rejectionRates[];
+-      int rejectionCount = CopyRates(m_symbol, PERIOD_M1, startTime, endTime, rejectionRates);
++      rejectionCount = CopyRates(m_symbol, PERIOD_M1, startTime, endTime, rejectionRates);
+       if(rejectionCount <= 0 || !CMarcoHistoryContext::HasPriorContext(rejectionRates[0].time,m_startWindow))
+         {
+          PrintFormat("[REJECTION CONTEXT UNAVAILABLE] %s: M1 history is required; simulation cancelled.", m_symbol);
+-         delete zzHtf;
+-         delete msHtf;
+-         delete dsHtf;
+-         delete spHtf;
+-         delete obHtf;
+-         delete fzHtf;
+-         delete bbHtf;
+-         delete indHtf;
+-         delete lbLogicHtf;
+-         delete zzLtf;
+-         delete msLtf;
+-         delete dsLtf;
+-         delete spLtf;
+-         delete obLtf;
+-         delete fzLtf;
+-         delete bbLtf;
+-         delete indLtf;
+-         delete lbLogicLtf;
+          return false;
+         }
+-      int nextRejection = 0;
+-      int nextHtf = 0;
+-      int nextTp = 0;
+-      for(int i = 1; i < run_copy; i++)
+-        {
++      nextRejection = 0;
++      nextHtf = 0;
++      nextTp = 0;
++      nextBar=1;
++        }
++      if(initializeOnly) return true;
++      for(int i=nextBar;i<run_copy;i++)
++        {
++         if(through>0 && run_time[i]>through) { nextBar=i; return true; }
++         nextBar=i+1;
+          int closed_i = i - 1;
+          if(run_time[closed_i] + PeriodSeconds(ExecutionTF()) > run_time[i])
+             continue;
+          double executionBid = run_open[i];
+          double executionAsk = executionBid + spreadVal;
++         if(!prepared)
++           {
+          while(nextHtf < htf_copy && htf_time[nextHtf] + PeriodSeconds(m_tradeTF) <= run_time[i])
+            {
+             int h = nextHtf++;
+@@ -445,6 +411,14 @@
+                  }
+               }
+            }
++         ObserveEntryClusters(run_time[i],lbLogicHtf,0);
++         SyncGlobalTrades();
++         prepared=true;
++           }
++         if(prepareOnly) { nextBar=i; return true; }
++         s_clusters.RetireCompleted();
++         RegisterPreparedClusters(run_time[i]);
++         prepared=false;
+          // -----------------------------------------------------------------
+          // 3. SCAN NEW ENTRY TRIGGERS ON THIS BAR
+          // -----------------------------------------------------------------
+@@ -586,6 +560,14 @@
+                (SkipIndPivot(k,firstPivotTime,firstPivotPrice,firstPivotConfirmTime) ||
+                 !IndEntryReady(k,firstPivotTime,firstPivotPrice,firstPivotConfirmTime,run_time[i]) ||
+                 SkipIndEntryPrice(k,run_time[i],isBull ? candidateAsk : candidateBid,firstPivotTime,firstPivotConfirmTime))) continue;
++            if(!s_clusters.Eligible(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,run_time[i])) continue;
++            string clusterSource=""; datetime clusterUsed=0;
++            if(s_clusters.Blocked(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,run_time[i],clusterSource,clusterUsed))
++              {
++               PrintFormat("[LB CLUSTER BLOCK] %s %s LB=%s: overlapping %s was traded at %s; wait for all cluster LBs to mitigate or the next broker day.",
++                           m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,clusterSource,TimeToString(clusterUsed,TIME_DATE|TIME_SECONDS));
++               continue;
++              }
+             // Opposing Leg Filter (Anti-Bait Trap Guard)
+             if(IsLegComingFromOppositeLB(isBull, firstPivotTime, entryZigZag, buffer))
+               {
+@@ -798,7 +780,9 @@
+             m_trades[t_idx].isOpen             = true;
+             m_trades[t_idx].outcome            = "OPEN";
+             m_trades[t_idx].hasEnteredVicinity = false;
++            s_clusters.Consume(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,run_time[i]);
+             }
++         SyncGlobalTrades();
+         }
+       // Resolve the final bar only when it is fully inside the requested history window.
+       int lastBar = run_copy - 1;
+@@ -815,35 +799,9 @@
+          m_totalLots += m_trades[t].lots*(1.0-m_trades[t].tpPlan.remaining);
+          m_totalRewards += m_trades[t].tpPlan.realizedR;
+         }
+-      for(int t = 0; t < ArraySize(m_trades); t++)
+-        {
+-         int g_sz = ArraySize(s_global_trades);
+-         ArrayResize(s_global_trades, g_sz + 1);
+-         s_global_trades[g_sz].symbol    = m_symbol;
+-         s_global_trades[g_sz].openTime  = m_trades[t].openTime;
+-         s_global_trades[g_sz].closeTime = m_trades[t].closeTime;
+-         s_global_trades[g_sz].openPrice = m_trades[t].openPrice;
+-         s_global_trades[g_sz].tpPrice   = m_trades[t].tpPrice;
+-         s_global_trades[g_sz].direction = m_trades[t].direction;
+-        }
+-      delete zzHtf;
+-      delete msHtf;
+-      delete dsHtf;
+-      delete spHtf;
+-      delete obHtf;
+-      delete fzHtf;
+-      delete bbHtf;
+-      delete indHtf;
+-      delete lbLogicHtf;
+-      delete zzLtf;
+-      delete msLtf;
+-      delete dsLtf;
+-      delete spLtf;
+-      delete obLtf;
+-      delete fzLtf;
+-      delete bbLtf;
+-      delete indLtf;
+-      delete lbLogicLtf;
+-      return run_copy > m_zzDepth * 2;
++      SyncGlobalTrades();
++      m_simComplete=true;
++      delete m_sim; m_sim=NULL;
++      return true;
+      }
+   };

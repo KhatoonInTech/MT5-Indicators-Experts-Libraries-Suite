@@ -1,0 +1,203 @@
+--- marco_backtest.mqh before
+
++++ marco_backtest.mqh
+
+@@ -17,4 +17,5 @@
+
+ #include <Custom\Marcotrades\trade_rejection.mqh>
+ #include <Custom\Marcotrades\m1_ind_entry.mqh>
++#include <Custom\Marcotrades\pivot_entry.mqh>
+ #include <Custom\Marcotrades\broker_execution.mqh>
+ #include <Custom\Marcotrades\structure_exit.mqh>
+@@ -295,4 +296,8 @@
+
+    string            outcome;
+ 
++   // First-bar execution segment for a pivot-edge fill in OHLC replay.
++   bool              edgeIntrabar;
++   double            edgeBid, edgeHigh, edgeLow;
++
+    // Vicinity Engine State
+    bool              hasEnteredVicinity;
+@@ -322,4 +327,5 @@
+
+    datetime          m1TouchTime;
+    SMarcoIndWait     indWait;
++   SMarcoPivotEntry  pivotEntry;
+    datetime          rejectionTouchTime;
+    datetime          rejectionHTFTouchTime;
+@@ -1323,5 +1329,13 @@
+
+            }
+          double before=plan.realizedR, lastExit=0;
+-         CMarcoStagedTP::Bar(plan,closedAt,barOpen+offset,barHigh+offset,barLow+offset,barClose+offset,
++         double segmentOpen=barOpen, segmentHigh=barHigh, segmentLow=barLow;
++         if(m_trades[t].edgeIntrabar && barTime==m_trades[t].openTime)
++           {
++            segmentOpen=m_trades[t].edgeBid;
++            segmentHigh=m_trades[t].edgeHigh;
++            segmentLow=m_trades[t].edgeLow;
++            rejection=false; // Whole-candle rejection would include pre-entry movement.
++           }
++         CMarcoStagedTP::Bar(plan,closedAt,segmentOpen+offset,segmentHigh+offset,segmentLow+offset,barClose+offset,
+                             m_enableVicinityExit,m_tpVicinityPips*pipSize,rejection,rejectionStart,lastExit);
+          // Book only this bar's realized share; the original risk never changes at BE.
+@@ -1714,4 +1728,5 @@
+
+                   m_htf_lbs[sz].firstTouchTime       = 0;
+                   m_htf_lbs[sz].m1TouchTime = 0;
++                  ZeroMemory(m_htf_lbs[sz].pivotEntry);
+                   CMarcoIndEntryFilter::Reset(m_htf_lbs[sz].indWait);
+                   m_htf_lbs[sz].rejectionTouchTime = 0;
+@@ -1786,4 +1801,5 @@
+
+                                           m_htf_lbs[cached].mitigationTime, htf_time[h] + PeriodSeconds(m_tradeTF));
+                   m_htf_lbs[cached].m1TouchTime = 0;
++                  ZeroMemory(m_htf_lbs[cached].pivotEntry);
+                   CMarcoIndEntryFilter::Reset(m_htf_lbs[cached].indWait);
+                   m_htf_lbs[cached].m1PivotTime = 0;
+@@ -1984,4 +2000,5 @@
+
+             if(CheckChochRejection(k, run_time[i], zzHtf, m_tradeTF, m_htfRejection) ||
+                (m1LBContext != NULL && CheckChochRejection(k, run_time[i], zzEntry, PERIOD_M1, m1LBContext.rejectionHistory))) continue;
++            double candidateBid=executionBid, candidateAsk=executionAsk;
+             double   firstPivotPrice = 0.0;
+             datetime firstPivotTime = 0;
+@@ -1993,10 +2010,13 @@
+
+                // The closed M1 range establishes the first touch minute without future data.
+                ArmM1Entry(k, run_time[closed_i], run_low[closed_i], run_high[closed_i]);
+-               ArmM1Entry(k, run_time[i], executionBid, executionBid);
++               ArmM1Entry(k, run_time[i], candidateBid, candidateBid);
+                if(!GetM1EntryPivot(k, run_time[i], firstPivotTime, firstPivotPrice, firstPivotConfirmTime))
+                   continue;
+-               if(!CTradeRejection::M1Expired(m_last_entry_bar,firstPivotConfirmTime) &&
+-                  SkipIndEntryPrice(k,run_time[i],isBull ? executionAsk : executionBid)) continue;
+-               if(CTradeRejection::M1Expired(m_last_entry_bar, firstPivotConfirmTime))
++               if(!CMarcoPivotEntry::Prepare(m_htf_lbs[k].pivotEntry,m_symbol,PERIOD_M1,isBull,
++                                            firstPivotTime,firstPivotConfirmTime,run_time[i])) continue;
++               if(!CMarcoPivotEntry::Enabled() && !CTradeRejection::M1Expired(m_last_entry_bar,firstPivotConfirmTime) &&
++                  SkipIndEntryPrice(k,run_time[i],isBull ? candidateAsk : candidateBid)) continue;
++               if(!CMarcoPivotEntry::Waiting(m_htf_lbs[k].pivotEntry) &&
++                  CTradeRejection::M1Expired(m_last_entry_bar, firstPivotConfirmTime))
+                  {
+                   CTradeRejection::Consume(m_htf_lbs[k].touchCount, 1);
+@@ -2024,5 +2044,5 @@
+
+                  }
+ 
+-               if(m_requireZZConfirmation || (CMarcoIndEntryFilter::Enabled() && m_htf_lbs[k].indWait.waiting))
++               if(m_requireZZConfirmation || CMarcoPivotEntry::Enabled() || (CMarcoIndEntryFilter::Enabled() && m_htf_lbs[k].indWait.waiting))
+                  {
+                   if(CTradeRejection::NeedsPivot(pivotTouches))
+@@ -2032,5 +2052,9 @@
+
+                      continue;
+ 
+-                  if(CTradeRejection::Expired(run_time[i], firstPivotConfirmTime, PeriodSeconds(m_tradeTF)))
++                  if(!CMarcoPivotEntry::Prepare(m_htf_lbs[k].pivotEntry,m_symbol,m_tradeTF,isBull,
++                                              firstPivotTime,firstPivotConfirmTime,run_time[i])) continue;
++
++                  if(!CMarcoPivotEntry::Waiting(m_htf_lbs[k].pivotEntry) &&
++                     CTradeRejection::Expired(run_time[i], firstPivotConfirmTime, PeriodSeconds(m_tradeTF)))
+                     {
+                      CTradeRejection::Consume(m_htf_lbs[k].touchCount, 1);
+@@ -2040,5 +2064,5 @@
+
+                else
+                  {
+-                  bool priceInZone = CTradeRejection::DirectEntry(isBull, executionBid, executionAsk, zLow, zHigh, buffer);
++                  bool priceInZone = CTradeRejection::DirectEntry(isBull, candidateBid, candidateAsk, zLow, zHigh, buffer);
+                   if(!priceInZone)
+                      continue;
+@@ -2047,8 +2071,28 @@
+
+               }
+ 
++            bool edgeIntrabar=false;
++            double edgeHigh=run_high[i], edgeLow=run_low[i];
++            if(CMarcoPivotEntry::Enabled())
++              {
++               if(!CMarcoPivotEntry::Bar(m_htf_lbs[k].pivotEntry,isBull,run_open[i],run_high[i],
++                                        run_low[i],run_close[i],candidateBid,edgeIntrabar,edgeHigh,edgeLow)) continue;
++               // An unfinished candle cannot supply a future historical level fill.
++               if(edgeIntrabar && run_time[i]+PeriodSeconds(ExecutionTF())>endTime) continue;
++               candidateAsk=candidateBid+spreadVal;
++               // Cancel invalidations before the crossing on the existing OHLC
++               // path (bullish candle O-L-H-C, bearish candle O-H-L-C).
++               double priorLow=(isBull && run_close[i]>=run_open[i]) ? run_low[i] : run_open[i];
++               double priorHigh=(!isBull && run_close[i]<run_open[i]) ? run_high[i] : run_open[i];
++               if(edgeIntrabar && (CTradeRejection::BoundaryBroken(isBull,priorLow,priorHigh,zLow,zHigh,buffer) ||
++                  CheckIndWaitBoundary(k,run_time[i],priorLow,priorHigh)))
++                 { CTradeRejection::Consume(m_htf_lbs[k].touchCount,1); continue; }
++               if(CheckIndWaitBoundary(k,run_time[i],candidateBid,candidateAsk) ||
++                  SkipIndEntryPrice(k,run_time[i],isBull ? candidateAsk : candidateBid,firstPivotTime,firstPivotConfirmTime)) continue;
++              }
++
+             if(m_entryTF!=ENTRY_TF_M1 &&
+                (SkipIndPivot(k,firstPivotTime,firstPivotPrice,firstPivotConfirmTime) ||
+                 !IndEntryReady(k,firstPivotTime,firstPivotPrice,firstPivotConfirmTime,run_time[i]) ||
+-                SkipIndEntryPrice(k,run_time[i],isBull ? executionAsk : executionBid,firstPivotTime,firstPivotConfirmTime))) continue;
++                SkipIndEntryPrice(k,run_time[i],isBull ? candidateAsk : candidateBid,firstPivotTime,firstPivotConfirmTime))) continue;
+ 
+             // Opposing Leg Filter (Anti-Bait Trap Guard)
+@@ -2086,5 +2130,5 @@
+
+                         break;
+                        }
+-                     double coveredDist = executionBid - openPx;
++                     double coveredDist = candidateBid - openPx;
+                      if(CTradeRejection::Overlap(m_allowOverlappingTrades, tpDist, coveredDist))
+                        {
+@@ -2102,5 +2146,5 @@
+
+                            break;
+                           }
+-                        double coveredDist = openPx - executionAsk;
++                        double coveredDist = openPx - candidateAsk;
+                         if(CTradeRejection::Overlap(m_allowOverlappingTrades, tpDist, coveredDist))
+                           {
+@@ -2139,5 +2183,5 @@
+
+                               break;
+                              }
+-                           double coveredDist = executionBid - openPx;
++                           double coveredDist = candidateBid - openPx;
+                            if(CTradeRejection::Overlap(m_allowOverlappingTrades, tpDist, coveredDist))
+                              {
+@@ -2155,5 +2199,5 @@
+
+                                  break;
+                                 }
+-                              double coveredDist = openPx - executionAsk;
++                              double coveredDist = openPx - candidateAsk;
+                               if(CTradeRejection::Overlap(m_allowOverlappingTrades, tpDist, coveredDist))
+                                 {
+@@ -2178,6 +2222,6 @@
+
+ 
+             double entryPx = 0.0;
+-            if(m_entryTF == ENTRY_TF_M1 || m_requireZZConfirmation)
+-               entryPx = isBull ? executionAsk : executionBid;
++            if(m_entryTF == ENTRY_TF_M1 || m_requireZZConfirmation || CMarcoPivotEntry::Enabled())
++               entryPx = isBull ? candidateAsk : candidateBid;
+             else
+                entryPx = isBull ? zHigh : zLow;
+@@ -2211,5 +2255,5 @@
+
+             CTradeRejection::Consume(m_htf_lbs[k].touchCount, 1);
+ 
+-            double lotSize = CalculateLotSize(isBull, entryPx, slPx, executionBid, executionAsk);
++            double lotSize = CalculateLotSize(isBull, entryPx, slPx, candidateBid, candidateAsk);
+             if(lotSize <= 0.0)
+                continue;
+@@ -2239,4 +2283,8 @@
+
+ 
+             ZeroMemory(m_trades[t_idx]);
++            m_trades[t_idx].edgeIntrabar = edgeIntrabar;
++            m_trades[t_idx].edgeBid = candidateBid;
++            m_trades[t_idx].edgeHigh = edgeHigh;
++            m_trades[t_idx].edgeLow = edgeLow;
+             m_trades[t_idx].tpPlan      = plan;
+             m_trades[t_idx].ticket      = m_ticketCounter++;

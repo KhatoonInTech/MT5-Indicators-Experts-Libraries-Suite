@@ -1,0 +1,69 @@
+US30 synchronization review - 2026-11-13
+
+Evidence from Logs/20261113.log (simulated session: 2026-11-12):
+- Backtester: M3 no entry; M5 buy at 20:55, LB_BULL_1794489300.
+- Trade indicator: M3 buy at 20:55 from the same LB ID; M5 did not enter.
+- Both: M10 buy at 20:03, entry 52412.8, original SL 52353.5,
+  pivot 20:01 at 52403.5, confirmed at 20:03; full SL loss.
+- The historical logs do not record the active IND bounds at that entry.
+
+Corrections:
+1. All three trade programs now pass the tested symbol's price point into
+   their M1, setup-TF and TP-TF liquidity-block engines. Registration previously
+   used _Point from the chart hosting the program, even for other symbols.
+2. The liquidity visualizer (liquiduity_block.mq5) now uses the same shared
+   strategy-pip definitions and override input as the trade engines. Previously
+   its US30 pip was 0.10 while the trade engines used 1.00; both proximity and
+   clustering distances could therefore differ.
+3. Sweep-source lookup no longer reads chart objects belonging to another
+   symbol, timeframe or program when its own sweep geometry is unavailable.
+4. Structure exits retain eligible post-entry CHoCH events across later BOS
+   events, including a source LB recognized later through an explicit causal
+   link. Events/LBs unavailable at the evaluation time remain excluded.
+5. Structural histories capture reclassifications of the last three events
+   and freeze the source pivot of each event. A CHoCH subsequently reclassified
+   as a sweep ceases to qualify when that change becomes known; reclassifying
+   an old event does not make it the latest market event for entry rules.
+6. Entry checks log executable price, active matching-side IND count,
+   nearest zone bounds, context time and ended overlapping zones. Simulation
+   configuration logs expose key inputs and resolved price distances.
+7. Trade indicator version 2.09/cache version 9 invalidates old results.
+   Cache identity also includes the configured setup-TF list. The current
+   user-edited four-TF list and existing input defaults were preserved.
+
+Validation:
+- 50 structural-exit checks; 212 M1 entry/wait checks; 14 production LB
+  registration/context checks; 72 cache/lifecycle checks; 91 TP-extension
+  checks; 6941 pip-unit/stop-grid checks. Total: 7380 passed.
+- Temporary MetaEditor builds: live EA 0 errors/0 warnings; backtest EA
+  0 errors/12 existing shadow warnings; trade indicator 0 errors/12 existing
+  shadow warnings; liquidity visualizer 0 errors/24 shadow warnings.
+- Installed EX5 files were not replaced. No trading programs were run.
+- This is code/regression validation, NOT a replay of the exact US30 candles.
+  The old logs cannot prove which discrepancy caused that specific M10 entry
+  or whether its source LB was known at the apparent CHoCH time.
+- Current source defaults differ: TP spread adjustment and vicinity exits
+  are enabled in the backtest EA and disabled in the trade indicator. Use
+  matching inputs/window/anchor/pip overrides when comparing their results.
+
+Modified production files (relative to MQL5):
+Include/Custom/Marcotrades/liquidity_blocks.mqh
+Include/Custom/Marcotrades/marco_backtest.mqh
+Include/Custom/Marcotrades/marco_live_auto.mqh
+Include/Custom/Marcotrades/trade_rejection.mqh
+Include/Custom/Marcotrades/structure_exit.mqh
+Include/Custom/Marcotrades/m1_ind_entry.mqh
+Include/Custom/ZigZag/market_structure.mqh
+Indicators/Custom/Marcotrades/liquiduity_block.mq5
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5
+
+Tests modified/added:
+Tests/Marcotrades/run_structure_exit_tests.py
+Tests/Marcotrades/run_indicator_cache_tests.py
+Tests/Marcotrades/run_zone_context_tests.py
+
+Programs requiring recompilation after copying the shared includes:
+Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5
+Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5
+Indicators/Custom/Marcotrades/liquiduity_block.mq5

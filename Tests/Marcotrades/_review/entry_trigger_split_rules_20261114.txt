@@ -1,0 +1,67 @@
+ENTRY-TRIGGER LB POLICY CORRECTION — 2026-11-14
+
+Scope
+-----
+This correction changes entry setup eligibility only. Raw liquidity blocks remain
+available immediately under the previous rules to entry prevention, rejection
+context, and intra-position partial/full exit management.
+
+Corrected entry policies
+------------------------
+1. BL-LB-IND
+   - Requires a valid mitigated BL-IND.
+   - Requires two consecutive bullish structural events after that mitigation.
+   - Bullish events include BL-BOS, BL-CHoCH, and BSL-Swept.
+   - A bearish event resets the consecutive count.
+
+2. BR-LB-IND
+   - Requires a valid mitigated BR-IND.
+   - Requires two consecutive bearish structural events after that mitigation.
+   - Bearish events include BR-BOS, BR-CHoCH, and SSL-Swept.
+   - A bullish event resets the consecutive count.
+
+3. BL-LB-BSL
+   - Does not require a mitigated BL-IND.
+   - Requires the registered BSL-Swept event to remain valid.
+   - Requires the immediately adjacent structural event after BSL-Swept to be bullish.
+
+4. BR-LB-SSL
+   - Does not require a mitigated BR-IND.
+   - Requires the registered SSL-Swept event to remain valid.
+   - Requires the immediately adjacent structural event after SSL-Swept to be bearish.
+
+5. Combined BL-LB-IND-BSL / BR-LB-IND-SSL labels
+   - Follow the sweep-trigger path because the LB has a concrete BSL/SSL trigger.
+   - They therefore do not inherit the IND-only mitigated-inducement requirement.
+
+Additional synchronization fix
+------------------------------
+If an existing cached IND LB is merged with a BSL/SSL trigger during the current
+bar, the simulator now refreshes the authoritative trigger type and sweep time
+before evaluating entry eligibility. This prevents a same-bar merge from being
+armed by the stale IND-only policy.
+
+Changed deliverables
+--------------------
+- marco_backtest_ea 1.58
+- marco_live_auto_ea 1.37
+- marco_backtest_trades 2.16 (cache schema 16)
+- liquidity_blocks shared engine 1.32
+- liquduity_block recompiled against the shared engine
+
+Validation
+----------
+- 46 trigger-specific entry-policy assertions passed.
+- 21 raw-zone context/scope assertions passed.
+- 244 M1 entry, waiting, pivot, and expiry assertions passed.
+- 73 indicator cache/lifecycle assertions passed.
+- 88 inducement structure assertions passed.
+- 3,895 history/rollover assertions passed.
+- 72,368 structure-only warmup assertions passed.
+- marco_backtest_ea: 0 compile errors.
+- marco_live_auto_ea: 0 compile errors, 0 warnings.
+- marco_backtest_trades: 0 compile errors.
+- liquduity_block: 0 compile errors.
+
+The existing compiler warnings in the backtester/indicators are pre-existing input
+name-hiding warnings and are unrelated to this entry-trigger correction.

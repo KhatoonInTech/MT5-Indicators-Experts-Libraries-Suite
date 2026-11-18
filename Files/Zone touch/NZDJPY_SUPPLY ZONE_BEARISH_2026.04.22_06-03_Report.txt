@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     NZDJPY (H4)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  94.081 / 94.095
+Zone:       94.184 – 93.774
+Zone Age:   998h 3m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 16:00
+Tick Vol:   8618
+Real Vol:   0
+Cumul Vol:  8345880
+ZZ Reversal:94.182 (chg 132.3 pips)
+Settings:   Lookback: 3000, Deviation: 1.00%, Depth: 15
+Quality:    65/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BULLISH.

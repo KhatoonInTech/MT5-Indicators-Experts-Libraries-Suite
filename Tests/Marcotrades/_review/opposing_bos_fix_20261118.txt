@@ -1,0 +1,35 @@
+Opposing LB entry prevention correction - 18 November 2026
+
+Issue verified from Files/Logs/20261118/marco_backtest_trades.log:
+ETHUSDc PERIOD_M2 BR-LB-IND LB_BEAR_1794892800 qualified at 09:02 on Nov 17.
+The M2 buy entered at 09:07, with latest M2 structure BR-BOS at 09:00, available 09:02, origin 08:08 at 1832.24.
+The previous code explicitly allowed it because the latest structure was not an opposing CHoCH.
+
+Correction:
+The shared entry filter now walks the latest uninterrupted opposing CHoCH/BOS/sweep sequence in structural-time order, using only event versions available at entry. It requires a causal CHoCH link or a source pivot inside an opposing LB. The LB must be available and active at entry. A candidate-direction event breaks the chain; removed/mitigated sources do not continue vetoing entries. Later zone expansion cannot invent an earlier geometric source link.
+The existing InpApplyEntryLBPolicyToPreventionExits filtering remains responsible for admitting qualified LBs into prevention history. The new checks consult that history. The direct pivot-leg guard now uses the selected completed pivot's start, excludes projection pivots, and checks both setup-TF and M1 LB histories. It no longer bypasses qualification via the raw cached-LB array.
+Setup-TF structural ancestry is checked even when the selected confirmation leg belongs to M1.
+No ZigZag algorithm, LB qualification calculation, partial/full exit policy, stop-loss policy or cluster rules were changed.
+The historical OpposingChoch API name and rejection enum are retained for compatibility; diagnostic reasons now identify OPPOSING_STRUCTURE_LB, and direct origins log ENTRY LEG BLOCK.
+
+Production files changed:
+Include/Custom/Marcotrades/trade_rejection.mqh
+Include/Custom/Marcotrades/marco_backtest.mqh
+Include/Custom/Marcotrades/marco_live_auto.mqh
+Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5 -> 1.67
+Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5 -> 1.46
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5 -> 2.25 (cache schema/key 25)
+The corresponding three EX5 files were rebuilt.
+New test: Tests/Marcotrades/run_opposing_entry_tests.py
+
+Validation:
+59 new opposing-entry checks, both directions, recorded ETHUSD event/qualification times and source geometry, no-LB/unrelated-BOS controls, chain resets/reclassification, source mitigation/removal, availability, and both direct-leg source timeframes.
+Restoring the old CHoCH-only guard causes the regression to fail.
+Existing tests passed: structure exits 56; opposing sequence 294; M1/pivot/IND waiting 608; entry qualification 78; indicator caching 74; cluster/persistence/scheduler 334; opposite-position guard 206; pivot entry/first-candle exits 253.
+MetaEditor: live EA 0 errors/0 warnings; backtest EA and simulator 0 errors/12 existing parameter-shadowing warnings each.
+ZigZag SHA256 unchanged: 949bc8de05d8731e0ccfb0ef70e429a0e182a6fa1eddd56b5564863a97d152a5.
+Tests run offline against production methods/adapters. The ETHUSD test reconstructs the logged decision; it is not a full MT5 candle/tick replay. No orders were sent and no programs were attached to charts.
+
+Deployment:
+Desktop MLQH FILES/mq5-vps-package.zip and source text bundles refreshed. Manifest hashes and the three rebuilt binaries were verified.
+Reload the updated program to use the fix; old completed simulator results are invalidated automatically by the new cache version.

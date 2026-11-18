@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     USDJPY (M15)
+Type:       BEARISH SWING POI TOUCHED
+Bid / Ask:  158.871 / 158.875
+Zone:       159.446 – 157.731
+Zone Age:   15559h 25m ago
+Touches:    0
+Trend:      BEARISH | Lower Highs & Lower Lows
+Last BOS:   Structural Break @ 00:45
+Tick Vol:   503
+Real Vol:   0
+Cumul Vol:  2009426
+ZZ Reversal:144.930 (chg 241.2 pips)
+Settings:   Lookback: 3000, Deviation: 0.50%, Depth: 5
+Quality:    92/100
+Reasoning:  SWING POI zone tapped by wick. Current structure is BEARISH.

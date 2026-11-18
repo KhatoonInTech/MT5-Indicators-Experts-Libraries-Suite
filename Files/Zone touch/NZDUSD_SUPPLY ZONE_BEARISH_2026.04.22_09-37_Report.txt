@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     NZDUSD (H1)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  0.59175 / 0.59183
+Zone:       0.59218 – 0.59168
+Zone Age:   147h 37m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 09:00
+Tick Vol:   1264
+Real Vol:   0
+Cumul Vol:  4965208
+ZZ Reversal:0.59211 (chg 49.1 pips)
+Settings:   Lookback: 3000, Deviation: 0.50%, Depth: 15
+Quality:    65/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BULLISH.

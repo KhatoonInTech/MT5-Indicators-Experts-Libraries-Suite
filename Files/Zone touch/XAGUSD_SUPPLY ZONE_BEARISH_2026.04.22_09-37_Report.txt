@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     XAGUSD (M15)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  78.514 / 78.575
+Zone:       79.024 – 78.394
+Zone Age:   17h 7m ago
+Touches:    0
+Trend:      BEARISH | Lower Highs & Lower Lows
+Last BOS:   Structural Break @ 23:30
+Tick Vol:   1357
+Real Vol:   0
+Cumul Vol:  18879508
+ZZ Reversal:78.652 (chg 326.2 pips)
+Settings:   Lookback: 5000, Deviation: 1.00%, Depth: 5
+Quality:    92/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BEARISH.

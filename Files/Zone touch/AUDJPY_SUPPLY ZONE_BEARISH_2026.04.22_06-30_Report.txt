@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     AUDJPY (H4)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  114.105 / 114.119
+Zone:       114.370 – 114.101
+Zone Age:   118h 30m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 00:00
+Tick Vol:   10978
+Real Vol:   0
+Cumul Vol:  10418555
+ZZ Reversal:114.296 (chg 127.8 pips)
+Settings:   Lookback: 3000, Deviation: 1.00%, Depth: 15
+Quality:    65/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BULLISH.

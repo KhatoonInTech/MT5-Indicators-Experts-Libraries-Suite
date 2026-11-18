@@ -1,0 +1,3 @@
+PASS: 608 M1/setup IND, waiting, first-pivot and expiry checks (both directions)
+PASS: old tick-only behavior reproduces the missed first touch
+PASS: restoring the stale saved-pivot behavior fails the replacement regression

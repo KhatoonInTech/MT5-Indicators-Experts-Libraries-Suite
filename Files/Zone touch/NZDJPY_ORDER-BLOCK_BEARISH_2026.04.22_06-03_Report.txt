@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     NZDJPY (D1)
+Type:       BEARISH ORDER-BLOCK TOUCHED
+Bid / Ask:  94.081 / 94.095
+Zone:       94.184 – 93.615
+Zone Age:   1014h 3m ago
+Touches:    0
+Trend:      BEARISH | Lower Highs & Lower Lows
+Last BOS:   Structural Break @ 00:00
+Tick Vol:   20021
+Real Vol:   0
+Cumul Vol:  8348537
+ZZ Reversal:94.182 (chg 354.5 pips)
+Settings:   Lookback: 3000, Deviation: 1.00%, Depth: 15
+Quality:    92/100
+Reasoning:  ORDER-BLOCK zone tapped by wick. Current structure is BEARISH.

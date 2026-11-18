@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     GBPCHF (D1)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  1.05956 / 1.05968
+Zone:       1.06308 – 1.05835
+Zone Age:   319h 36m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 00:00
+Tick Vol:   23705
+Real Vol:   0
+Cumul Vol:  8277911
+ZZ Reversal:1.05183 (chg 112.5 pips)
+Settings:   Lookback: 3000, Deviation: 1.00%, Depth: 15
+Quality:    65/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BULLISH.

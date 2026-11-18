@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     GBPJPY (H1)
+Type:       BULLISH DEMAND ZONE TOUCHED
+Bid / Ask:  214.734 / 214.753
+Zone:       214.735 – 213.995
+Zone Age:   88h 47m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 14:00
+Tick Vol:   4513
+Real Vol:   0
+Cumul Vol:  4056351
+ZZ Reversal:215.082 (chg 108.7 pips)
+Settings:   Lookback: 3000, Deviation: 0.50%, Depth: 15
+Quality:    92/100
+Reasoning:  DEMAND ZONE zone tapped by wick. Current structure is BULLISH.

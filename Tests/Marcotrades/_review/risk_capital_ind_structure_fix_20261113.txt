@@ -1,0 +1,40 @@
+Risk capital dropdown and IND structure filter - 2026-11-13
+
+Implemented:
+1. InpRiskCapital dropdown in live EA, backtest EA and trade indicator:
+   BALANCE / EQUITY / FREE_MARGIN / MARGIN. Default is FREE_MARGIN, matching the previous calculation.
+   Budget = selected capital * InpMaxRiskPercent / 100.
+   Live uses the matching MT5 account value. Simulations use their own balance, floating P/L and used margin, never the real account's capital.
+   MARGIN means currently used margin. Zero used margin means no risk budget, so a flat simulated account cannot open its first trade in this mode.
+   Broker volume limits, quarter-lot grid, buffered SL risk and free-margin reserve checks still apply. These constraints can reduce volume below the requested risk percentage.
+   Live rechecks the selected capital during preflight and again after the final OrderCheck. It never increases the initial risk cap while submitting an entry.
+   Logs identify the selected capital base and budget. Indicator cache version is now 13 and includes the capital choice.
+
+2. Shared IND rule in Inducements.mqh, used by both EAs and both indicators:
+   Before = latest valid BOS/CHoCH strictly before the zone's origin candle.
+   After = latest valid BOS/CHoCH available when the qualifying touches are confirmed, on that zone's own timeframe.
+   Bullish candidate with bearish structure before AND after is rejected as BL-IND.
+   Bearish candidate with bullish structure before AND after is rejected as BR-IND.
+   Sweeps do not count as directional BOS/CHoCH. Unknown structure is not guessed from the engine's initial default trend.
+   Rejected candidates stay rejected and cannot absorb new candidates as cluster masters. Previously valid INDs are not retroactively relabelled by later events.
+   Original first-qualifying-touch timestamps are preserved. Rejections log [IND STRUCTURE REJECT].
+   The liquidity-block visualizer now commits ZigZag/structure/zone calculations on completed candles, matching the trade engines. An unfinished candle cannot permanently qualify or reject an IND.
+
+Verification:
+- 905 actual live/backtest sizing checks: all four bases, long/short parity, no-budget cases, capital changes during both broker checks, volume limits and margin constraints.
+- 88 shared IND qualification checks: both directions, causal cutoff, sweeps, threshold timestamp and rejected cluster masters.
+- 73 indicator cache/lifecycle checks, including capital-choice invalidation.
+- 244 existing M1 entry/touch/waiting regressions.
+- 3,895 history/rollover checks and 238 liquidity warmup checks, including M2/M4/M12 in the current timeframe list.
+- All tests ran offline; no broker orders were sent.
+
+Native compilation:
+marco_live_auto_ea.mq5 1.34: Result: 0 errors, 0 warnings, 24322 ms elapsed, cpu='X64 Regular'
+marco_backtest_ea.mq5 1.55: Result: 0 errors, 12 warnings, 21645 ms elapsed, cpu='X64 Regular'
+marco_backtest_trades.mq5 2.13: Result: 0 errors, 12 warnings, 23813 ms elapsed, cpu='X64 Regular'
+liquiduity_block.mq5 1.20: Result: 0 errors, 24 warnings, 13236 ms elapsed, cpu='X64 Regular'
+
+The accompanying ZIP contains the four compiled EX5 files in their MQL5-relative folders.
+Running programs were not replaced. Install these files in the terminal's MQL5 directory and reload the programs to activate the changes.
+The eight changed MQL source files are saved in this workspace; the new shared header is Include/Custom/Marcotrades/risk_capital.mqh.
+MT5 account-property definitions: https://www.mql5.com/en/docs/constants/environment_state/accountinformation

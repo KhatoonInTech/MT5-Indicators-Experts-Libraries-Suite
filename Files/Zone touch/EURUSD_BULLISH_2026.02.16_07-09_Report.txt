@@ -1,0 +1,17 @@
+INSTITUTIONAL FVG ANALYSIS REPORT
+========================================
+Symbol:    EURUSD (M15)
+Signal:    BULLISH FVG
+Quality:   98/100
+Rec:       ?? STRONG BUY
+Time:      2026.02.16_07-09
+
+TRADE SETUP:
+Entry: 1.18769
+SL:    1.18199
+TP:    1.19209
+Lot:   0.22
+R:R:   1:2.00
+
+REASONING:
+? Structure aligned. ? Breakout + Clear FVG. ? Wick rejection (45%). ? Round number. ? SMT divergence. ? Discount zone. ? Liquidity swept. ? Fresh zone. ? Killzone. ? Volume spike. ?? Trend continuation!

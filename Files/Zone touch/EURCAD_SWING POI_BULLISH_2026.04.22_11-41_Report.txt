@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     EURCAD (M15)
+Type:       BULLISH SWING POI TOUCHED
+Bid / Ask:  1.60316 / 1.60331
+Zone:       1.60312 – 1.60222
+Zone Age:   476h 56m ago
+Touches:    0
+Trend:      BEARISH | Lower Highs & Lower Lows
+Last BOS:   Structural Break @ 19:45
+Tick Vol:   1183
+Real Vol:   0
+Cumul Vol:  39268959
+ZZ Reversal:1.60242 (chg 223.6 pips)
+Settings:   Lookback: 3000, Deviation: 0.50%, Depth: 5
+Quality:    65/100
+Reasoning:  SWING POI zone tapped by wick. Current structure is BEARISH.

@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     EURNZD (H1)
+Type:       BULLISH SWING POI TOUCHED
+Bid / Ask:  1.98891 / 1.98906
+Zone:       1.98852 – 1.98469
+Zone Age:   678h 2m ago
+Touches:    0
+Trend:      BEARISH | Lower Highs & Lower Lows
+Last BOS:   Structural Break @ 04:00
+Tick Vol:   281
+Real Vol:   0
+Cumul Vol:  4193386
+ZZ Reversal:1.98776 (chg 175.0 pips)
+Settings:   Lookback: 3000, Deviation: 0.50%, Depth: 15
+Quality:    65/100
+Reasoning:  SWING POI zone tapped by wick. Current structure is BEARISH.

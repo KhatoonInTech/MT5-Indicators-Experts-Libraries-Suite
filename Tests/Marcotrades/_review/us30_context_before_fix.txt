@@ -1,0 +1,1074 @@
+BAR 2026.11.12 19:45 OHLC 52443.5 52448.5 52437.5 52439.5 pivots=439
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 19:37 line=52447.5 origin=2026.11.12 19:20 price=52563.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:46 OHLC 52438.5 52439.5 52427.5 52437.5 pivots=439
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 19:37 line=52447.5 origin=2026.11.12 19:20 price=52563.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:47 OHLC 52436.5 52443.5 52428.5 52431.5 pivots=440
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 19:37 line=52447.5 origin=2026.11.12 19:20 price=52563.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:48 OHLC 52431.5 52438.5 52428.5 52433.5 pivots=441
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 19:37 line=52447.5 origin=2026.11.12 19:20 price=52563.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:49 OHLC 52433.5 52445.5 52433.5 52444.5 pivots=441
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 19:37 line=52447.5 origin=2026.11.12 19:20 price=52563.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:50 OHLC 52443.5 52444.5 52423.5 52429.5 pivots=441
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 19:37 line=52447.5 origin=2026.11.12 19:20 price=52563.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:51 OHLC 52430.5 52431.5 52424.5 52428.5 pivots=442
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 19:37 line=52447.5 origin=2026.11.12 19:20 price=52563.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:52 OHLC 52427.5 52434.5 52421.5 52426.5 pivots=442
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 19:37 line=52447.5 origin=2026.11.12 19:20 price=52563.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:53 OHLC 52425.5 52440.5 52425.5 52434.5 pivots=442
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 19:37 line=52447.5 origin=2026.11.12 19:20 price=52563.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:54 OHLC 52435.5 52445.5 52425.5 52427.5 pivots=442
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 19:37 line=52447.5 origin=2026.11.12 19:20 price=52563.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:55 OHLC 52428.5 52434.5 52420.5 52425.5 pivots=443
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 19:54 line=52426.5 origin=2026.11.12 19:43 price=52459.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:56 OHLC 52424.5 52444.5 52424.5 52438.5 pivots=444
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 19:54 line=52426.5 origin=2026.11.12 19:43 price=52459.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:57 OHLC 52437.5 52446.5 52436.5 52442.5 pivots=444
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ STRUCT BR-BOS at=2026.11.12 19:54 line=52426.5 origin=2026.11.12 19:43 price=52459.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:58 OHLC 52441.5 52441.5 52419.5 52421.5 pivots=445
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ STRUCT BR-BOS at=2026.11.12 19:54 line=52426.5 origin=2026.11.12 19:43 price=52459.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 19:59 OHLC 52420.5 52440.5 52417.5 52435.5 pivots=445
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ STRUCT BR-BOS at=2026.11.12 19:54 line=52426.5 origin=2026.11.12 19:43 price=52459.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:00 OHLC 52436.5 52442.5 52433.5 52439.5 pivots=446
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 19:54 line=52426.5 origin=2026.11.12 19:43 price=52459.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:01 OHLC 52438.5 52438.5 52411.5 52411.5 pivots=447
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:00 line=52420.5 origin=2026.11.12 19:56 price=52446.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:02 OHLC 52412.5 52420.5 52403.5 52406.5 pivots=447
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:00 line=52420.5 origin=2026.11.12 19:56 price=52446.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:03 OHLC 52405.5 52419.5 52404.5 52412.5 pivots=448
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:00 line=52420.5 origin=2026.11.12 19:56 price=52446.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:04 OHLC 52411.5 52414.5 52404.5 52413.5 pivots=448
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:00 line=52420.5 origin=2026.11.12 19:56 price=52446.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:05 OHLC 52412.5 52424.5 52410.5 52410.5 pivots=448
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:00 line=52420.5 origin=2026.11.12 19:56 price=52446.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:06 OHLC 52409.5 52422.5 52400.5 52418.5 pivots=449
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:00 line=52420.5 origin=2026.11.12 19:56 price=52446.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:07 OHLC 52419.5 52422.5 52399.5 52402.5 pivots=449
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:08 OHLC 52403.5 52407.5 52395.5 52400.5 pivots=449
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:09 OHLC 52399.5 52424.5 52399.5 52423.5 pivots=450
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:10 OHLC 52422.5 52424.5 52408.5 52408.5 pivots=451
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:11 OHLC 52409.5 52410.5 52403.5 52403.5 pivots=451
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:12 OHLC 52403.5 52407.5 52397.5 52406.5 pivots=451
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:13 OHLC 52407.5 52410.5 52401.5 52406.5 pivots=452
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:14 OHLC 52407.5 52419.5 52405.5 52415.5 pivots=452
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:15 OHLC 52416.5 52422.5 52414.5 52416.5 pivots=452
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:16 OHLC 52415.5 52417.5 52397.5 52412.5 pivots=453
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=3 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:17 OHLC 52411.5 52419.5 52408.5 52409.5 pivots=454
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=3 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:18 OHLC 52410.5 52413.5 52399.5 52400.5 pivots=455
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=4 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:19 OHLC 52400.5 52417.5 52396.5 52414.5 pivots=455
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=4 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:20 OHLC 52413.5 52435.5 52413.5 52424.5 pivots=456
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=4 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BR-BOS at=2026.11.12 20:06 line=52403.5 origin=2026.11.12 20:04 price=52424.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:21 OHLC 52423.5 52435.5 52423.5 52430.5 pivots=457
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:22 OHLC 52431.5 52443.5 52427.5 52435.5 pivots=457
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:23 OHLC 52436.5 52440.5 52430.5 52434.5 pivots=457
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:24 OHLC 52435.5 52438.5 52423.5 52424.5 pivots=457
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:25 OHLC 52425.5 52432.5 52416.5 52417.5 pivots=457
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:26 OHLC 52417.5 52426.5 52414.5 52420.5 pivots=457
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:27 OHLC 52419.5 52419.5 52393.5 52397.5 pivots=457
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:28 OHLC 52398.5 52402.5 52391.5 52398.5 pivots=457
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:29 OHLC 52399.5 52414.5 52399.5 52411.5 pivots=458
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:30 OHLC 52411.5 52419.5 52406.5 52412.5 pivots=458
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:31 OHLC 52411.5 52416.5 52398.5 52399.5 pivots=459
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:32 OHLC 52398.5 52404.5 52391.5 52398.5 pivots=459
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BL-CHoCH at=2026.11.12 20:20 line=52424.5 origin=2026.11.12 20:07 price=52395.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+LB_VETO origin=2026.11.12 20:21 bounds=52427.5,52443.5 cause=2026.11.12 20:32 IND=Demand / Supply_BEAR_1794513360 bounds=52436.5,52446.5 qualified_pivot=2026.11.12 20:21
+LB_VETO origin=2026.11.12 20:21 bounds=52427.5,52443.5 cause=2026.11.12 20:32 IND=Demand / Supply_BEAR_1794513360 bounds=52436.5,52446.5 qualified_pivot=2026.11.12 20:21
+BAR 2026.11.12 20:33 OHLC 52397.5 52397.5 52380.5 52387.5 pivots=459
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:34 OHLC 52386.5 52395.5 52384.5 52385.5 pivots=460
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:35 OHLC 52384.5 52391.5 52377.9 52380.5 pivots=460
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:36 OHLC 52379.5 52385.5 52378.5 52381.5 pivots=460
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:37 OHLC 52380.5 52382.5 52366.5 52370.5 pivots=460
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:38 OHLC 52369.5 52376.5 52365.5 52367.5 pivots=460
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:39 OHLC 52367.5 52379.5 52367.5 52376.5 pivots=460
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:40 OHLC 52375.5 52387.5 52374.5 52384.5 pivots=460
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:41 OHLC 52383.5 52393.5 52378.5 52380.5 pivots=460
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:42 OHLC 52382.5 52383.5 52368.5 52369.5 pivots=461
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:43 OHLC 52369.5 52381.2 52368.5 52378.5 pivots=462
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794516000 52378.5 52393.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:44 OHLC 52377.5 52382.5 52377.5 52380.5 pivots=462
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794516000 52378.5 52393.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:45 OHLC 52380.5 52384.5 52373.5 52380.5 pivots=462
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794516000 52378.5 52393.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:46 OHLC 52379.5 52384.5 52364.5 52374.5 pivots=463
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794516000 52378.5 52393.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:47 OHLC 52374.5 52388.5 52369.5 52385.5 pivots=464
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794516000 52378.5 52393.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:48 OHLC 52385.5 52387.5 52375.5 52383.5 pivots=465
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794516000 52378.5 52393.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:49 OHLC 52382.5 52385.5 52372.5 52373.5 pivots=465
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794516000 52378.5 52393.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:50 OHLC 52373.5 52381.5 52369.5 52374.5 pivots=465
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794516000 52378.5 52393.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-CHoCH at=2026.11.12 20:32 line=52395.5 origin=2026.11.12 20:21 price=52443.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:51 OHLC 52373.5 52373.5 52340.5 52357.5 pivots=465
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794516000 52378.5 52393.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:50 line=52365.5 origin=2026.11.12 20:40 price=52393.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00
+BAR 2026.11.12 20:52 OHLC 52358.5 52358.5 52338.5 52344.5 pivots=465
+ IND Demand / Supply_BULL_1794488940 52365.3 52466.4 touches=0 qualified=0 dead=1 death=2026.11.12 13:14
+ IND Swing POI_BEAR_1794489180 52343.4 52392.4 touches=5 qualified=1 dead=1 death=2026.11.12 13:52
+ IND Demand / Supply_BEAR_1794493500 52441.4 52472.3 touches=0 qualified=0 dead=1 death=2026.11.12 14:28
+ IND Demand / Supply_BULL_1794495600 52398.5 52450.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:03
+ IND Swing POI_BEAR_1794495660 52404.5 52455.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:04
+ IND Swing POI_BEAR_1794496740 52444.5 52473.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:29
+ IND Demand / Supply_BULL_1794496860 52395.5 52437.5 touches=0 qualified=0 dead=1 death=2026.11.12 15:24
+ IND Swing POI_BULL_1794497100 52392.5 52414.5 touches=5 qualified=1 dead=1 death=2026.11.12 20:27
+ IND Demand / Supply_BEAR_1794511920 52457.5 52470.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794512880 52433.5 52445.5 touches=1 qualified=0 dead=1 death=2026.11.12 19:56
+ IND Demand / Supply_BEAR_1794513360 52436.5 52446.5 touches=2 qualified=1 dead=0 death=1970.01.01 00:00
+ IND Swing POI_BEAR_1794513840 52410.5 52424.5 touches=3 qualified=1 dead=1 death=2026.11.12 20:19
+ IND Demand / Supply_BEAR_1794515340 52406.5 52419.5 touches=0 qualified=0 dead=0 death=1970.01.01 00:00
+ IND Demand / Supply_BEAR_1794516000 52378.5 52393.5 touches=1 qualified=0 dead=0 death=1970.01.01 00:00
+ STRUCT BR-BOS at=2026.11.12 20:50 line=52365.5 origin=2026.11.12 20:40 price=52393.5
+ LB LB_BULL_1794468240 52452.4 52462.4 cause=2026.11.12 07:31
+ LB LB_BEAR_1794489180 52343.4 52392.4 cause=1970.01.01 00:00

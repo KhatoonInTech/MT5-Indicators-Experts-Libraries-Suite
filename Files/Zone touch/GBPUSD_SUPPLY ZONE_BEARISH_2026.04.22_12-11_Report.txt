@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     GBPUSD (H1)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  1.35346 / 1.35350
+Zone:       1.35443 – 1.35350
+Zone Age:   41h 11m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 20:00
+Tick Vol:   911
+Real Vol:   0
+Cumul Vol:  10321240
+ZZ Reversal:1.34746 (chg 69.7 pips)
+Settings:   Lookback: 3000, Deviation: 0.50%, Depth: 15
+Quality:    65/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BULLISH.

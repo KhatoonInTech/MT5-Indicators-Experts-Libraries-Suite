@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     BTCUSD (M15)
+Type:       BEARISH SWING POI TOUCHED
+Bid / Ask:  77872.39 / 77873.39
+Zone:       78296.88 – 77744.80
+Zone Age:   110h 22m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 05:00
+Tick Vol:   1899
+Real Vol:   0
+Cumul Vol:  104006549
+ZZ Reversal:78428.73 (chg 365172.0 pips)
+Settings:   Lookback: 5000, Deviation: 1.00%, Depth: 5
+Quality:    65/100
+Reasoning:  SWING POI zone tapped by wick. Current structure is BULLISH.

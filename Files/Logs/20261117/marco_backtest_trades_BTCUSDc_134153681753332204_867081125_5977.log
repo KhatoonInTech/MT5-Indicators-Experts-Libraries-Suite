@@ -1,0 +1,6 @@
+2026.11.17 11:26:38 [BTCUSDc,PERIOD_M2] [LIFECYCLE] Started marco_backtest_trades
+2026.11.17 11:26:38 [BTCUSDc,PERIOD_M2] [PRE-INIT MESSAGES]
+
+2026.11.17 11:26:38 [BTCUSDc,PERIOD_M2] [BROKER REPLAY] Loaded 6 recorded rejections; exact symbol/TF/LB/entry-minute matching. Unrecorded attempts remain simulated.
+2026.11.17 11:26:38 [BTCUSDc,PERIOD_M2] [INDICATOR CACHE] BTCUSDc: restored 3 recorded trades, 7/7 TFs processed; drawing saved results only.
+2026.11.17 11:30:23 [BTCUSDc,PERIOD_M2] [LIFECYCLE] Deinit reason=3

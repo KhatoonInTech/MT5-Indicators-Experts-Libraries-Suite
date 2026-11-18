@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     EURCHF (H1)
+Type:       BULLISH SWING POI TOUCHED
+Bid / Ask:  0.91633 / 0.91640
+Zone:       0.91627 – 0.91352
+Zone Age:   537h 36m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 15:00
+Tick Vol:   1494
+Real Vol:   0
+Cumul Vol:  4745898
+ZZ Reversal:0.91535 (chg 109.5 pips)
+Settings:   Lookback: 3000, Deviation: 0.50%, Depth: 15
+Quality:    92/100
+Reasoning:  SWING POI zone tapped by wick. Current structure is BULLISH.

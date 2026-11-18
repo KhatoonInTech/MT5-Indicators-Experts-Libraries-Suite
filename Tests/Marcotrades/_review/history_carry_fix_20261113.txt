@@ -1,0 +1,27 @@
+Previous-day ZigZag / market-structure carry fix - 2026-11-13
+
+Problem verified in source:
+- Both simulations loaded history from InpStartWindow, so preceding-day swings and structural events were absent.
+- Live daily reporting deleted calculation engines, and midnight synchronization rebuilt them from that day's start.
+- Daily journal rotation also discarded still-open trades from the management list.
+
+Changes:
+- Shared history_context.mqh resolves midnight of the previous available trading day using the last M1 candle before the requested day. This handles weekends and holidays. Missing/unsynchronized prior history does not silently initialize from today.
+- Backtest engine feeds prior-day bars through setup-TF, TP-TF and M1 ZigZag/structure/zone contexts before enabling trade simulation at InpStartWindow. Existing current-session setup eligibility rules remain in force.
+- Trade indicator waits for prior-day history and uses that same simulation engine. Cache format/key changed to 12 to invalidate results calculated without warmup.
+- Live attachment/restart warms from the previous available trading day. Incremental engine updates keep their fixed history boundary and existing state across reporting time and midnight. Removed the daily engine wipe and midnight reset.
+- Report/journal rotation continues. Open trades are retained with their management fields; closed records are removed and duplicate position IDs are not reloaded.
+- No trade is simulated during warmup. No unfinished 23:59 candle is assumed closed at 23:59:59: it is processed when closed-bar data becomes available at/after midnight.
+
+Versions: live EA 1.33; backtest EA 1.54; trade indicator 2.12.
+
+Verification:
+- 2,653 offline assertions for history boundaries, missing history, weekend gaps, trade-window gating, journal preservation, and real production ZigZag/market-structure continuity across M1/M3/M5/M10/M15/M30/H1. Two-day synthetic OHLC fixture; rollover output matches uninterrupted processing.
+- 244 existing M1 entry/touch/waiting regressions passed.
+- 72 existing indicator cache/lifecycle regressions passed.
+- Native MetaEditor: live EA 0 errors/0 warnings; backtest EA and trade indicator each 0 errors/12 existing shadowing warnings.
+- MQL UTF-8 BOM and CRLF preserved.
+
+Builds were verified in temporary copies, not installed onto running charts:
+C:\Users\Super\AppData\Local\Temp\marco_history_carry_158997f6e7df47628a9e72b9687348e5
+Recompile/reload the updated programs to activate them. Tests did not place orders, run the live EA, or validate an actual broker midnight session.

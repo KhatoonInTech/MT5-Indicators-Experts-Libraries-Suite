@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     NZDCAD (M15)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  0.80758 / 0.80770
+Zone:       0.80769 – 0.80699
+Zone Age:   31h 45m ago
+Touches:    0
+Trend:      BEARISH | Lower Highs & Lower Lows
+Last BOS:   Structural Break @ 00:00
+Tick Vol:   7
+Real Vol:   0
+Cumul Vol:  35168080
+ZZ Reversal:0.80272 (chg 49.7 pips)
+Settings:   Lookback: 3000, Deviation: 0.50%, Depth: 5
+Quality:    92/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BEARISH.

@@ -1,0 +1,53 @@
+MARCO STRATEGY PIP UNITS
+
+These are explicit strategy distance units, NOT an automatic broker-specification
+lookup. Use identical settings in the live EA, backtest EA and trade indicator.
+Broker symbol prefixes/suffixes and .cash are supported. Quote precision does
+not change these defaults; valid stop prices still round outward to tick size.
+
+1 pip = 1.00 price:
+  US30, GER40, HK50, JP225, SPN35
+
+1 pip = 0.10 price:
+  US500, USTEC, AUS200, EU50, FRA40, N25, US2000,
+  XAUUSD, XAUAUD, XAUEUR, XPDUSD, XPTUSD, BTCUSD, ETHUSD
+
+1 pip = 0.01 price:
+  XAGUSD, XAGAUD, XAGEUR, USOIL, UKOIL, BCHUSD, SOLUSD, XCUUSD
+
+1 pip = 0.0001 price:
+  EURCZK, EURHUF, EURNOK, EURPLN, USDCZK, USDHKD, USDHUF, USDILS,
+  USDMXN, USDNOK, USDPLN, USDSEK, USDZAR, USDSGD, USDCNH
+
+Aliases: US100=USTEC; DE30/DE40=GER40; FR40=FRA40; STOXX50=EU50.
+XAUGBP/GOLD use 0.10; SILVER uses 0.01.
+Unlisted symbols retain the legacy digit-based fallback unless overridden.
+
+SETTING: InpPipSizeOverrides
+Blank = the defaults above. Enter SYMBOL=price-per-pip;SYMBOL=price-per-pip.
+Example: US500=0.1;XAUUSD=0.01
+More specific names win: US500=0.1;US500m=0.25 applies 0.25 to US500m.
+Use positive decimal numbers (no exponent notation). Duplicate names, zero,
+negative values and invalid numbers stop initialization instead of being ignored.
+Changing this setting invalidates the indicator's cached simulation.
+The override affects ALL pip-based settings, including proximity and TP vicinity.
+
+BROKER CONVENTIONS
+Exness, FTMO and FundedNext do not use one universal non-forex pip definition.
+Do not assume the strategy defaults equal every broker's terminology.
+Examples from the official pages checked during this change:
+- Exness: US30 1.00; US500/USTEC 0.10. Its commodity documentation lists gold
+  crosses at 0.01; set XAUUSD/XAUAUD/XAUEUR individually if that is the intended unit.
+- FundedNext's examples imply US30=0.10, XAUUSD=0.10 and BTCUSD=0.10.
+  To use its stated US30 pip convention, set US30=0.1.
+- FTMO's 2024 whole-price-unit non-FX announcement explicitly applies to cTrader
+  and DXtrade. It is NOT used here to guess MetaTrader pip sizes. Choose explicit
+  overrides when transferring settings between those platforms.
+The complete broker-by-symbol matrix has not been verified. Defaults for the
+remaining instruments are strategy conventions, not certified broker pip sizes.
+
+Sources:
+https://get.exness.help/hc/en-us/articles/17854383867548-Indices
+https://get.exness.help/hc/en-us/articles/17854173039388-Commodities
+https://help.fundednext.com/en/articles/8607163-what-is-the-pip-or-point-value-in-fundednext
+https://ftmo.com/en/blog/trading-updates/trading-update-19-sep-2024-2-2/

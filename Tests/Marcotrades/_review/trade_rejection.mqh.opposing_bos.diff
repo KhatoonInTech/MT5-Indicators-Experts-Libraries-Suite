@@ -1,0 +1,140 @@
+--- trade_rejection.mqh.before_opposing_bos
++++ trade_rejection.mqh
+@@ -201,6 +201,34 @@
+       for(int i=0; i<ArraySize(zones); i++)
+          if(zones[i].until==0 && !zones[i].seen) zones[i].until=now;
+      }
++   static int StructureDirection(string name)
++     {
++      if(name=="BL-CHoCH" || name=="BL-BOS" || name=="BSL-Swept") return 1;
++      if(name=="BR-CHoCH" || name=="BR-BOS" || name=="SSL-Swept") return -1;
++      return 0;
++     }
++   bool ActiveSource(const SRejectionLB &lb,bool candidateBull,datetime now,ENUM_TIMEFRAMES tf)
++     {
++      return lb.bull!=candidateBull && lb.available<=now && (lb.until==0 || now<lb.until) &&
++             (lb.mitigation==0 || now<lb.mitigation+PeriodSeconds(tf));
++     }
++   // Consult the same available/qualified LB snapshots as structural prevention.
++   bool IncomingLeg(bool candidateBull,datetime origin,double price,datetime now,
++                    ENUM_TIMEFRAMES tf,double buffer,string &id)
++     {
++      id="";
++      if(origin<=0 || origin>now) return false;
++      for(int b=ArraySize(zones)-1;b>=0;b--)
++        {
++         SRejectionLB lb=zones[b];
++         if(!ActiveSource(lb,candidateBull,now,tf)) continue;
++         if(CTradeRejection::OriginInside(origin,price,lb.created,lb.mitigation,PeriodSeconds(tf),lb.low,lb.high,buffer))
++           { id=lb.id; return true; }
++        }
++      return false;
++     }
++   // Name retained for existing callers. The veto follows an uninterrupted
++   // opposing CHoCH/BOS/sweep sequence, not just an immediately latest CHoCH.
+    STradeRejection OpposingChoch(bool candidateBull, datetime legOrigin, datetime legEnd,
+                                 datetime touch, datetime now, ENUM_TIMEFRAMES tf, double buffer, bool diagnostics = false)
+      {
+@@ -214,51 +242,62 @@
+       if(now<touch) return AllowWithTrace("TOUCH_NOT_YET_AVAILABLE", diagnostics);
+       if(legOrigin==0) return AllowWithTrace("NO_MATCHING_INCOMING_LEG", diagnostics);
+       if(legOrigin>touch) return AllowWithTrace("LEG_STARTED_AFTER_RECORDED_TOUCH", diagnostics);
+-      SRejectionEvent ev;
+-      if(!Latest(now,ev)) return AllowWithTrace("NO_AVAILABLE_STRUCTURE", diagnostics);
++      SRejectionEvent latest;
++      if(!Latest(now,latest)) return AllowWithTrace("NO_AVAILABLE_STRUCTURE", diagnostics);
++      int opposing=candidateBull ? -1 : 1;
+       if(diagnostics)
+          PrintFormat("[CHOCH AUDIT] latest=%s event=%s available=%s source_pivot=%s source_price=%.8f",
+-                     ev.name, TimeToString(ev.time, TIME_DATE|TIME_SECONDS), TimeToString(ev.available, TIME_DATE|TIME_SECONDS),
+-                     TimeToString(ev.originTime, TIME_DATE|TIME_SECONDS), ev.originPrice);
+-      if(ev.name != (candidateBull ? "BR-CHoCH" : "BL-CHoCH"))
+-         return AllowWithTrace("LATEST_STRUCTURE_IS_NOT_OPPOSING_CHOCH", diagnostics);
+-      // The latest CHoCH remains the structural context across intervening pullbacks.
+-      // Its source pivot may precede the final touching leg; the CHoCH need not occur inside that leg.
+-      // A later structure is already excluded by selecting only the latest available event above.
+-      if(ev.originTime==0) return AllowWithTrace("NO_CHOCH_SOURCE_PIVOT", diagnostics);
+-      if(ev.originTime>legOrigin) return AllowWithTrace("CHOCH_SOURCE_AFTER_INCOMING_LEG_ORIGIN", diagnostics);
+-      if(legEnd>0 && ev.time>legEnd) return AllowWithTrace("CHOCH_AFTER_TOUCHING_LEG_ENDED", diagnostics);
+-      // An IND-vetoed LB cannot be traded, but its causal opposing structure still blocks entry.
+-      int knownOpposing = 0;
+-      for(int b=ArraySize(zones)-1;b>=0;b--)
++                     latest.name, TimeToString(latest.time, TIME_DATE|TIME_SECONDS), TimeToString(latest.available, TIME_DATE|TIME_SECONDS),
++                     TimeToString(latest.originTime, TIME_DATE|TIME_SECONDS), latest.originPrice);
++      if(StructureDirection(latest.name)!=opposing)
++         return AllowWithTrace("LATEST_STRUCTURE_IS_NOT_OPPOSING", diagnostics);
++      if(legEnd>0 && latest.time>legEnd)
++         return AllowWithTrace("STRUCTURE_AFTER_TOUCHING_LEG_ENDED", diagnostics);
++      SRejectionEvent ev=latest;
++      for(int chain=0;chain<ArraySize(events);chain++)
+         {
+-         SRejectionLB lb=zones[b];
+-         if(lb.bull==candidateBull || lb.available>now || (lb.until>0 && now>=lb.until)) continue;
+-         knownOpposing++;
+-         bool produced=lb.choch==ev.time;
+-         bool stemmed=false;
+-         if(!produced)
+-            for(int v=b; v>=0; v--)
++         // A candidate-direction event or reclassification ends the chain.
++         if(StructureDirection(ev.name)!=opposing) break;
++         if(ev.originTime>0 && ev.originTime<=legOrigin)
++            for(int b=ArraySize(zones)-1;b>=0;b--)
+               {
+-               SRejectionLB source=zones[v];
+-               if(source.id!=lb.id || source.available>ev.available ||
+-                  (source.until>0 && ev.available>=source.until)) continue;
+-               stemmed=CTradeRejection::OriginInside(ev.originTime, ev.originPrice, source.created,
+-                         source.mitigation, PeriodSeconds(tf), source.low, source.high, buffer);
+-               break;
++               SRejectionLB lb=zones[b];
++               if(!ActiveSource(lb,candidateBull,now,tf)) continue;
++               bool produced=lb.choch==ev.time;
++               bool stemmed=false;
++               if(!produced)
++                  for(int v=b;v>=0;v--)
++                    {
++                     SRejectionLB source=zones[v];
++                     if(source.id!=lb.id || source.available>ev.available ||
++                        (source.until>0 && ev.available>=source.until)) continue;
++                     stemmed=CTradeRejection::OriginInside(ev.originTime,ev.originPrice,source.created,
++                               source.mitigation,PeriodSeconds(tf),source.low,source.high,buffer);
++                     break;
++                    }
++               if(!produced && !stemmed) continue;
++               result.action=TRADE_RETIRE_ZONE; result.reason=REJECT_OPPOSING_CHOCH_LB;
++               result.sourceTF=tf; result.opposingId=lb.id; result.eventTime=ev.time;
++               if(diagnostics)
++                  PrintFormat("[CHOCH AUDIT] decision=REJECT reason=OPPOSING_STRUCTURE_LB source=%s LB=%s latest=%s linked=%s linked_at=%s origin=%s price=%.8f",
++                              EnumToString(tf),lb.id,latest.name,ev.name,TimeToString(ev.time,TIME_DATE|TIME_SECONDS),
++                              TimeToString(ev.originTime,TIME_DATE|TIME_SECONDS),ev.originPrice);
++               return result;
+               }
+-         if(diagnostics)
+-            PrintFormat("[CHOCH AUDIT] opposing=%s created=%s available=%s zone=[%.8f,%.8f] causal_choch=%s produced=%s stemmed=%s",
+-                        lb.id, TimeToString(lb.created, TIME_DATE|TIME_SECONDS), TimeToString(lb.available, TIME_DATE|TIME_SECONDS),
+-                        lb.low, lb.high, TimeToString(lb.choch, TIME_DATE|TIME_SECONDS), produced ? "true" : "false", stemmed ? "true" : "false");
+-         if(!produced && !stemmed) continue;
+-         result.action=TRADE_RETIRE_ZONE; result.reason=REJECT_OPPOSING_CHOCH_LB;
+-         result.sourceTF=tf; result.opposingId=lb.id; result.eventTime=ev.time;
+-         if(diagnostics) Print("[CHOCH AUDIT] decision=REJECT reason=OPPOSING_CHOCH_LB");
+-         return result;
++         // Event revisions are appended out of order. Select the preceding event
++         // by its structural time, using only the version available at entry.
++         SRejectionEvent previous; bool found=false;
++         for(int e=ArraySize(events)-1;e>=0;e--)
++           {
++            SRejectionEvent candidate;
++            if(!EventAt(e,now,candidate) || candidate.time>=ev.time) continue;
++            if(!found || candidate.time>previous.time) { previous=candidate; found=true; }
++           }
++         if(!found) break;
++         ev=previous;
+         }
+-      if(diagnostics) PrintFormat("[CHOCH AUDIT] known_opposing_LBs=%d", knownOpposing);
+-      return AllowWithTrace("NO_AVAILABLE_OPPOSING_LB_LINKED_TO_CHOCH", diagnostics);
+-     }
++      return AllowWithTrace("NO_ACTIVE_OPPOSING_LB_LINKED_TO_STRUCTURE_CHAIN", diagnostics);
++     }
++
+   };
+ #endif

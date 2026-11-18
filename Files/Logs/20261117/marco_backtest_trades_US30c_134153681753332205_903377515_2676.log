@@ -1,0 +1,6 @@
+2026.11.17 21:31:35 [US30c,PERIOD_M4] [LIFECYCLE] Started marco_backtest_trades
+2026.11.17 21:31:35 [US30c,PERIOD_M4] [PRE-INIT MESSAGES]
+
+2026.11.17 21:31:35 [US30c,PERIOD_M4] [BROKER REPLAY] Loaded 6 recorded rejections; exact symbol/TF/LB/entry-minute matching. Unrecorded attempts remain simulated.
+2026.11.17 21:31:35 [US30c,PERIOD_M4] [INDICATOR CACHE] US30c: restored 3 recorded trades, 7/7 TFs processed; drawing saved results only.
+2026.11.17 21:32:55 [US30c,PERIOD_M4] [LIFECYCLE] Deinit reason=1

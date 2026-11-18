@@ -1,0 +1,21 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     AUDNZD (D1)
+Type:       BULLISH DEMAND ZONE TOUCHED
+Bid / Ask:  1.21437 / 1.21450
+Zone:       1.21001 – 1.20421
+Trade:      SL: 1.20391 | TP: 1.23568 (1:2 RR)
+Est. Risk:  Loss: -0.00 USD | Profit: +0.00 USD (1 Lot)
+Quality:    20/100
+
+POINTS OF CONFLUENCE:
+- ? **Liquidity:** No Sweep Detected
+- ?? **Momentum:** Neutral Approach
+- ?? **Structure:** Weak Sequence
+- ?? **Freshness:** Mitigated Once
+- ?? **Session:** Outside Major Sessions
+- ? **Fibonacci:** Valid Discount Zone
+- ? **Proximity:** Too Far (44.9 pips)- ? **Alignment:** HTF & LTF Trend Synergy
+
+
+Verdict:    Low Probability. Lacks crucial structural & momentum support.

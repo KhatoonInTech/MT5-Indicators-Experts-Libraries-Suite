@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     BTCUSD (D1)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  77533.10 / 77534.27
+Zone:       84261.38 – 75550.80
+Zone Age:   1950h 3m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 00:00
+Tick Vol:   78374
+Real Vol:   0
+Cumul Vol:  41361617
+ZZ Reversal:78296.88 (chg 1335822.0 pips)
+Settings:   Lookback: 5000, Deviation: 5.00%, Depth: 15
+Quality:    65/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BULLISH.

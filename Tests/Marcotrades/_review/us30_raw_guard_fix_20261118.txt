@@ -1,0 +1,37 @@
+US30c M2 BUY / M1 raw guard correction - 2026-11-18
+
+Evidence:
+Files/Logs/20261118/marco_backtest_trades_US30c_134153681753332205_973990781_6462.log
+Entry 2026.11.17 05:16, M2 LB_BULL_1794887400, BUY 51461.7.
+M1 latest BR-BOS 05:00, available 05:01. Old decision: NO_ACTIVE_OPPOSING_LB_LINKED_TO_STRUCTURE_CHAIN.
+
+Root cause:
+With InpApplyEntryLBPolicyToPreventionExits=true, both M1 and setup-TF prevention capture excluded all IND-overlap-vetoed raw LB sources, without testing their structural qualification.
+
+Change:
+Raw sources can enter prevention history after EntryTriggerStructureTime passes. Readiness is latched at its actual availability; source remains in the exit-source registry and cannot trigger its own entry. False mode remains raw. Indicator displays qualified guards in its prevention/all views, never the entry-only view. Added LB GUARD ARMED diagnostics. Trade cache revision 26 forces recalculation. Opposing position-exit sequence is unchanged.
+
+Actual-candle replay:
+Read-only export from the current MT5 terminal: 1741 US30c M1 bars, 2026.11.16 through 2026.11.17 06:00.
+Guard origin 04:52, bounds 51514.3..51526.3, causal BR-CHoCH 04:54, qualification known 05:01, not mitigated at 05:16.
+Production M1 context adapted to C++ using existing test adapter (terminal/chart metadata mocked):
+- Restored old exclusion: ALLOW at 05:16.
+- Corrected backtest context: REJECT at 05:16.
+- Corrected live context: REJECT at 05:16.
+This validates the entry-prevention decision, not a complete MT5 trade simulation. No orders sent.
+
+Other validation:
+108 qualification checks; 59 opposing-entry checks and CHoCH-only mutation; 358 warmup checks; 294 opposing-sequence checks; 56 structure-exit checks; 74 simulator-cache checks passed.
+All four builds: 0 errors. Liquidity indicator: 25 existing shared-code shadowing warnings; simulator and backtest EA: 12 each; live EA: 0 warnings.
+ZigZag.mqh SHA256 unchanged: 949BC8DE05D8731E0CCFB0EF70E429A0E182A6FA1EDDD56B5564863A97D152A5
+
+Changed source/test files:
+Include/Custom/Marcotrades/liquidity_blocks.mqh
+Include/Custom/Marcotrades/marco_backtest.mqh
+Include/Custom/Marcotrades/marco_live_auto.mqh
+Indicators/Custom/Marcotrades/liquiduity_block.mq5 (1.26)
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5 (2.26)
+Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5 (1.68)
+Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5 (1.47)
+Tests/Marcotrades/run_entry_trigger_structure_tests.py
+Corresponding four EX5 files rebuilt. Review outputs and exported candles are under Tests/Marcotrades/_review/.

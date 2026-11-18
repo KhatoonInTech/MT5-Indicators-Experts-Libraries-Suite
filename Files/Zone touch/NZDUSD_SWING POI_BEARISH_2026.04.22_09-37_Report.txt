@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     NZDUSD (M15)
+Type:       BEARISH SWING POI TOUCHED
+Bid / Ask:  0.59175 / 0.59183
+Zone:       0.59290 – 0.59163
+Zone Age:   113h 37m ago
+Touches:    0
+Trend:      BEARISH | Lower Highs & Lower Lows
+Last BOS:   Structural Break @ 00:00
+Tick Vol:   257
+Real Vol:   0
+Cumul Vol:  15751278
+ZZ Reversal:0.59211 (chg 49.1 pips)
+Settings:   Lookback: 3000, Deviation: 0.50%, Depth: 5
+Quality:    92/100
+Reasoning:  SWING POI zone tapped by wick. Current structure is BEARISH.

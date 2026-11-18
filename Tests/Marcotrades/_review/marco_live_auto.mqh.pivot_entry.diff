@@ -1,0 +1,95 @@
+--- marco_live_auto.mqh before
+
++++ marco_live_auto.mqh
+
+@@ -20,4 +20,5 @@
+
+ #include <Custom\Marcotrades\trade_rejection.mqh>
+ #include <Custom\Marcotrades\m1_ind_entry.mqh>
++#include <Custom\Marcotrades\pivot_entry.mqh>
+ #include <Custom\Marcotrades\broker_execution.mqh>
+ #include <Custom\Marcotrades\structure_exit.mqh>
+@@ -361,4 +362,5 @@
+
+    datetime          m1TouchTime;
+    SMarcoIndWait     indWait;
++   SMarcoPivotEntry  pivotEntry;
+    datetime          rejectionTouchTime;
+    datetime          rejectionHTFTouchTime;
+@@ -1989,4 +1991,5 @@
+
+                      m_htf_lbs[sz].firstTouchTime       = 0;
+                      m_htf_lbs[sz].m1TouchTime = 0;
++                     ZeroMemory(m_htf_lbs[sz].pivotEntry);
+                      CMarcoIndEntryFilter::Reset(m_htf_lbs[sz].indWait);
+                      m_htf_lbs[sz].rejectionTouchTime = 0;
+@@ -2104,4 +2107,5 @@
+
+                                              m_htf_lbs[cached].mitigationTime, m_htf_time[i] + PeriodSeconds(tf));
+                      m_htf_lbs[cached].m1TouchTime = 0;
++                     ZeroMemory(m_htf_lbs[cached].pivotEntry);
+                      CMarcoIndEntryFilter::Reset(m_htf_lbs[cached].indWait);
+                      m_htf_lbs[cached].m1PivotTime = 0;
+@@ -2250,4 +2254,5 @@
+
+                   m_htf_lbs[sz].firstTouchTime       = 0;
+                   m_htf_lbs[sz].m1TouchTime = 0;
++                  ZeroMemory(m_htf_lbs[sz].pivotEntry);
+                   CMarcoIndEntryFilter::Reset(m_htf_lbs[sz].indWait);
+                   m_htf_lbs[sz].rejectionTouchTime = 0;
+@@ -2322,4 +2327,5 @@
+
+                                           m_htf_lbs[cached].mitigationTime, m_htf_time[new_i] + PeriodSeconds(m_tradeTF));
+                   m_htf_lbs[cached].m1TouchTime = 0;
++                  ZeroMemory(m_htf_lbs[cached].pivotEntry);
+                   CMarcoIndEntryFilter::Reset(m_htf_lbs[cached].indWait);
+                   m_htf_lbs[cached].m1PivotTime = 0;
+@@ -2716,7 +2722,10 @@
+
+             if(!GetM1EntryPivot(k, TimeCurrent(), firstPivotTime, firstPivotPrice, firstPivotConfirmTime))
+                continue;
+-            if(!CTradeRejection::M1Expired(m_last_entry_bar,firstPivotConfirmTime) &&
++            if(!CMarcoPivotEntry::Prepare(m_htf_lbs[k].pivotEntry,m_symbol,PERIOD_M1,isBull,
++                                         firstPivotTime,firstPivotConfirmTime,TimeCurrent())) continue;
++            if(!CMarcoPivotEntry::Enabled() && !CTradeRejection::M1Expired(m_last_entry_bar,firstPivotConfirmTime) &&
+                SkipIndEntryPrice(k,TimeCurrent(),isBull ? ask : bid)) continue;
+-            if(CTradeRejection::M1Expired(m_last_entry_bar, firstPivotConfirmTime))
++            if(!CMarcoPivotEntry::Waiting(m_htf_lbs[k].pivotEntry) &&
++                  CTradeRejection::M1Expired(m_last_entry_bar, firstPivotConfirmTime))
+               {
+                PrintFormat("[M1 ENTRY EXPIRED] %s %s LB=%s first_pivot=%s confirmed=%s; missed entry window, later pivots cannot re-arm this setup.",
+@@ -2747,5 +2756,5 @@
+
+               }
+ 
+-            if(m_requireZZConfirmation || (CMarcoIndEntryFilter::Enabled() && m_htf_lbs[k].indWait.waiting))
++            if(m_requireZZConfirmation || CMarcoPivotEntry::Enabled() || (CMarcoIndEntryFilter::Enabled() && m_htf_lbs[k].indWait.waiting))
+               {
+                if(CTradeRejection::NeedsPivot(pivotTouches))
+@@ -2755,5 +2764,9 @@
+
+                   continue;
+ 
+-               if(CTradeRejection::Expired(TimeCurrent(), firstPivotConfirmTime, PeriodSeconds(m_tradeTF)))
++               if(!CMarcoPivotEntry::Prepare(m_htf_lbs[k].pivotEntry,m_symbol,m_tradeTF,isBull,
++                                           firstPivotTime,firstPivotConfirmTime,TimeCurrent())) continue;
++
++               if(!CMarcoPivotEntry::Waiting(m_htf_lbs[k].pivotEntry) &&
++                  CTradeRejection::Expired(TimeCurrent(), firstPivotConfirmTime, PeriodSeconds(m_tradeTF)))
+                  {
+                   CTradeRejection::Consume(m_htf_lbs[k].touchCount, 1);
+@@ -2770,4 +2783,6 @@
+
+            }
+ 
++         if(!CMarcoPivotEntry::Quote(m_htf_lbs[k].pivotEntry,isBull,bid)) continue;
++
+          if(m_entryTF!=ENTRY_TF_M1 &&
+             (SkipIndPivot(k,firstPivotTime,firstPivotPrice,firstPivotConfirmTime) ||
+@@ -2793,4 +2808,5 @@
+
+          ask = entryTick.ask;
+          bid = entryTick.bid;
++         if(!CMarcoPivotEntry::Quote(m_htf_lbs[k].pivotEntry,isBull,bid)) continue;
+          double entryPx = isBull ? ask : bid;
+          // The executable quote is refreshed after overlap checks; apply the same veto again.

@@ -1,0 +1,81 @@
+--- marco_live_auto.mqh.before_opposing_bos
++++ marco_live_auto.mqh
+@@ -737,7 +737,7 @@
+       return -1;
+      }
+ 
+-   bool              IsLegComingFromOppositeLB(bool candidateIsBull, datetime touchPivotTime, ZigZag* zzHtfRef, double buffer)
++   bool              IsLegComingFromOppositeLB(bool candidateIsBull, datetime touchPivotTime, ZigZag* zzHtfRef, double buffer, datetime now)
+      {
+       if(zzHtfRef == NULL || zzHtfRef.pivots.Total() < 2)
+          return false;
+@@ -746,7 +746,7 @@
+       for(int p = zzHtfRef.pivots.Total() - 1; p >= 0; p--)
+         {
+          Pivot* pv = (Pivot*)zzHtfRef.pivots.At(p);
+-         if(pv == NULL || pv == zzHtfRef.projection)
++         if(pv == NULL || pv == zzHtfRef.projection || pv.end == NULL || StringFind(pv.ln,"ZZ_Proj")>=0)
+             continue;
+          if(pv.end.time == touchPivotTime)
+            {
+@@ -755,21 +755,29 @@
+            }
+         }
+ 
+-      if(touchIdx <= 0)
++      if(touchIdx < 0)
+          return false;
+ 
+-      Pivot* prevPv = (Pivot*)zzHtfRef.pivots.At(touchIdx - 1);
+-      if(prevPv == NULL || prevPv.end == NULL)
+-         return false;
+-
+-      double   prevPrice = prevPv.end.price;
+-      datetime prevTime  = prevPv.end.time;
+-
+-      for(int i = 0; i < m_htf_lb_count; i++)
+-         if(m_htf_lbs[i].sourceActive && m_htf_lbs[i].isBullish != candidateIsBull &&
+-            CTradeRejection::OriginInside(prevTime, prevPrice, m_htf_lbs[i].createdTime, m_htf_lbs[i].mitigationTime,
+-                                         PeriodSeconds(m_tradeTF), m_htf_lbs[i].zoneLow, m_htf_lbs[i].zoneHigh, buffer))
+-            return true;
++      Pivot* selected=(Pivot*)zzHtfRef.pivots.At(touchIdx);
++      if(selected==NULL || selected.start==NULL) return false;
++      double prevPrice=selected.start.price;
++      datetime prevTime=selected.start.time;
++
++      string opposingId="";
++      ENUM_TIMEFRAMES sourceTF=m_tradeTF;
++      bool blocked=m_htfRejection.IncomingLeg(candidateIsBull,prevTime,prevPrice,now,m_tradeTF,buffer,opposingId);
++      if(!blocked && m1LBContext!=NULL && m_tradeTF!=PERIOD_M1)
++        {
++         sourceTF=PERIOD_M1;
++         blocked=m1LBContext.rejectionHistory.IncomingLeg(candidateIsBull,prevTime,prevPrice,now,PERIOD_M1,buffer,opposingId);
++        }
++      if(blocked)
++        {
++         PrintFormat("[ENTRY LEG BLOCK] %s %s source=%s LB=%s origin=%s price=%.8f at=%s",
++                     m_symbol,EnumToString(m_tradeTF),EnumToString(sourceTF),opposingId,
++                     TimeToString(prevTime,TIME_DATE|TIME_SECONDS),prevPrice,TimeToString(now,TIME_DATE|TIME_SECONDS));
++         return true;
++        }
+ 
+       return false;
+      }
+@@ -1018,7 +1026,7 @@
+       if(result.action != TRADE_RETIRE_ZONE) return false;
+       CTradeRejection::Retire(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated, m_htf_lbs[k].mitigationTime, now);
+       m_htf_lbs[k].m1PivotTime = 0; m_htf_lbs[k].m1PivotPrice = 0.0; m_htf_lbs[k].m1ConfirmTime = 0;
+-      PrintFormat("[TRADE REJECTED] %s %s LB=%s reason=OPPOSING_CHOCH_LB source=%s opposing=%s event=%s at=%s",
++      PrintFormat("[TRADE REJECTED] %s %s LB=%s reason=OPPOSING_STRUCTURE_LB source=%s opposing=%s event=%s at=%s",
+                   m_symbol, EnumToString(m_tradeTF), m_htf_lbs[k].id, EnumToString(result.sourceTF),
+                   result.opposingId, TimeToString(result.eventTime, TIME_DATE|TIME_SECONDS), TimeToString(now, TIME_DATE|TIME_SECONDS));
+       return true;
+@@ -2989,7 +2997,7 @@
+          if(!entryAllowed)
+             continue;
+          // Opposing Leg Filter (Anti-Bait Trap Guard)
+-         if(IsLegComingFromOppositeLB(isBull, firstPivotTime, entryZigZag, buffer))
++         if(IsLegComingFromOppositeLB(isBull, firstPivotTime, entryZigZag, buffer, TimeCurrent()))
+            {
+             PrintFormat("🛑 [%s] %s Trade BLOCKED: Touching pivot follows a ZigZag leg coming straight from an opposing %s zone! Skipping.",
+                         m_symbol, setupNomenclature, isBull ? "BR-LB" : "BL-LB");

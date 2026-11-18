@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     GBPUSD (M15)
+Type:       BULLISH DEMAND ZONE TOUCHED
+Bid / Ask:  1.34876 / 1.34880
+Zone:       1.34889 – 1.34728
+Zone Age:   78h 38m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 20:15
+Tick Vol:   289
+Real Vol:   0
+Cumul Vol:  3147262
+ZZ Reversal:1.35443 (chg 71.5 pips)
+Settings:   Lookback: 3000, Deviation: 0.50%, Depth: 5
+Quality:    92/100
+Reasoning:  DEMAND ZONE zone tapped by wick. Current structure is BULLISH.

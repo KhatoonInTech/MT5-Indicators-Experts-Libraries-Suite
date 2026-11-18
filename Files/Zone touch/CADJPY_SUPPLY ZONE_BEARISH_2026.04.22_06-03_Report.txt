@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     CADJPY (D1)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  116.675 / 116.689
+Zone:       117.197 – 115.975
+Zone Age:   1062h 3m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 00:00
+Tick Vol:   18784
+Real Vol:   0
+Cumul Vol:  7981445
+ZZ Reversal:116.848 (chg 301.2 pips)
+Settings:   Lookback: 3000, Deviation: 1.00%, Depth: 15
+Quality:    65/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BULLISH.

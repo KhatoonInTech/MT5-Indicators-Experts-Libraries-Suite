@@ -1,0 +1,88 @@
+US30 M10 follow-up: exact candle replay, 2026-11-13
+
+This supersedes the unresolved exact-trade conclusions in us30_sync_20261113.txt.
+All times below use the MT5 candle/server timestamps, not the PC timezone.
+
+Trade examined
+US30c BUY, 2026.11.12 20:03, entry 52412.8, original SL 52353.5.
+The user reported an entry inside BL-IND and no exit at the later BR-CHoCH.
+
+1. ENTRY: the chart showed future IND qualification over older candles.
+The overlapping zone is Swing POI_BULL_1794497100, bounds 52392.5..52414.5.
+At 20:03 it had zero counted touches and was NOT a qualified inducement.
+At 20:06 it had one touch. At 20:10 it reached the required two touches.
+Its final five-touch label was drawn from its original 15:25 source candle,
+which made it appear to be an IND at the 20:03 entry.
+The actual entry-price filter reports no active matching IND at 20:03 and
+reports this overlapping IND at 20:10. The entry filter was not bypassed.
+
+Change: store the first known qualification time separately from the source
+pivot time. Draw the IND rectangle from that qualification time, with a
+hover tooltip showing origin and qualification times. In this example the
+IND shading begins at 20:10. The entry remains allowed under the existing
+minimum-touch rule; future IND qualification must not cancel past entries.
+
+2. EXIT: the LB entry veto was also deleting information needed for exits.
+At 20:32 a BR-CHoCH formed at 52395.5, confirmed at 20:33. Its source pivot
+was the 20:21 high of 52443.5. The corresponding BR-LB-SSL candidate covered
+52427.5..52443.5. Registration rejected it because it overlapped an active
+BR-IND (Demand / Supply_BEAR_1794513360, bounds 52436.5..52446.5).
+That correctly blocked a new entry setup, but also left the existing buy's
+protection logic without the causal LB source. It therefore missed the exit.
+
+Change: retain such sources separately for opposing-structure exits. They
+remain excluded from new entry setups, entry-rejection history decisions,
+and same-direction TP extensions. Both M1 and setup-TF histories receive
+these sources in the live and simulation engines. Source records are
+removed when their causal structure is no longer classified as CHoCH.
+
+Verified result
+The simulator M1 context AND the live EA M1 context, replayed independently
+from the actual US30c candles, first produce a FULL exit signal at 20:33:
+  CHoCH candle: 20:32; line: 52395.5
+  Source: EXIT_ONLY_LB_BEAR_1794514860_1794515520
+  Next M1 bid open: 52386.5
+  Gross R: (52386.5 - 52412.8) / (52412.8 - 52353.5) = -0.4435076R
+Thus the policy now requests an early full exit, rather than waiting for SL.
+This price is the simulator's next-open reference, not a guaranteed live fill.
+
+Validation and limits
+- 456 focused checks passed: LB registration 21; structural exits 56;
+  TP extension 95; M1 entry/wait 212; indicator cache/lifecycle 72.
+- Exact-candle replay checks IND eligibility at entry and later qualification,
+  first structural exit timing, and continued exclusion from entry LB lists.
+- Replay uses production MQL core logic adapted to C++ with terminal/chart
+  interfaces mocked. It is not a full native MT5 strategy-tester run and does
+  not reproduce broker fills, commission, or slippage.
+- The terminal was read only to export candles; no orders were sent.
+- Temporary native MetaEditor builds: all four programs compile with 0 errors.
+  Live EA: 0 warnings; backtester and trade indicator: 12 existing shadowing
+  warnings each; liquidity visualizer: 24 existing shadowing warnings.
+- Installed EX5 programs were not replaced or restarted.
+
+Changed production files in this follow-up (relative to MQL5)
+Include/Custom/Marcotrades/liquidity_blocks.mqh
+Include/Custom/Marcotrades/trade_rejection.mqh
+Include/Custom/Marcotrades/lb_extension.mqh
+Include/Custom/Marcotrades/marco_backtest.mqh
+Include/Custom/Marcotrades/marco_live_auto.mqh
+Include/Custom/Marcotrades/Inducements.mqh
+Indicators/Custom/Marcotrades/liquiduity_block.mq5 (version 1.17)
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5 (version 2.10, cache 10)
+
+Applying the source changes
+Recompile and reload the following programs after transferring shared includes:
+Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5
+Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5
+Indicators/Custom/Marcotrades/liquiduity_block.mq5
+Trade indicator cache version 10 rejects prior cached simulation results.
+Use matching inputs/window/pip overrides when comparing backtester and indicator.
+
+Evidence and reproduction (under Tests/Marcotrades)
+_review/us30_20261112_m1.csv: exported candles.
+_review/us30_context_before_fix.txt: original replay, including LB_VETO trace.
+_review/us30_context_replay.txt: corrected simulator-context replay.
+_review/us30_context_live_replay.txt: corrected live-context replay.
+replay_us30_context.py: runs the simulator context; add --live-context for live.
+The replay requires Python and C:\MinGW\bin\g++.exe; it never connects to MT5.

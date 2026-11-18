@@ -1,0 +1,63 @@
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:676:30: error: 'CMarcoLBEntryClusters' has not been declared
+    void ObserveEntryClusters(CMarcoLBEntryClusters &book,datetime now,CLiquidityBlockLogic* logic,int pass)
+                              ^~~~~~~~~~~~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:676:71: error: 'CLiquidityBlockLogic' has not been declared
+    void ObserveEntryClusters(CMarcoLBEntryClusters &book,datetime now,CLiquidityBlockLogic* logic,int pass)
+                                                                       ^~~~~~~~~~~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp: In member function 'bool Engine::SendCheckedEntry(CTrade&, bool, double, double, double, string, double&, MqlTradeResult&)':
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:538:36: error: 'HasOppositePosition' was not declared in this scope
+       if(HasOppositePosition(isBull)) return false;
+                                    ^
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:663:87: error: 'StringFormat' was not declared in this scope
+                   riskLots, marginLots, lots, margin, check.margin_free, check.retcode));
+                                                                                       ^
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:663:88: error: 'Print' was not declared in this scope
+                   riskLots, marginLots, lots, margin, check.margin_free, check.retcode));
+                                                                                        ^
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:668:36: error: 'HasOppositePosition' was not declared in this scope
+       if(HasOppositePosition(isBull)) return false;
+                                    ^
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp: In member function 'void Engine::ObserveEntryClusters(int&, datetime, int*, int)':
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:678:21: error: 'm_htf_lb_count' was not declared in this scope
+       for(int k=0;k<m_htf_lb_count;k++)
+                     ^~~~~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:680:13: error: 'm_htf_lbs' was not declared in this scope
+          if(m_htf_lbs[k].entryTriggerTime<=0 || m_htf_lbs[k].createdTime<CMarcoLBEntryClusters::Day(now)) continue;
+             ^~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:680:74: error: 'CMarcoLBEntryClusters' has not been declared
+          if(m_htf_lbs[k].entryTriggerTime<=0 || m_htf_lbs[k].createdTime<CMarcoLBEntryClusters::Day(now)) continue;
+                                                                          ^~~~~~~~~~~~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:681:30: error: request for member 'm_liquidity_blocks' in 'logic', which is of non-class type 'int*'
+          for(int z=0;z<logic.m_liquidity_blocks.Total();z++)
+                              ^~~~~~~~~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:683:13: error: 'CLiquidityBlock' was not declared in this scope
+             CLiquidityBlock* lb=(CLiquidityBlock*)logic.m_liquidity_blocks.At(z);
+             ^~~~~~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:683:30: error: 'lb' was not declared in this scope
+             CLiquidityBlock* lb=(CLiquidityBlock*)logic.m_liquidity_blocks.At(z);
+                              ^~
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:683:50: error: expected primary-expression before ')' token
+             CLiquidityBlock* lb=(CLiquidityBlock*)logic.m_liquidity_blocks.At(z);
+                                                  ^
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:684:35: error: 'm_htf_lbs' was not declared in this scope
+             if(lb==NULL || lb.id!=m_htf_lbs[k].id || (pass==0)!=lb.isMitigated) continue;
+                                   ^~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:685:18: error: request for member 'Observe' in 'book', which is of non-class type 'int'
+             book.Observe(m_symbol,(int)m_tradeTF,lb.id,lb.isBullish ? 1 : -1,lb.zoneLow,lb.zoneHigh,now,lb.isMitigated);
+                  ^~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:685:40: error: 'm_tradeTF' was not declared in this scope
+             book.Observe(m_symbol,(int)m_tradeTF,lb.id,lb.isBullish ? 1 : -1,lb.zoneLow,lb.zoneHigh,now,lb.isMitigated);
+                                        ^~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp: In member function 'double BackEngine::CalculateLotSize(bool, double, double, double, double)':
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:796:68: error: 'StringFormat' was not declared in this scope
+                   minLot,maxLot,step,limit,directionalUsed,capacity));
+                                                                    ^
+C:\Users\Super\AppData\Local\Temp\marco_entry_sizing_y1e2q1je\test.cpp:796:69: error: 'Print' was not declared in this scope
+                   minLot,maxLot,step,limit,directionalUsed,capacity));
+                                                                     ^
+Traceback (most recent call last):
+  File "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\run_entry_sizing_tests.py", line 249, in <module>
+    subprocess.run([shutil.which('g++') or r'C:\MinGW\bin\g++.exe', '-std=c++17', '-O2', str(cpp), '-o', str(binary)], check=True)
+  File "C:\Users\Super\anaconda3\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['C:\\MinGW\\bin\\g++.EXE', '-std=c++17', '-O2', 'C:\\Users\\Super\\AppData\\Local\\Temp\\marco_entry_sizing_y1e2q1je\\test.cpp', '-o', 'C:\\Users\\Super\\AppData\\Local\\Temp\\marco_entry_sizing_y1e2q1je\\test.exe']' returned non-zero exit status 1.

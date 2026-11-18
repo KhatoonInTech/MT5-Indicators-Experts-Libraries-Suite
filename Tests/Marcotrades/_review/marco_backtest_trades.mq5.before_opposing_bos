@@ -1,0 +1,799 @@
+﻿#define MARCO_LOG_PROGRAM "marco_backtest_trades"
+#include <Custom\General\daily_log.mqh>
+// Independent chart indicator: simulates its own trades and draws risk/reward areas.
+#property copyright "Marcotrades"
+#property version   "2.24"
+#property indicator_chart_window
+#property indicator_buffers 0
+#property indicator_plots   0
+
+#include <Custom\Marcotrades\indicator_finance.mqh>
+// Reuse the strategy source with an independent in-process state. Only this
+// indicator compilation substitutes the functions that MT5 forbids in indicators.
+#define OrderCalcProfit MarcoIndicatorCalcProfit
+#define OrderCalcMargin MarcoIndicatorCalcMargin
+#define ObjectDelete MarcoSimulationObjectDelete
+#define ObjectsDeleteAll MarcoSimulationObjectsDeleteAll
+#include <Custom\Marcotrades\marco_backtest.mqh>
+#undef OrderCalcProfit
+#undef OrderCalcMargin
+#undef ObjectDelete
+#undef ObjectsDeleteAll
+
+input group "=== Strategy Simulator Config ==="
+input datetime        InpStartWindow              = D'2026.11.16 00:00'; // Backtest Start Window (Date/Time)
+input datetime        InpEndWindow                = D'2026.11.16 23:59'; // Backtest End Window (0 for Current Time)
+input double          InpStartingCapital          = 500;               // Simulated Starting Capital ($)
+input double          InpMaxRiskPercent           = 25.0;                // Risk per trade (% of selected capital)
+input ENUM_MARCO_RISK_CAPITAL InpRiskCapital = RISK_CAPITAL_FREE_MARGIN; // Capital used by InpMaxRiskPercent
+input bool            InpAllowOverlappingTrades = true; // Allow same-direction overlap (open trade >= 50% TP; never opposite)
+input double          InpSLBufferPips             = 75.0;                 // SL Buffer outside Liquidity Block (Pips)
+input string InpPipSizeOverrides = ""; // Price per pip overrides: US500=0.1;XAUUSD=0.01
+input ENUM_MARCO_ENTRY_TF InpEntryTF = ENTRY_TF_M1; // Entry TF: M1 / LB TF (M1 always requires pivot confirmation)
+input ENUM_MARCO_ENTRY_TIMING InpEntryTiming = ENTRY_PIVOT_CANDLE_EDGE; // Entry timing: next open / pivot candle edge
+input ENUM_MARCO_IND_ENTRY_FILTER InpM1IndEntryFilter = IND_ENTRY_PRICE; // Skip IND on setup + entry TF: Pivot / Entry price / Either / Off
+input ENUM_TIMEFRAMES InpTPTimeframe              = PERIOD_M1;           // Compatibility input: staged TP zones always use M1
+input ENUM_TP_PRIORITY InpTPPriority1             = TP_PRIORITY_FALLBACK;     // TP Priority #1 Target (Opposing LB, IND, Fallback)
+input ENUM_SL_LOCATION InpSLlocation              = SL_LOCATION_CONFIRM_PIVOT; // SL Location {LB boundaries, Confirmation pivot}
+input bool            InpBlockLessRR              = false;                // Block trades where Priority 1 or 2 TP R:R < InpFallbackRR
+input bool            InpUseFallbackTP            = true;                // Compatibility input: staged exits always include fallback RR
+input double          InpFallbackRR               = 1.0;                 // Fallback R:R Multiple (e.g. 2.0 for 2R)
+input int             InpScanSpeedPerSecond       = 15;                  // Number of simulations per tick
+input bool            InpSendWhatsAppAlert        = true;                // Compatibility setting: WhatsApp unavailable in indicators
+input group "=== Take Profit Protection & Execution ==="
+input bool            InpUseRecordedBrokerRejections = true;           // Exclude matching recorded broker-rejected attempts
+input string          InpBrokerRejectionFile = "marcotrades\\BrokerExecution\\imported_rejections.csv"; // Optional imported log records (MQL5/Files)
+input bool             InpAdjustTPForSpread        = false;          // Adjust TP for Broker Spread (Pre-Trade)
+input bool             InpEnableVicinityExit       = false;          // Enable 1-Pip TP Vicinity Rejection Exit
+input double           InpTPVicinityPips           = 3.0;           // Vicinity Distance from TP (Pips)
+input ENUM_TIMEFRAMES  InpTPVicinityTF             = PERIOD_M1;     // Rejection candle timeframe for partial TP protection
+
+input group "=== Strategy Settings==="
+input bool            InpRequireZZConfirmation    = true;                // Require ZigZag Pivot inside Zone + Buffer
+input bool            InpRiskyMode                = true;                // Risky Mode: Ignore pre-confirmation touches (trades 1st touch post-conf)
+input int             InpMinTouches               = 2;                   // Min touches for Inducement qualification
+
+input group "=== Liquidity Block Triggers ==="
+input bool            InpTrackSweepsAnywhere      = true;                // Track TF-BL-LB-SSL & TF-BR-LB-BSL
+input bool            InpTrackPostInducementCHoCH = true;                // Track TF-BL-LB-IND & TF-BR-LB-IND
+input bool            InpApplyEntryLBPolicyToPreventionExits = true;    // Apply entry-qualified LB rules to prevention and position exits
+
+input group "=== Inducement Rules ==="
+input double          InpProximityPips            = 1.0;                 // Touch proximity buffer outside zone (Pips)
+input bool            InpStrictOriginPivots       = true;                // Enforce Strict Origin (Buyers=Pivot Low, Sellers=Pivot High)
+
+input group "=== Anti-Clustering & Zone Prolongation ==="
+input bool            InpMergeClusteredZones      = true;                // Prolong single master inducement & prevent stacking
+input double          InpClusterTolerancePips     = 5.0;                // Cluster tolerance range (Pips)
+input bool            InpMergeExpandBounds        = false;               // Expand master boundaries to cover cluster
+
+input group "=== SMC Zone Sources ==="
+input bool            InpCheckDemandSupply        = true;                // Demand / Supply Zones
+input bool            InpCheckOrderBlocks         = true;                // Order Blocks
+input bool            InpCheckSwingPOIs           = true;                // Swing POIs
+input bool            InpCheckFlipZones           = false;               // Flip Zones
+input bool            InpCheckBreakers            = false;               // Breaker Blocks
+
+input group "=== Structural ZigZag Configuration ==="
+input double          InpDeviation                = 0.001;               // Price deviation for reversals (%)
+input int             InpDepth                    = 1;                   // Lookback depth for structural swings
+input string          InpPriceDiff                = "Absolute";          // Diff Mode (Absolute/Percent)
+
+input group "=== Trade Display ==="
+input bool            InpAllSetupTFs      = true;           // Display trades from all configured setup TFs
+input ENUM_TIMEFRAMES InpSetupTF          = PERIOD_CURRENT; // Display filter only; all configured TFs are simulated
+input int             InpMaxTrades       = 300;            // Most recent matching trades to draw
+input group "=== Appearance ==="
+input color           InpTargetColor     = C'38,166,154';
+input color           InpStopColor       = C'239,83,80';
+input int             InpFillStrength    = 25;                       // Tint strength against chart background (0-100)
+input bool            InpShowLabels      = true;
+input bool            InpShowExitLine    = true;
+
+struct SDrawnBacktestTrade
+  {
+   SMarcoTPPlan plan;
+   string symbol, setup, outcome;
+   int tf, direction;
+   ulong ticket;
+   datetime opened, closed, windowEnd;
+   double entry, sl, tp, exitPrice, lots, profit;
+  };
+
+SDrawnBacktestTrade g_trades[];
+string g_prefix, g_status = "";
+ENUM_TIMEFRAMES g_setupTFs[] = {PERIOD_M2, PERIOD_M3, PERIOD_M4,  PERIOD_M5, PERIOD_M10, PERIOD_M12, PERIOD_M15 };
+datetime g_windowEnd = 0;
+int g_nextTF = 0, g_waitAttempts = 0, g_skipped = 0;
+int g_totalTrades = 0, g_wins = 0, g_losses = 0;
+double g_rewards = 0;
+bool g_finished = false;
+string g_progress = "Preparing history";
+color g_background;
+int g_matching = 0;
+string g_cacheKey, g_cachePath;
+bool g_cacheWriteWarned = false;
+ENUM_TIMEFRAMES g_simulationVicinityTF = PERIOD_M1;
+
+// Cache records contain no strings/dynamic arrays, so FileWriteStruct is safe.
+// Text fields are stored separately with explicit UTF-16 lengths.
+struct STradeCacheHeader
+  {
+   int magic, version, nextTF, waitAttempts, skipped, totalTrades, wins, losses;
+   int records, overlapRecords, vicinityTF;
+   datetime windowEnd;
+   double rewards;
+   bool finished;
+  };
+struct STradeCacheRecord
+  {
+   SMarcoTPPlan plan;
+   int tf, direction;
+   ulong ticket;
+   datetime opened, closed, windowEnd;
+   double entry, sl, tp, exitPrice, lots, profit;
+  };
+struct STradeCacheOverlap
+  {
+   int setupTF;
+   ulong ticket;
+   datetime openTime, closeTime;
+   double openPrice, tpPrice;
+   int direction;
+  };
+
+// Chart period and display settings deliberately do not identify a simulation.
+// Raw PERIOD_CURRENT is keyed here; its simulation meaning is frozen in the snapshot.
+string SimulationCacheKey()
+  {
+   string key="MarcoTradeCache24|"+IntegerToString((long)__DATETIME__)+"|"+_Symbol+"|"+
+              AccountInfoString(ACCOUNT_SERVER)+"|"+IntegerToString(AccountInfoInteger(ACCOUNT_LOGIN))+"|"+
+              AccountInfoString(ACCOUNT_CURRENCY)+"|"+IntegerToString(AccountInfoInteger(ACCOUNT_LEVERAGE));
+   for(int i=0;i<ArraySize(g_setupTFs);i++) key+="|SetupTF="+IntegerToString((long)g_setupTFs[i]);
+   key+="|InpStartWindow="+(string)InpStartWindow;
+   key+="|BrokerReplay="+CMarcoBrokerExecution::Fingerprint()+"|Import="+InpBrokerRejectionFile;
+   key+="|InpEndWindow="+(string)InpEndWindow;
+   key+="|InpStartingCapital="+StringFormat("%.17g",InpStartingCapital);
+   key+="|InpMaxRiskPercent="+StringFormat("%.17g",InpMaxRiskPercent);
+   key+="|InpRiskCapital="+IntegerToString((int)InpRiskCapital);
+   key+="|InpAllowOverlappingTrades="+(string)InpAllowOverlappingTrades;
+   key+="|PipOverrides="+InpPipSizeOverrides;
+   key+="|InpSLBufferPips="+StringFormat("%.17g",InpSLBufferPips);
+   key+="|InpEntryTF="+(string)InpEntryTF;
+   key+="|InpEntryTiming="+(string)InpEntryTiming;
+   key+="|M1IndEntryFilter="+(string)InpM1IndEntryFilter;
+   key+="|InpTPPriority1="+(string)InpTPPriority1;
+   key+="|InpSLlocation="+(string)InpSLlocation;
+   key+="|InpBlockLessRR="+(string)InpBlockLessRR;
+   key+="|InpFallbackRR="+StringFormat("%.17g",InpFallbackRR);
+   key+="|InpAdjustTPForSpread="+(string)InpAdjustTPForSpread;
+   key+="|InpEnableVicinityExit="+(string)InpEnableVicinityExit;
+   key+="|InpTPVicinityPips="+StringFormat("%.17g",InpTPVicinityPips);
+   key+="|InpTPVicinityTF="+(string)InpTPVicinityTF;
+   key+="|InpRequireZZConfirmation="+(string)InpRequireZZConfirmation;
+   key+="|InpRiskyMode="+(string)InpRiskyMode;
+   key+="|InpMinTouches="+(string)InpMinTouches;
+   key+="|InpTrackSweepsAnywhere="+(string)InpTrackSweepsAnywhere;
+   key+="|InpTrackPostInducementCHoCH="+(string)InpTrackPostInducementCHoCH;
+   key+="|InpApplyEntryLBPolicyToPreventionExits="+(string)InpApplyEntryLBPolicyToPreventionExits;
+   key+="|InpProximityPips="+StringFormat("%.17g",InpProximityPips);
+   key+="|InpStrictOriginPivots="+(string)InpStrictOriginPivots;
+   key+="|InpMergeClusteredZones="+(string)InpMergeClusteredZones;
+   key+="|InpClusterTolerancePips="+StringFormat("%.17g",InpClusterTolerancePips);
+   key+="|InpMergeExpandBounds="+(string)InpMergeExpandBounds;
+   key+="|InpCheckDemandSupply="+(string)InpCheckDemandSupply;
+   key+="|InpCheckOrderBlocks="+(string)InpCheckOrderBlocks;
+   key+="|InpCheckSwingPOIs="+(string)InpCheckSwingPOIs;
+   key+="|InpCheckFlipZones="+(string)InpCheckFlipZones;
+   key+="|InpCheckBreakers="+(string)InpCheckBreakers;
+   key+="|InpDeviation="+StringFormat("%.17g",InpDeviation);
+   key+="|InpDepth="+(string)InpDepth;
+   key+="|InpPriceDiff="+(string)InpPriceDiff;
+   return key;
+  }
+
+string SimulationCachePath(string key)
+  {
+   uint hash=2166136261;
+   for(int i=0;i<StringLen(key);i++) hash=(hash^(uint)StringGetCharacter(key,i))*16777619;
+   // The complete key is checked on read, so a hash collision cannot load different settings.
+   return "marcotrades\\IndicatorCache\\"+IntegerToString(ChartID())+"_"+IntegerToString((long)hash)+".bin";
+  }
+
+bool CacheWriteText(int file, string value)
+  {
+   int length=StringLen(value);
+   return FileWriteInteger(file,length)==4 && (length==0 || FileWriteString(file,value,length)==(uint)(length*2));
+  }
+
+bool CacheReadText(int file, string &value)
+  {
+   if(FileTell(file)+4>FileSize(file)) return false;
+   int length=FileReadInteger(file);
+   if(length<0 || length>32768 || FileTell(file)+(ulong)length*2>FileSize(file)) return false;
+   value=length>0 ? FileReadString(file,length) : "";
+   return StringLen(value)==length;
+  }
+
+bool SaveSimulationCache()
+  {
+   // Freeze the window immediately; unfinished engines restart as one chronological batch.
+   FolderCreate("marcotrades");
+   FolderCreate("marcotrades\\IndicatorCache");
+   string temp=g_cachePath+"."+IntegerToString((long)GetMicrosecondCount())+".tmp";
+   int file=FileOpen(temp,FILE_WRITE|FILE_BIN|FILE_UNICODE);
+   if(file==INVALID_HANDLE) return false;
+   STradeCacheHeader header; ZeroMemory(header);
+   header.magic=0x4D545243; header.version=24;
+   header.nextTF=g_nextTF; header.waitAttempts=g_waitAttempts; header.skipped=g_skipped;
+   header.totalTrades=g_totalTrades; header.wins=g_wins; header.losses=g_losses;
+   header.records=ArraySize(g_trades);
+   header.overlapRecords=ArraySize(CMarcoBacktestInstance::s_global_trades);
+   header.vicinityTF=(int)g_simulationVicinityTF;
+   header.windowEnd=g_windowEnd; header.rewards=g_rewards; header.finished=g_finished;
+   if(!g_finished)
+     {
+      header.nextTF=0; header.waitAttempts=0; header.skipped=0;
+      header.totalTrades=0; header.wins=0; header.losses=0;
+      header.records=0; header.overlapRecords=0; header.rewards=0;
+     }
+   bool ok=FileWriteStruct(file,header)==sizeof(header) && CacheWriteText(file,g_cacheKey) && CacheWriteText(file,g_progress);
+   for(int i=0; i<header.records && ok; i++)
+     {
+      SDrawnBacktestTrade trade=g_trades[i];
+      STradeCacheRecord row; ZeroMemory(row);
+      row.plan=trade.plan; row.tf=trade.tf; row.direction=trade.direction; row.ticket=trade.ticket;
+      row.opened=trade.opened; row.closed=trade.closed; row.windowEnd=trade.windowEnd;
+      row.entry=trade.entry; row.sl=trade.sl; row.tp=trade.tp; row.exitPrice=trade.exitPrice;
+      row.lots=trade.lots; row.profit=trade.profit;
+      ok=FileWriteStruct(file,row)==sizeof(row) && CacheWriteText(file,trade.symbol) &&
+         CacheWriteText(file,trade.setup) && CacheWriteText(file,trade.outcome);
+     }
+   for(int i=0; i<header.overlapRecords && ok; i++)
+     {
+      SBacktestGlobalTrade trade=CMarcoBacktestInstance::s_global_trades[i];
+      STradeCacheOverlap row; ZeroMemory(row);
+      row.openTime=trade.openTime; row.closeTime=trade.closeTime; row.openPrice=trade.openPrice;
+      row.tpPrice=trade.tpPrice; row.direction=trade.direction; row.setupTF=trade.setupTF; row.ticket=trade.ticket;
+      ok=FileWriteStruct(file,row)==sizeof(row) && CacheWriteText(file,trade.symbol);
+     }
+   if(ok) ok=FileWriteInteger(file,0x454E4443)==4;
+   FileFlush(file);
+   FileClose(file);
+   if(ok) ok=FileMove(temp,0,g_cachePath,FILE_REWRITE);
+   if(!ok) FileDelete(temp);
+   return ok;
+  }
+
+void CheckpointSimulation()
+  {
+   if(!SaveSimulationCache() && !g_cacheWriteWarned)
+     {
+      Print("[INDICATOR CACHE] Cannot save results: ",g_cachePath,". A chart reload may need to repeat unfinished simulations.");
+      g_cacheWriteWarned=true;
+     }
+  }
+
+bool LoadSimulationCache()
+  {
+   int file=FileOpen(g_cachePath,FILE_READ|FILE_BIN|FILE_UNICODE);
+   if(file==INVALID_HANDLE) return false;
+   STradeCacheHeader header; ZeroMemory(header);
+   string key,progress;
+   bool ok=FileReadStruct(file,header)==sizeof(header);
+   if(ok) ok=(header.finished || (header.nextTF==0 && header.records==0 && header.overlapRecords==0)) && header.magic==0x4D545243 && header.version==24 && header.nextTF>=0 && header.nextTF<=ArraySize(g_setupTFs) &&
+             header.records>=0 && header.records<=1000000 && header.overlapRecords>=0 && header.overlapRecords<=1000000 &&
+             (ulong)header.records*sizeof(STradeCacheRecord)+(ulong)header.overlapRecords*sizeof(STradeCacheOverlap)<=FileSize(file) &&
+             header.windowEnd>InpStartWindow && header.vicinityTF>0 &&
+             header.totalTrades>=header.records && header.wins>=0 && header.losses>=0 &&
+             CacheReadText(file,key) && key==g_cacheKey && CacheReadText(file,progress);
+   SDrawnBacktestTrade records[];
+   SBacktestGlobalTrade overlap[];
+   if(ok) ok=ArrayResize(records,header.records)==header.records && ArrayResize(overlap,header.overlapRecords)==header.overlapRecords;
+   for(int i=0; i<header.records && ok; i++)
+     {
+      STradeCacheRecord row;
+      ok=FileReadStruct(file,row)==sizeof(row) && CacheReadText(file,records[i].symbol) &&
+         records[i].symbol==_Symbol && CacheReadText(file,records[i].setup) && CacheReadText(file,records[i].outcome);
+      if(!ok) break;
+      records[i].plan=row.plan; records[i].tf=row.tf; records[i].direction=row.direction; records[i].ticket=row.ticket;
+      records[i].opened=row.opened; records[i].closed=row.closed; records[i].windowEnd=row.windowEnd;
+      records[i].entry=row.entry; records[i].sl=row.sl; records[i].tp=row.tp; records[i].exitPrice=row.exitPrice;
+      records[i].lots=row.lots; records[i].profit=row.profit;
+     }
+   for(int i=0; i<header.overlapRecords && ok; i++)
+     {
+      STradeCacheOverlap row;
+      ok=FileReadStruct(file,row)==sizeof(row) && CacheReadText(file,overlap[i].symbol) && overlap[i].symbol==_Symbol;
+      if(!ok) break;
+      overlap[i].openTime=row.openTime; overlap[i].closeTime=row.closeTime; overlap[i].openPrice=row.openPrice;
+      overlap[i].tpPrice=row.tpPrice; overlap[i].direction=row.direction; overlap[i].setupTF=row.setupTF; overlap[i].ticket=row.ticket;
+     }
+   if(ok) ok=FileReadInteger(file)==0x454E4443 && FileTell(file)==FileSize(file);
+   FileClose(file);
+   if(!ok) return false; // Never expose a partial/corrupt or different-settings snapshot.
+   ArrayResize(g_trades,0);
+   CMarcoBacktestInstance::ResetGlobalTrades();
+   if(ArrayResize(g_trades,header.records)!=header.records ||
+      ArrayResize(CMarcoBacktestInstance::s_global_trades,header.overlapRecords)!=header.overlapRecords) return false;
+   // MQL5 ArrayCopy cannot copy structs containing strings; assign each record.
+   for(int i=0;i<header.records;i++) g_trades[i]=records[i];
+   for(int i=0;i<header.overlapRecords;i++) CMarcoBacktestInstance::s_global_trades[i]=overlap[i];
+   g_nextTF=header.nextTF; g_waitAttempts=header.waitAttempts; g_skipped=header.skipped;
+   g_totalTrades=header.totalTrades; g_wins=header.wins; g_losses=header.losses;
+   g_windowEnd=header.windowEnd; g_rewards=header.rewards; g_finished=header.finished;
+   g_simulationVicinityTF=(ENUM_TIMEFRAMES)header.vicinityTF;
+   g_progress=progress;
+   return true;
+  }
+
+// MQL chart rectangles use solid colors: tint against the background and
+// place the rectangles behind candles instead of hiding candle bodies.
+color Tint(color foreground, color background)
+  {
+   int weight = InpFillStrength;
+   uint fg = (uint)foreground, bg = (uint)background;
+   uint r = ((fg & 255) * weight + (bg & 255) * (100 - weight)) / 100;
+   uint g = (((fg >> 8) & 255) * weight + ((bg >> 8) & 255) * (100 - weight)) / 100;
+   uint b = (((fg >> 16) & 255) * weight + ((bg >> 16) & 255) * (100 - weight)) / 100;
+   return (color)(r | (g << 8) | (b << 16));
+  }
+
+void StyleObject(string name, color clr, string tooltip, bool background = false)
+  {
+   ObjectSetInteger(0, name, OBJPROP_COLOR, clr);
+   ObjectSetInteger(0, name, OBJPROP_BACK, background);
+   ObjectSetInteger(0, name, OBJPROP_SELECTABLE, false);
+   ObjectSetInteger(0, name, OBJPROP_HIDDEN, true);
+   ObjectSetString(0, name, OBJPROP_TOOLTIP, tooltip);
+  }
+
+void Segment(string name, datetime start, double price1, datetime end, double price2,
+             color clr, ENUM_LINE_STYLE style, string tooltip)
+  {
+   if(!ObjectCreate(0, name, OBJ_TREND, 0, start, price1, end, price2)) return;
+   StyleObject(name, clr, tooltip);
+   ObjectSetInteger(0, name, OBJPROP_RAY_LEFT, false);
+   ObjectSetInteger(0, name, OBJPROP_RAY_RIGHT, false);
+   ObjectSetInteger(0, name, OBJPROP_STYLE, style);
+  }
+
+void Area(string name, datetime start, datetime end, double entry, double level,
+          color clr, string tooltip)
+  {
+   if(!ObjectCreate(0, name, OBJ_RECTANGLE, 0, start, entry, end, level)) return;
+   StyleObject(name, Tint(clr, g_background), tooltip, true);
+   ObjectSetInteger(0, name, OBJPROP_FILL, true);
+   Segment(name + "_edge", start, level, end, level, clr, STYLE_SOLID, tooltip);
+  }
+
+void TextAt(string name, datetime time, double price, string value, color clr,
+            ENUM_ANCHOR_POINT anchor, string tooltip)
+  {
+   if(!ObjectCreate(0, name, OBJ_TEXT, 0, time, price)) return;
+   StyleObject(name, clr, tooltip);
+   ObjectSetString(0, name, OBJPROP_TEXT, value);
+   ObjectSetString(0, name, OBJPROP_FONT, "Arial");
+   ObjectSetInteger(0, name, OBJPROP_FONTSIZE, 8);
+   ObjectSetInteger(0, name, OBJPROP_ANCHOR, anchor);
+  }
+
+void Status(string value)
+  {
+   g_status = value;
+   string name = g_prefix + "status";
+   if(ObjectFind(0, name) < 0)
+      ObjectCreate(0, name, OBJ_LABEL, 0, 0, 0);
+   StyleObject(name, (color)ChartGetInteger(0, CHART_COLOR_FOREGROUND), value);
+   ObjectSetInteger(0, name, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+   ObjectSetInteger(0, name, OBJPROP_XDISTANCE, 12);
+   ObjectSetInteger(0, name, OBJPROP_YDISTANCE, 24);
+   ObjectSetInteger(0, name, OBJPROP_FONTSIZE, 9);
+   ObjectSetString(0, name, OBJPROP_TEXT, value);
+  }
+
+void DrawTrade(const SDrawnBacktestTrade &trade, int index)
+  {
+   bool isOpen = trade.outcome == "OPEN";
+   datetime end = isOpen ? trade.windowEnd : trade.closed;
+   if(end <= trade.opened) end = trade.opened + 60;
+   string id = g_prefix + IntegerToString(index);
+   string tf = EnumToString((ENUM_TIMEFRAMES)trade.tf);
+   StringReplace(tf, "PERIOD_", "");
+   double rr = trade.plan.realizedR;
+   string side = trade.direction == 1 ? "BUY" : "SELL";
+   string tooltip = StringFormat("%s %s %s #%I64u\n%s\nEntry: %s @ %s\nSL: %s | TP: %s | Realized R %.2f\nLots: %.8f | %s",
+      trade.symbol, tf, side, trade.ticket, trade.setup,
+      TimeToString(trade.opened, TIME_DATE|TIME_SECONDS), DoubleToString(trade.entry, _Digits),
+      DoubleToString(trade.sl, _Digits), DoubleToString(trade.tp, _Digits), rr, trade.lots, trade.outcome);
+   if(isOpen)
+      tooltip += "\nStill open at backtest window end: " + TimeToString(end, TIME_DATE|TIME_SECONDS);
+   else
+      tooltip += StringFormat("\nExit: %s @ %s | Profit: %.2f",
+         TimeToString(trade.closed, TIME_DATE|TIME_SECONDS), DoubleToString(trade.exitPrice, _Digits), trade.profit);
+
+   if(trade.plan.extensionCount>0)
+      tooltip+=StringFormat("\nTP extensions: %d | Protected SL: %s",trade.plan.extensionCount,DoubleToString(CMarcoStagedTP::Stop(trade.plan),_Digits));
+   Area(id + "_target", trade.opened, end, trade.entry, trade.tp, InpTargetColor, tooltip);
+   Area(id + "_stop", trade.opened, end, trade.entry, trade.sl, InpStopColor, tooltip);
+   color neutral = (color)ChartGetInteger(0, CHART_COLOR_FOREGROUND);
+   Segment(id + "_entry", trade.opened, trade.entry, end, trade.entry, neutral, STYLE_DOT, tooltip);
+   if(ObjectCreate(0, id + "_arrow", OBJ_ARROW, 0, trade.opened, trade.entry))
+     {
+      StyleObject(id + "_arrow", trade.direction == 1 ? InpTargetColor : InpStopColor, tooltip);
+      ObjectSetInteger(0, id + "_arrow", OBJPROP_ARROWCODE, trade.direction == 1 ? 233 : 234);
+      ObjectSetInteger(0, id + "_arrow", OBJPROP_ANCHOR, trade.direction == 1 ? ANCHOR_TOP : ANCHOR_BOTTOM);
+     }
+   if(InpShowExitLine && !isOpen)
+     {
+      Segment(id + "_path", trade.opened, trade.entry, end, trade.exitPrice, neutral, STYLE_DASH, tooltip);
+      if(ObjectCreate(0, id + "_exit", OBJ_ARROW, 0, end, trade.exitPrice))
+        {
+         StyleObject(id + "_exit", neutral, tooltip);
+         ObjectSetInteger(0, id + "_exit", OBJPROP_ARROWCODE, 251);
+        }
+     }
+   for(int stage=0; stage<trade.plan.count; stage++)
+     {
+      string key=id+"_stage"+IntegerToString(stage);
+      string label=CMarcoStagedTP::Name(trade.plan.kind[stage])+" "+DoubleToString(trade.plan.fraction[stage]*100,0)+"%";
+      Segment(key,trade.opened,trade.plan.price[stage],end,trade.plan.price[stage],InpTargetColor,STYLE_DOT,tooltip);
+      if(InpShowLabels) TextAt(key+"_text",end,trade.plan.price[stage]," "+label,InpTargetColor,ANCHOR_LEFT,tooltip);
+      if(trade.plan.closed[stage]>0)
+        {
+         datetime fill=trade.plan.exitTime[stage];
+         double price=trade.plan.exitPrice[stage];
+         if(InpShowExitLine) Segment(key+"_fill",trade.opened,trade.entry,fill,price,neutral,STYLE_DASH,tooltip);
+         if(InpShowLabels) TextAt(key+"_closed",fill,price," "+label+" closed",neutral,ANCHOR_LEFT_LOWER,tooltip);
+        }
+     }
+   for(int exit=0;exit<2;exit++)
+      if(trade.plan.structureClosed[exit]>0)
+        {
+         string key=id+"_choch_exit"+IntegerToString(exit);
+         datetime fill=trade.plan.structureTime[exit];
+         double price=trade.plan.structurePrice[exit];
+         string label=exit==1 ? " CHoCH full exit" : " CHoCH half remaining + BE";
+         if(InpShowExitLine) Segment(key,trade.opened,trade.entry,fill,price,neutral,STYLE_DASH,tooltip);
+         if(InpShowLabels) TextAt(key+"_text",fill,price,label,neutral,ANCHOR_LEFT_LOWER,tooltip);
+        }
+   for(int step=0;step<2;step++)
+      if(trade.plan.sequence.closed[step]>0)
+        {
+         string key=id+"_opposing_sequence"+IntegerToString(step);
+         datetime fill=trade.plan.sequence.time[step];
+         double price=trade.plan.sequence.price[step];
+         string label=" Opposing structure "+IntegerToString(step+1)+": "+DoubleToString(trade.plan.sequence.closed[step]*100,2)+"% of entry lots closed";
+         if(InpShowExitLine) Segment(key,trade.opened,trade.entry,fill,price,neutral,STYLE_DASH,tooltip);
+         if(InpShowLabels) TextAt(key+"_text",fill,price,label,neutral,ANCHOR_LEFT_LOWER,tooltip);
+        }
+   if(trade.plan.protectedSL>0)
+     {
+      Segment(id+"_protected_sl",trade.plan.extensionTime,trade.plan.protectedSL,end,trade.plan.protectedSL,InpStopColor,STYLE_DASH,tooltip);
+      if(InpShowLabels) TextAt(id+"_protected_text",end,trade.plan.protectedSL," Protected SL",InpStopColor,ANCHOR_LEFT,tooltip);
+     }
+   if(InpShowLabels)
+     {
+      TextAt(id + "_label", trade.opened, MathMax(trade.tp, trade.sl),
+         tf + " " + side + " | " + DoubleToString(rr, 2) + "R | " + trade.outcome,
+         neutral, ANCHOR_LEFT_LOWER, tooltip);
+      TextAt(id + "_sl", end, trade.sl, " SL " + DoubleToString(trade.sl, _Digits),
+         InpStopColor, ANCHOR_LEFT, tooltip);
+     }
+  }
+
+bool MatchesDisplay(const SDrawnBacktestTrade &trade)
+  {
+   return InpAllSetupTFs || trade.tf==(int)(InpSetupTF==PERIOD_CURRENT ? (ENUM_TIMEFRAMES)_Period : InpSetupTF);
+  }
+
+void DrawAll()
+  {
+   ObjectsDeleteAll(0, g_prefix);
+   g_background = (color)ChartGetInteger(0, CHART_COLOR_BACKGROUND);
+   g_matching=0;
+   for(int i=0;i<ArraySize(g_trades);i++) if(MatchesDisplay(g_trades[i])) g_matching++;
+   int skip=MathMax(0,g_matching-InpMaxTrades), shown=0;
+   for(int i=0;i<ArraySize(g_trades);i++)
+     {
+      if(!MatchesDisplay(g_trades[i])) continue;
+      if(skip>0) { skip--; continue; }
+      DrawTrade(g_trades[i],i);
+      shown++;
+     }
+   Status(StringFormat("Marco simulator | %s | %s | shown %d/%d | total %d, W %d / L %d | %.2fR | skipped TFs %d",
+      _Symbol, g_progress, shown, g_matching, g_totalTrades, g_wins, g_losses, g_rewards, g_skipped));
+   ChartRedraw();
+  }
+
+// Display filtering never changes the order of simulations or overlap checks.
+void CollectTrades(CMarcoBacktestInstance *instance)
+  {
+   g_totalTrades += ArraySize(instance.m_trades);
+   g_wins += instance.m_wins;
+   g_losses += instance.m_losses;
+   g_rewards += instance.m_totalRewards;
+   for(int i = 0; i < ArraySize(instance.m_trades); i++)
+     {
+      SSimulatedTrade original = instance.m_trades[i];
+      SDrawnBacktestTrade trade;
+      trade.symbol = original.symbol;
+      trade.setup = original.setupType;
+      trade.outcome = original.outcome;
+      trade.tf = (int)instance.m_tradeTF;
+      trade.direction = original.direction;
+      trade.ticket = original.ticket;
+      trade.opened = original.openTime;
+      trade.closed = original.isOpen ? 0 : original.closeTime;
+      trade.windowEnd = g_windowEnd;
+      trade.entry = original.openPrice;
+      trade.sl = original.tpPlan.initialSL;
+      trade.plan = original.tpPlan;
+      trade.tp = CMarcoStagedTP::Farthest(original.tpPlan);
+      trade.exitPrice = original.isOpen ? 0.0 : original.closePrice;
+      trade.lots = original.lots;
+      trade.profit = original.realizedProfit;
+      if(trade.entry == trade.sl) continue;
+      int size = ArraySize(g_trades);
+      ArrayResize(g_trades, size + 1);
+      int position = size;
+      while(position > 0 && g_trades[position - 1].opened > trade.opened)
+        {
+         g_trades[position] = g_trades[position - 1];
+         position--;
+        }
+      g_trades[position] = trade;
+     }
+  }
+
+// CopyRates initiates asynchronous history loading in an indicator. Never use
+// Sleep or accept an unavailable series as a completed zero-trade simulation.
+int HistoryState(ENUM_TIMEFRAMES tf)
+  {
+   datetime historyStart=0;
+   if(!CMarcoHistoryContext::ResolveStart(_Symbol,InpStartWindow,historyStart)) return 0;
+   MqlRates rates[];
+   int count = CopyRates(_Symbol, tf, historyStart, g_windowEnd, rates);
+   if(count < 0 || !SeriesInfoInteger(_Symbol, tf, SERIES_SYNCHRONIZED)) return 0;
+   if(count==0 || !CMarcoHistoryContext::HasPriorContext(rates[0].time,InpStartWindow)) return 0;
+   return count > InpDepth * 2 ? 1 : -1;
+  }
+
+void AdvanceScenario(bool skipped)
+  {
+   if(skipped) g_skipped++;
+   g_nextTF++;
+   g_waitAttempts = 0;
+   if(g_nextTF>=ArraySize(g_setupTFs))
+     {
+      g_finished=true;
+      g_progress="Complete "+TimeToString(g_windowEnd,TIME_DATE|TIME_MINUTES);
+     }
+   CheckpointSimulation(); // Persist results when the complete chronological batch is collected.
+  }
+
+CMarcoBacktestInstance *g_clusterInstances[];
+void ClearClusterInstances()
+  {
+   for(int i=0;i<ArraySize(g_clusterInstances);i++) if(CheckPointer(g_clusterInstances[i])==POINTER_DYNAMIC) delete g_clusterInstances[i];
+   ArrayResize(g_clusterInstances,0);
+  }
+SMarcoSimulationConfig ClusterSimulationConfig()
+  {
+   SMarcoSimulationConfig c;
+   c.sweeps=InpTrackSweepsAnywhere; c.postInd=InpTrackPostInducementCHoCH;
+   c.touches=InpMinTouches; c.proximity=InpProximityPips; c.strictOrigin=InpStrictOriginPivots;
+   c.merge=InpMergeClusteredZones; c.tolerance=InpClusterTolerancePips; c.expand=InpMergeExpandBounds;
+   c.ds=InpCheckDemandSupply; c.ob=InpCheckOrderBlocks; c.sp=InpCheckSwingPOIs;
+   c.fz=InpCheckFlipZones; c.bb=InpCheckBreakers;
+   return c;
+  }
+
+bool PrepareClusterSimulation()
+  {
+   if(ArraySize(g_clusterInstances)==0)
+     {
+      for(int i=0;i<ArraySize(g_setupTFs);i++)
+         if(HistoryState(g_setupTFs[i])==0 || HistoryState(PERIOD_M1)==0 ||
+            (InpEnableVicinityExit && HistoryState(g_simulationVicinityTF)==0))
+           {
+            g_progress="Waiting for shared history: "+EnumToString(g_setupTFs[i]);
+            if(++g_waitAttempts>=60)
+              {
+               Print("[INDICATOR SIMULATION] Stopped: shared history unavailable after 60 attempts. Reload after history is available.");
+               g_progress="Stopped: shared history unavailable";
+               EventKillTimer();
+              }
+            DrawAll();
+            return false;
+           }
+      if(!g_marcoIndicatorFinance.Prepare(_Symbol))
+        {
+         g_progress="Waiting for symbol specifications: "+g_marcoIndicatorFinance.error;
+         if(++g_waitAttempts>=60) { Print("[INDICATOR SIMULATION] Stopped: ",g_marcoIndicatorFinance.error); EventKillTimer(); }
+         DrawAll(); return false;
+        }
+      g_waitAttempts=0;
+      CMarcoBacktestInstance::ResetGlobalTrades();
+      ArrayResize(g_clusterInstances,ArraySize(g_setupTFs));
+      for(int i=0;i<ArraySize(g_setupTFs);i++)
+        {
+         ENUM_TIMEFRAMES tf=g_setupTFs[i];
+         CMarcoBacktestInstance *instance=new CMarcoBacktestInstance();
+      instance.Init(_Symbol, tf, InpTPTimeframe, InpStartingCapital,
+         InpMaxRiskPercent, InpSLBufferPips, InpDepth, InpDeviation,
+         InpStartWindow, g_windowEnd, InpRequireZZConfirmation, InpRiskyMode,
+         InpUseFallbackTP, InpFallbackRR, InpPriceDiff, InpBlockLessRR, InpTPPriority1,
+         InpAllowOverlappingTrades, InpSLlocation, InpAdjustTPForSpread,
+         InpEnableVicinityExit, InpTPVicinityPips, InpEntryTF, g_simulationVicinityTF,
+         InpApplyEntryLBPolicyToPreventionExits);
+         g_clusterInstances[i]=instance;
+        }
+     }
+   SMarcoSimulationConfig c=ClusterSimulationConfig();
+   bool ready=CMarcoSimulationBatch::Pump(g_clusterInstances,0,ArraySize(g_clusterInstances),c,250);
+   g_progress=ready ? "Collecting chronological results" : "Simulating all setup TFs chronologically";
+   DrawAll();
+   return ready;
+  }
+
+void RunNextScenarios()
+  {
+   if(g_finished || IsStopped()) return;
+   if(!PrepareClusterSimulation()) return;
+   ulong started = GetTickCount64();
+   int processed = 0;
+   while(g_nextTF < ArraySize(g_setupTFs) && processed < InpScanSpeedPerSecond && !IsStopped())
+     {
+      ENUM_TIMEFRAMES tf = g_setupTFs[g_nextTF];
+      // Structural targets and execution use M1; chart period is a display choice.
+      int htf = HistoryState(tf);
+      int tp = InpEnableVicinityExit ? HistoryState(g_simulationVicinityTF) : 1;
+      int m1 = HistoryState(PERIOD_M1);
+      if(htf == 0 || tp == 0 || m1 == 0)
+        {
+         g_progress = "Waiting for history: " + EnumToString(tf);
+         if(++g_waitAttempts >= 60)
+           {
+            PrintFormat("[INDICATOR SIMULATION] %s %s skipped: history unavailable after 60 attempts.", _Symbol, EnumToString(tf));
+            AdvanceScenario(true);
+           }
+         break;
+        }
+      if(htf < 0 || tp < 0 || m1 < 0)
+        {
+         PrintFormat("[INDICATOR SIMULATION] %s %s skipped: not enough bars in the selected window.", _Symbol, EnumToString(tf));
+         AdvanceScenario(true);
+         processed++;
+         continue;
+        }
+      if(!g_marcoIndicatorFinance.Prepare(_Symbol))
+        {
+         g_progress = "Waiting for symbol specifications: " + g_marcoIndicatorFinance.error;
+         if(++g_waitAttempts >= 60)
+           {
+            Print("[INDICATOR SIMULATION] Stopped: ", g_marcoIndicatorFinance.error);
+            g_finished = true;
+            EventKillTimer();
+           }
+         break;
+        }
+      g_progress = "Simulating " + EnumToString(tf);
+      DrawAll();
+      CMarcoBacktestInstance *instance=g_clusterInstances[g_nextTF];
+      int completedIndex=g_nextTF;
+      int registrySize = ArraySize(CMarcoBacktestInstance::s_global_trades);
+      bool success = instance.RunSimulation(InpTrackSweepsAnywhere, InpTrackPostInducementCHoCH,
+         InpMinTouches, InpProximityPips, InpStrictOriginPivots,
+         InpMergeClusteredZones, InpClusterTolerancePips, InpMergeExpandBounds,
+         InpCheckDemandSupply, InpCheckOrderBlocks, InpCheckSwingPOIs,
+         InpCheckFlipZones, InpCheckBreakers);
+      if(success && g_marcoIndicatorFinance.error == "")
+        {
+         CollectTrades(instance);
+         PrintFormat("[INDICATOR SIMULATION] %s %s: %d trades, W %d / L %d, %.2fR, balance %.2f (indicator financial estimates).",
+            _Symbol, EnumToString(tf), ArraySize(instance.m_trades), instance.m_wins, instance.m_losses,
+            instance.m_totalRewards, instance.m_currentBalance);
+         AdvanceScenario(false);
+        }
+      else
+        {
+         ArrayResize(CMarcoBacktestInstance::s_global_trades, registrySize);
+         PrintFormat("[INDICATOR SIMULATION] %s %s skipped: %s", _Symbol, EnumToString(tf),
+            g_marcoIndicatorFinance.error == "" ? "simulation data unavailable" : g_marcoIndicatorFinance.error);
+         AdvanceScenario(true);
+        }
+      delete instance;
+      g_clusterInstances[completedIndex]=NULL;
+      processed++;
+      // Yield between scenarios so an indicator does not run all six in one event.
+      if(GetTickCount64() - started >= 250) break;
+     }
+   if(g_nextTF >= ArraySize(g_setupTFs))
+     {
+      g_finished = true;
+      g_progress = "Complete " + TimeToString(g_windowEnd, TIME_DATE|TIME_MINUTES);
+      EventKillTimer();
+     }
+   CheckpointSimulation();
+   DrawAll();
+  }
+
+int OnInit()
+  {
+   g_marcoDailyLog.Start();
+   if(!CMarcoRiskCapital::Configure(InpRiskCapital)) return INIT_PARAMETERS_INCORRECT;
+   if(!CMarcoSymbolUnits::Configure(InpPipSizeOverrides)) return INIT_PARAMETERS_INCORRECT;
+   CMarcoIndEntryFilter::Configure(InpM1IndEntryFilter);
+   CMarcoPivotEntry::Configure(InpEntryTiming);
+   if(!MathIsValidNumber(InpFallbackRR) || InpFallbackRR<=0)
+     { Print("[TP CONFIG] InpFallbackRR must be positive for staged exits."); return INIT_PARAMETERS_INCORRECT; }
+   g_windowEnd = (InpEndWindow == 0 || InpEndWindow > TimeCurrent()) ? TimeCurrent() : InpEndWindow;
+   if(InpStartWindow >= g_windowEnd || InpMaxTrades < 1 || InpScanSpeedPerSecond < 1 ||
+      InpFillStrength < 0 || InpFillStrength > 100 || InpDepth < 1 || InpDeviation < 0 ||
+      InpStartingCapital <= 0 || InpMaxRiskPercent <= 0 || InpMaxRiskPercent > 100 ||
+      (InpPriceDiff != "Absolute" && InpPriceDiff != "Percent"))
+      return INIT_PARAMETERS_INCORRECT;
+   g_prefix = "MarcoTrades_" + IntegerToString(ChartID()) + "_" + IntegerToString((long)GetMicrosecondCount()) + "_";
+   ArrayResize(g_trades, 0);
+   CMarcoBacktestInstance::ResetGlobalTrades();
+   g_nextTF = g_matching = g_totalTrades = g_wins = g_losses = g_skipped = g_waitAttempts = 0;
+   g_rewards = 0;
+   g_finished = false;
+   g_progress = "Preparing history";
+   g_simulationVicinityTF=InpTPVicinityTF==PERIOD_CURRENT ? (ENUM_TIMEFRAMES)_Period : InpTPVicinityTF;
+   if(!CMarcoBrokerExecution::Configure(InpUseRecordedBrokerRejections,InpBrokerRejectionFile)) return INIT_FAILED;
+   g_cacheKey=SimulationCacheKey();
+   g_cachePath=SimulationCachePath(g_cacheKey);
+   g_cacheWriteWarned=false;
+   g_background = (color)ChartGetInteger(0, CHART_COLOR_BACKGROUND);
+   IndicatorSetString(INDICATOR_SHORTNAME, "Marco Independent Trade Simulator");
+   if(LoadSimulationCache())
+     {
+      PrintFormat("[INDICATOR CACHE] %s: restored %d recorded trades, %d/%d TFs processed; %s.",
+                  _Symbol,ArraySize(g_trades),g_nextTF,ArraySize(g_setupTFs),g_finished ? "drawing saved results only" : "restarting unfinished chronological batch");
+      if(!g_finished && !EventSetTimer(1)) return INIT_FAILED;
+      DrawAll();
+      return INIT_SUCCEEDED;
+     }
+   ArrayResize(g_trades,0);
+   CMarcoBacktestInstance::ResetGlobalTrades();
+   if(InpSendWhatsAppAlert)
+      Print("[INDICATOR SIMULATION] InpSendWhatsAppAlert is unsupported: MT5 forbids WebRequest in indicators. No message will be sent.");
+   Print("[INDICATOR SIMULATION] Independent chart-symbol simulation. Broker-specification profit/margin estimates may differ from broker-side calculations. No orders are sent.");
+   if(!EventSetTimer(1)) return INIT_FAILED;
+   CheckpointSimulation(); // Freeze EndWindow=0 and PERIOD_CURRENT before any chart change.
+   DrawAll();
+   return INIT_SUCCEEDED;
+  }
+
+void OnDeinit(const int reason)
+  {
+   ClearClusterInstances();
+   g_marcoDailyLog.Write("[LIFECYCLE] Deinit reason="+(string)reason);
+   EventKillTimer();
+   CMarcoBacktestInstance::ResetGlobalTrades();
+   // Indicators can be unloaded on a TF switch: globals alone are not a cache.
+   // Checkpoints are written during simulation, never by a retiring old instance.
+   if((reason==REASON_REMOVE || reason==REASON_CHARTCLOSE) && g_cachePath!="") FileDelete(g_cachePath);
+   if(g_prefix != "") ObjectsDeleteAll(0, g_prefix);
+   ChartRedraw();
+  }
+
+void OnTimer() {
+   g_marcoDailyLog.Pulse(); RunNextScenarios(); }
+
+void OnChartEvent(const int id, const long &lparam, const double &dparam, const string &sparam)
+  {
+   g_marcoDailyLog.Pulse();
+   if(id == CHARTEVENT_CHART_CHANGE && g_background != (color)ChartGetInteger(0, CHART_COLOR_BACKGROUND))
+      DrawAll();
+  }
+
+int OnCalculate(const int rates_total, const int prev_calculated, const datetime &time[],
+                const double &open[], const double &high[], const double &low[], const double &close[],
+                const long &tick_volume[], const long &volume[], const int &spread[])
+  {
+   g_marcoDailyLog.Pulse();
+   return rates_total;
+  }

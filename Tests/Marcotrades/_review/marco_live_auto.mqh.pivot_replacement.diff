@@ -1,0 +1,208 @@
+--- marco_live_auto.mqh before
+
++++ marco_live_auto.mqh
+
+@@ -363,4 +363,5 @@
+
+    SMarcoIndWait     indWait;
+    SMarcoPivotEntry  pivotEntry;
++   SMarcoPivotWatch  pivotWatch;
+    datetime          rejectionTouchTime;
+    datetime          rejectionHTFTouchTime;
+@@ -856,4 +857,12 @@
+
+       CaptureM1PivotConfirmations(zzEntry, barTime + PeriodSeconds(PERIOD_M1));
+       m_last_entry_bar = barTime;
++      if(CMarcoPivotEntry::Enabled())
++         for(int k=0;k<m_htf_lb_count;k++)
++           {
++            if(ObservePivotEntryRange(k,barTime,low,high)) continue;
++            datetime pivot=0,confirmed=0; double price=0;
++            if(m_entryTF==ENTRY_TF_M1 && m_htf_lbs[k].m1TouchTime>0)
++               GetLatestEntryPivot(k,barTime+PeriodSeconds(PERIOD_M1),zzEntry,true,pivot,price,confirmed);
++           }
+       if(m1LBContext != NULL)
+          AuditChochTouches(barTime, low, high, barTime + PeriodSeconds(PERIOD_M1), zzEntry,
+@@ -1191,4 +1200,101 @@
+
+      }
+ 
++
++   void DiscardPivotEntry(int k, datetime now, string reason)
++     {
++      if(!m_htf_lbs[k].pivotWatch.invalid && m_htf_lbs[k].pivotWatch.confirmed>0)
++         PrintFormat("[PIVOT DISCARDED] %s setup=%s LB=%s pivot=%s price=%.8f at=%s reason=%s; waiting for latest confirmed pivot",
++                     m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,
++                     TimeToString(m_htf_lbs[k].pivotWatch.pivot,TIME_DATE|TIME_SECONDS),m_htf_lbs[k].pivotWatch.price,
++                     TimeToString(now,TIME_DATE|TIME_SECONDS),reason);
++      m_htf_lbs[k].pivotWatch.invalid=true;
++      ZeroMemory(m_htf_lbs[k].pivotEntry);
++      m_htf_lbs[k].m1PivotTime=0; m_htf_lbs[k].m1PivotPrice=0; m_htf_lbs[k].m1ConfirmTime=0;
++     }
++
++   bool ObservePivotEntryRange(int k, datetime sampleTime, double low, double high)
++     {
++      if(!CMarcoPivotEntry::Enabled() || m_htf_lbs[k].entryTriggerTime<=0 ||
++         sampleTime<m_htf_lbs[k].entryTriggerTime+PeriodSeconds(m_tradeTF)) return false;
++      if(CTradeRejection::Used(m_htf_lbs[k].touchCount,m_htf_lbs[k].isMitigated)) return true;
++      bool bull=m_htf_lbs[k].isBullish;
++      // A waiting edge entry never receives the SL buffer as extra LB validity.
++      if(CTradeRejection::BoundaryBroken(bull,low,high,m_htf_lbs[k].zoneLow,m_htf_lbs[k].zoneHigh,0))
++        {
++         DiscardPivotEntry(k,sampleTime,"SETUP_LB_MITIGATED");
++         CTradeRejection::Retire(m_htf_lbs[k].touchCount,m_htf_lbs[k].isMitigated,m_htf_lbs[k].mitigationTime,sampleTime);
++         PrintFormat("[PIVOT WAIT CANCELLED] %s setup=%s LB=%s: setup LB boundary broken at %s",
++                     m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,TimeToString(sampleTime,TIME_DATE|TIME_SECONDS));
++         return true;
++        }
++      if(m_htf_lbs[k].pivotWatch.confirmed>0 && sampleTime>=m_htf_lbs[k].pivotWatch.confirmed &&
++         (bull ? low<m_htf_lbs[k].pivotWatch.price : high>m_htf_lbs[k].pivotWatch.price))
++         DiscardPivotEntry(k,sampleTime,"PIVOT_EXTREME_BROKEN");
++      return false;
++     }
++
++   bool GetLatestEntryPivot(int k, datetime now, ZigZag* zz, bool m1,
++                            datetime &pivot, double &price, datetime &confirmed)
++     {
++      pivot=0; price=0; confirmed=0;
++      if(zz==NULL || CTradeRejection::Used(m_htf_lbs[k].touchCount,m_htf_lbs[k].isMitigated)) return false;
++      int selected=-1; datetime latest=0, known=0;
++      int count=m1 ? ArraySize(m_m1PivotConfirmations) : ArraySize(m_pivotConfirmations);
++      for(int p=0;p<zz.pivots.Total() && p<count;p++)
++        {
++         Pivot* pv=(Pivot*)zz.pivots.At(p);
++         if(pv==NULL || pv==zz.projection || StringFind(pv.ln,"ZZ_Proj")>=0 ||
++            pv.isHigh==m_htf_lbs[k].isBullish) continue;
++         datetime available=m1 ? m_m1PivotConfirmations[p].availableTime : m_pivotConfirmations[p].availableTime;
++         datetime at=m1 ? m_m1PivotConfirmations[p].pivotTime : m_pivotConfirmations[p].pivotTime;
++         double value=m1 ? m_m1PivotConfirmations[p].price : m_pivotConfirmations[p].price;
++         bool high=m1 ? m_m1PivotConfirmations[p].isHigh : m_pivotConfirmations[p].isHigh;
++         // The availability record must describe this exact current endpoint.
++         if(available<=0 || available>now || at!=pv.end.time || value!=pv.end.price || high!=pv.isHigh) continue;
++         if(selected<0 || at>latest || (at==latest && available>known))
++           { selected=p; latest=at; known=available; }
++        }
++      if(selected<0)
++        { DiscardPivotEntry(k,now,"NO_CURRENT_CONFIRMED_PIVOT"); return false; }
++      Pivot* current=(Pivot*)zz.pivots.At(selected);
++      SMarcoPivotWatch previous=m_htf_lbs[k].pivotWatch;
++      bool same=previous.pivot==latest && previous.price==current.end.price && previous.confirmed==known;
++      if(previous.confirmed>0 && (latest<previous.pivot || known<previous.confirmed))
++        { DiscardPivotEntry(k,now,"PIVOT_REMOVED_NO_NEW_CONFIRMATION"); return false; }
++      if(same && previous.invalid) return false;
++      if(!same)
++        {
++         if(previous.confirmed>0)
++            PrintFormat("[PIVOT REPLACED] %s setup=%s LB=%s old=%s/%.8f latest=%s/%.8f confirmed=%s; recalculate entry edge and SL",
++                        m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,
++                        TimeToString(previous.pivot,TIME_DATE|TIME_SECONDS),previous.price,
++                        TimeToString(latest,TIME_DATE|TIME_SECONDS),current.end.price,TimeToString(known,TIME_DATE|TIME_SECONDS));
++         ZeroMemory(m_htf_lbs[k].pivotEntry);
++         m_htf_lbs[k].m1PivotTime=0; m_htf_lbs[k].m1PivotPrice=0; m_htf_lbs[k].m1ConfirmTime=0;
++         m_htf_lbs[k].pivotWatch.pivot=latest;
++         m_htf_lbs[k].pivotWatch.price=current.end.price;
++         m_htf_lbs[k].pivotWatch.confirmed=known;
++         m_htf_lbs[k].pivotWatch.invalid=false;
++        }
++      bool bull=m_htf_lbs[k].isBullish;
++      // Pick the latest endpoint FIRST. Never fall back to an older in-zone pivot
++      // just because the latest pivot fails zone, IND, touch or CHoCH eligibility.
++      if(current.end.price<m_htf_lbs[k].zoneLow || current.end.price>m_htf_lbs[k].zoneHigh) return false;
++      if(m1)
++        {
++         if(!CTradeRejection::M1Pivot(bull,current.isHigh,latest,current.end.price,
++                                     m_htf_lbs[k].m1TouchTime,known,now,m_htf_lbs[k].zoneLow,m_htf_lbs[k].zoneHigh)) return false;
++        }
++      else if(latest<=m_htf_lbs[k].entryTriggerTime) return false;
++      if(!IndEntryReady(k,latest,current.end.price,known,now) || SkipIndPivot(k,latest,current.end.price,known)) return false;
++      pivot=latest; price=current.end.price; confirmed=known;
++      if(m1)
++        {
++         m_htf_lbs[k].m1PivotTime=pivot; m_htf_lbs[k].m1PivotPrice=price; m_htf_lbs[k].m1ConfirmTime=confirmed;
++         if(BlockM1OpposingLeg(k,now)) return false;
++        }
++      return true;
++     }
++
+    bool              GetM1EntryPivot(int k, datetime now, datetime &pivotTime,
+                                      double &pivotPrice, datetime &confirmTime)
+@@ -1199,4 +1305,6 @@
+
+       if(zzEntry == NULL || m_htf_lbs[k].m1TouchTime == 0)
+          return false;
++      if(CMarcoPivotEntry::Enabled())
++         return GetLatestEntryPivot(k,now,zzEntry,true,pivotTime,pivotPrice,confirmTime);
+       // Opposing M1 origin invalidates the setup before pivot confirmation or execution.
+       if(BlockM1OpposingLeg(k, now))
+@@ -1992,4 +2100,5 @@
+
+                      m_htf_lbs[sz].m1TouchTime = 0;
+                      ZeroMemory(m_htf_lbs[sz].pivotEntry);
++                     ZeroMemory(m_htf_lbs[sz].pivotWatch);
+                      CMarcoIndEntryFilter::Reset(m_htf_lbs[sz].indWait);
+                      m_htf_lbs[sz].rejectionTouchTime = 0;
+@@ -2108,4 +2217,5 @@
+
+                      m_htf_lbs[cached].m1TouchTime = 0;
+                      ZeroMemory(m_htf_lbs[cached].pivotEntry);
++                     ZeroMemory(m_htf_lbs[cached].pivotWatch);
+                      CMarcoIndEntryFilter::Reset(m_htf_lbs[cached].indWait);
+                      m_htf_lbs[cached].m1PivotTime = 0;
+@@ -2255,4 +2365,5 @@
+
+                   m_htf_lbs[sz].m1TouchTime = 0;
+                   ZeroMemory(m_htf_lbs[sz].pivotEntry);
++                  ZeroMemory(m_htf_lbs[sz].pivotWatch);
+                   CMarcoIndEntryFilter::Reset(m_htf_lbs[sz].indWait);
+                   m_htf_lbs[sz].rejectionTouchTime = 0;
+@@ -2328,4 +2439,5 @@
+
+                   m_htf_lbs[cached].m1TouchTime = 0;
+                   ZeroMemory(m_htf_lbs[cached].pivotEntry);
++                  ZeroMemory(m_htf_lbs[cached].pivotWatch);
+                   CMarcoIndEntryFilter::Reset(m_htf_lbs[cached].indWait);
+                   m_htf_lbs[cached].m1PivotTime = 0;
+@@ -2705,4 +2817,12 @@
+
+            }
+ 
++            if(CMarcoPivotEntry::Enabled())
++              {
++               if(ObservePivotEntryRange(k,TimeCurrent(),bid,bid)) continue;
++               datetime latestPivot=0,latestConfirmed=0; double latestPrice=0;
++               ZigZag* currentZZ=m_entryTF==ENTRY_TF_M1 ? zzEntry : zzHtf;
++               if(m_entryTF!=ENTRY_TF_M1 || m_htf_lbs[k].m1TouchTime>0)
++                  GetLatestEntryPivot(k,TimeCurrent(),currentZZ,m_entryTF==ENTRY_TF_M1,latestPivot,latestPrice,latestConfirmed);
++              }
+          if(CheckIndWaitBoundary(k,TimeCurrent(),bid,ask)) continue;
+ 
+@@ -2740,5 +2860,10 @@
+
+          else
+            {
+-            if(CMarcoIndEntryFilter::Enabled() && m_htf_lbs[k].indWait.waiting)
++            if(CMarcoPivotEntry::Enabled())
++              {
++               if(!GetLatestEntryPivot(k,TimeCurrent(),zzHtf,false,firstPivotTime,firstPivotPrice,firstPivotConfirmTime)) continue;
++               pivotTouches=1;
++              }
++            else if(CMarcoIndEntryFilter::Enabled() && m_htf_lbs[k].indWait.waiting)
+               {
+                if(!GetSetupIndWaitPivot(k,TimeCurrent(),zzHtf,firstPivotTime,firstPivotPrice,firstPivotConfirmTime)) continue;
+@@ -2808,4 +2933,15 @@
+
+          ask = entryTick.ask;
+          bid = entryTick.bid;
++         if(CMarcoPivotEntry::Enabled())
++           {
++            MqlRates forming[];
++            if(CopyRates(m_symbol,PERIOD_M1,0,1,forming)!=1) continue;
++            // A candle may have closed while the scan was running. Let the next
++            // engine update capture its pivot replacement before sending an order.
++            if(forming[0].time>m_last_entry_bar+PeriodSeconds(PERIOD_M1)) continue;
++            if(ObservePivotEntryRange(k,forming[0].time,forming[0].low,forming[0].high) ||
++               ObservePivotEntryRange(k,entryTick.time,bid,bid) ||
++               m_htf_lbs[k].pivotWatch.invalid) continue;
++           }
+          if(!CMarcoPivotEntry::Quote(m_htf_lbs[k].pivotEntry,isBull,bid)) continue;
+          double entryPx = isBull ? ask : bid;

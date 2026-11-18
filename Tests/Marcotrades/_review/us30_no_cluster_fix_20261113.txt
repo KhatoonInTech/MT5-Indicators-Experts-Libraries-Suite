@@ -1,0 +1,89 @@
+US30 M10 no-clustering entry fix - 2026-11-13
+
+Evidence: Logs/20261113.log, indicator run at 16:23:32-16:23:59.
+Simulated session: 2026.11.12. All trading times are MT5 server/candle times.
+
+What actually happened
+20:03: BUY entry 52412.8 was inside the qualified M1 BL-IND at
+52380.5..52421.5. The IND check correctly skipped it and began waiting.
+20:21: The waiting filter recorded a bullish CHoCH from the 20:20 candle.
+20:33: A bearish CHoCH from the 20:32 candle became known. The older 20:20
+structure was also reclassified. The waiting filter retained its stale
+bullish permission and did not compare it against the newer bearish CHoCH.
+20:34: Price breached the original BL-IND low, mitigating that zone.
+20:36: The engine accepted the 20:34 pivot at 52377.9 and opened the buy at
+52381.8. Its active-IND count was zero; the price was back inside the old,
+mitigated rectangle, not a still-active IND. The waiting/structure rules
+should nevertheless have prevented this entry.
+
+Root cause 1: stale IND waiting permission
+Ready() previously accepted ANY same-direction CHoCH since the wait began.
+It did not revoke permission after a newer opposing CHoCH, and Observe()
+ignored changes from CHoCH to sweep/BOS classifications.
+
+Fix: retain timestamped event revisions, feed revisions of the last three
+market events into the M1 filter, and require the latest valid CHoCH to be
+in the intended trade direction. It must be known after waiting starts and
+before the selected pivot. Recheck at execution time, including cached
+pivot confirmations, so later opposing structure cannot be bypassed.
+Trades which never entered IND waiting retain their existing behavior.
+
+Root cause 2: protective LB source excluded from the entry guard
+The previous exit fix kept the 20:21 bearish source pivot/LB associated
+with the 20:32 BR-CHoCH, but explicitly excluded that retained source from
+OpposingChoch(). This was an omission in that fix.
+
+Fix: an LB vetoed as a new entry setup still participates in the opposing
+structure rejection check. It remains unavailable as a tradable setup or
+a source for same-direction TP extensions. Its flag is now named
+entryVetoed instead of exitOnly to reflect that distinction.
+
+Exact-candle regression result
+Before: 20:03 skipped, but at 20:36 WAIT_READY=1 and STRUCTURE_ACTION=0 (ALLOW).
+After: 20:03 still skipped; at 20:36 WAIT_READY=0 and STRUCTURE_ACTION=2
+(TRADE_RETIRE_ZONE), event 20:32, source
+EXIT_ONLY_LB_BEAR_1794514860_1794515520.
+Both independently replayed production M1 contexts (live and simulator)
+produce this rejection. The legacy source-ID prefix is retained.
+
+Validation
+244 M1 entry/wait checks, 56 structural-exit checks, 95 TP-extension checks,
+and 72 indicator cache checks passed: 467 total.
+Actual exported US30c candles reproduce the original failure and corrected
+rejection. The replay adapts production MQL logic to C++ and mocks terminal
+interfaces; it is not a complete native MT5 strategy-tester account run.
+No broker orders were sent. Installed EX5 files were not replaced/restarted.
+
+Changed production files (relative to MQL5)
+Include/Custom/Marcotrades/m1_ind_entry.mqh
+Include/Custom/Marcotrades/trade_rejection.mqh
+Include/Custom/Marcotrades/lb_extension.mqh
+Include/Custom/Marcotrades/marco_backtest.mqh
+Include/Custom/Marcotrades/marco_live_auto.mqh
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5
+
+Trade indicator version is 2.11, cache version 11. The cache rejects earlier
+results. Simulation configuration logging now explicitly prints merge=on/off
+instead of printing only the cluster tolerance and expand option.
+
+Recompile/reload after transferring the updated shared includes:
+Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5
+Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5
+
+Evidence under Tests/Marcotrades:
+replay_us30_no_cluster.py --assert-fixed
+replay_us30_no_cluster.py --live-context --assert-fixed
+_review/us30_no_cluster_before_fix.txt
+_review/us30_no_cluster_replay.txt
+_review/us30_no_cluster_live_replay.txt
+
+This follow-up supersedes the previous report's statement that entry-vetoed
+sources are excluded from opposing-entry checks. They now block opposing
+entries while remaining excluded from entry setup creation and TP extension.
+
+Native MetaEditor verification: all four programs compiled with 0 errors.
+Live EA: 0 warnings; backtester and trade indicator: 12 existing shadowing
+warnings each; liquidity visualizer: 24 existing shadowing warnings.
+Temporary compiled artifacts:
+C:\Users\Super\AppData\Local\Temp\marco_ind_wait_fix_5328f4766634418e9a56d39f3268356c

@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     USDJPY (D1)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  159.364 / 159.375
+Zone:       160.460 – 159.324
+Zone Age:   558h 3m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 00:00
+Tick Vol:   13024
+Real Vol:   0
+Cumul Vol:  106475766
+ZZ Reversal:157.587 (chg 287.3 pips)
+Settings:   Lookback: 3000, Deviation: 1.00%, Depth: 15
+Quality:    65/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BULLISH.

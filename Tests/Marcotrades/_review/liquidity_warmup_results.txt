@@ -1,0 +1,11 @@
+TF 1: anchor, intraday anchor, lookback, weekend and missing history passed
+TF 2: anchor, intraday anchor, lookback, weekend and missing history passed
+TF 3: anchor, intraday anchor, lookback, weekend and missing history passed
+TF 4: anchor, intraday anchor, lookback, weekend and missing history passed
+TF 5: anchor, intraday anchor, lookback, weekend and missing history passed
+TF 10: anchor, intraday anchor, lookback, weekend and missing history passed
+TF 12: anchor, intraday anchor, lookback, weekend and missing history passed
+TF 15: anchor, intraday anchor, lookback, weekend and missing history passed
+TF 30: anchor, intraday anchor, lookback, weekend and missing history passed
+TF 60: anchor, intraday anchor, lookback, weekend and missing history passed
+358 liquidity warmup assertions passed; midnight reset/integration guards passed

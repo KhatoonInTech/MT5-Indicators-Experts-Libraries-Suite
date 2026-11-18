@@ -1,0 +1,35 @@
+STRUCTURE-ONLY PREVIOUS-DAY WARMUP - 2026-11-13
+
+Install: extract the contents into the terminal's MQL5 folder, preserving paths.
+Reload the two indicators after installation. Replace/reload the EAs when you intend
+those programs to use this build. This package does not execute or attach an EA.
+
+Versions: liquidity visualizer 1.21; trade indicator 2.14;
+backtest EA 1.56; live EA 1.35.
+
+Previous-day warmup calculates ZigZag and market-structure state internally.
+Previous-day pivot candles cannot become zones, even if confirmed after the start.
+Demand/supply, swing POI, order-block, flip, breaker, IND and LB warmup origins
+are excluded. Current-window zone origins still use their actual pivot candles.
+The visualizer hides warmup ZigZag/BOS/CHoCH/sweep drawings. Carried swing levels
+and new structure lines are displayed only from the anchor/window onward.
+No reset of swing levels or market structure occurs at the start boundary.
+The trade indicator cache is version 14; old cached simulations are discarded.
+
+Window boundary: selected anchor/lookback start in the visualizer, backtest start
+in both simulation programs, today's session start for live initialization.
+This change addresses history loaded before that boundary. It does not delete
+historical trades or reset management of already-open live positions.
+
+Validation: synthetic production-engine replays on M1/M2/M3/M4/M5/M10/M12/M15/M30/H1;
+72,368 checks each for backtest and live M1 contexts. Swings and structure match
+unrestricted reference replay; warmup has zero zones/drawings; current-window
+zone creation remains active. 3,895 history/rollover, 238 warmup selector,
+88 IND structure, 244 M1 entry and 73 cache checks also passed.
+All four MetaEditor compilations: zero errors. Existing shadow warnings remain.
+This is offline regression and compilation validation, not a new broker/live run.
+
+marco_live_auto_ea.mq5 1.35: Result: 0 errors, 0 warnings, 29550 ms elapsed, cpu='X64 Regular'
+marco_backtest_ea.mq5 1.56: Result: 0 errors, 12 warnings, 26694 ms elapsed, cpu='X64 Regular'
+marco_backtest_trades.mq5 2.14: Result: 0 errors, 12 warnings, 27319 ms elapsed, cpu='X64 Regular'
+liquiduity_block.mq5 1.21: Result: 0 errors, 24 warnings, 17254 ms elapsed, cpu='X64 Regular'

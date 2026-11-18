@@ -1,0 +1,63 @@
+LB cluster entry policy - 17 November 2026
+
+Behavior implemented
+- One executed entry per connected cluster of same-symbol, same-direction, entry-qualified setup LBs. IND/BSL/SSL subtype and setup timeframe do not separate a cluster.
+- Inclusive interval overlap includes containment, exact boundary contact and chains. Register all setup TFs before testing entries.
+- Closing a position does not release its cluster. The existing overlap switch/50% TP rule does not override the cluster block.
+- Release occurs only when ALL recorded members physically mitigate under the existing LB outer-boundary rule, or the broker date changes. A fresh qualifying LB may then create a new cluster. An already mitigated setup itself never becomes eligible again.
+- Mitigated connecting members remain part of the cluster until the last member mitigates. Disappearance/reclassification alone does not clear a consumed cluster; recorded premises can still mitigate using closed setup-TF bars.
+- Definite rejected orders release reservations. Accepted or uncertain broker responses retain the block to prevent duplicate entries.
+- Live persistence: MQL5/Files/marcotrades/LiveEA/LBClusters_<account>_<scope hash>_<broker-day timestamp>.bin. Scoped by broker server/account/symbol/day. Exclusive file locking, atomic replacement, structural validation. A corrupt or unwritable journal prevents new entries.
+- [LB CLUSTER BLOCK] logs identify the candidate and previously consumed cluster member.
+- New live tracking starts with entries submitted by this build; old-version trades lack saved setup boundaries and cannot be reliably backfilled. Once recorded by this build, the cluster survives EA/terminal restarts even after the position closes.
+
+Simulation coordination
+Previously each timeframe completed its whole history before the next timeframe ran. The new shared clock processes all setup TFs chronologically: structures/mitigations/exits first across TFs, then cluster registration and entries. Earlier eligible trades therefore consume their cluster before later overlapping setups on any TF. Same-timestamp ties use configured TF order. Existing OHLC intrabar fill assumptions remain; this is not tick replay.
+The simulator indicator preserves the selected end time through chart reloads. Completed results reload from cache. Reloading an unfinished batch restarts that chronological batch because partially saved chart results cannot reconstruct all active engines/cluster history.
+ZigZag.mqh is unchanged: SHA256 949bc8de05d8731e0ccfb0ef70e429a0e182a6fa1eddd56b5564863a97d152a5.
+The liquidity-block display indicator and exit policy were not edited for this entry-only feature.
+
+Production files added
+Include/Custom/Marcotrades/lb_entry_clusters.mqh
+Include/Custom/Marcotrades/lb_entry_clusters_live.mqh
+
+Production source files updated
+Include/Custom/Marcotrades/marco_backtest.mqh
+Include/Custom/Marcotrades/marco_live_auto.mqh
+Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5 (1.66)
+Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5 (1.45)
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5 (2.24)
+
+Rebuilt binaries
+Experts/Custom EAs/Backtesting/marco_backtest_ea.ex5
+Experts/Custom EAs/Marcotrades/marco_live_auto_ea.ex5
+Indicators/Custom/Marcotrades/marco_backtest_trades.ex5
+
+Test files added/updated
+Tests/Marcotrades/run_lb_cluster_tests.py (new)
+Tests/Marcotrades/run_opposite_position_tests.py
+Tests/Marcotrades/run_indicator_cache_tests.py
+Tests/Marcotrades/run_m1_touch_tests.py
+Tests/Marcotrades/run_history_context_tests.py
+Tests/Marcotrades/run_entry_sizing_tests.py
+Existing test adapters were updated for simulation-state ownership, the new helper-method boundary, and whole-batch cache restart semantics.
+
+Verification
+334 cluster/persistence/scheduler/production observation checks; premature-retirement mutation rejected.
+206 opposite-direction checks; old missing guard mutation rejected.
+74 indicator cache/lifecycle checks.
+608 M1/setup IND/wait/pivot checks; missed-touch and stale-pivot mutations rejected.
+253 pivot-entry/first-candle exit checks.
+3895 history/rollover assertions.
+56 structural-exit checks.
+294 opposing-sequence assertions.
+11702 staged TP/durable retry assertions.
+905 live/backtest sizing checks.
+78 entry-trigger structure assertions.
+41 VPS export/import fixture checks.
+Compiler: live EA 0 errors/0 warnings; backtest EA and simulator indicator each 0 errors/12 existing parameter-shadowing warnings.
+These are offline production-code/adaptor tests plus MetaEditor builds. No live orders were sent, and no full historical run inside MT5 was executed as part of this change.
+
+Deployment
+Desktop MLQH FILES/mq5-vps-package.zip and the exporter text bundles were refreshed. All 201 manifest hashes verified; both new helpers and all 3 rebuilt binaries match the workspace. Transfer scripts already include LiveEA .bin files; no script changes were needed for this feature. The package also contains other existing programs that were not rebuilt in this task.
+Load the rebuilt versions to use the rule. No extra enable switch is required. Carry Files/marcotrades/LiveEA state when migrating a running installation to preserve cluster history.

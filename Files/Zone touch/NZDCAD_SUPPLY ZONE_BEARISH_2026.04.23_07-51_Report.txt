@@ -1,0 +1,21 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     NZDCAD (D1)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  0.80442 / 0.80453
+Zone:       0.81358 – 0.80756
+Trade:      SL: 0.81388 | TP: 0.78550 (1:2 RR)
+Est. Risk:  Loss: -0.00 USD | Profit: +0.00 USD (1 Lot)
+Quality:    0/100
+
+POINTS OF CONFLUENCE:
+- ? **Liquidity:** Swept + High Vol/Disp
+- ? **Momentum:** Dangerous Approach
+- ?? **Structure:** Weak Sequence
+- ? **Freshness:** Heavily Mitigated
+- ?? **Session:** Outside Major Sessions
+- ? **Fibonacci:** Valid Premium Zone
+- ? **Proximity:** Too Far (31.4 pips)- ?? **Alignment:** Counter-Trend Alert
+
+
+Verdict:    Low Probability. Lacks crucial structural & momentum support.

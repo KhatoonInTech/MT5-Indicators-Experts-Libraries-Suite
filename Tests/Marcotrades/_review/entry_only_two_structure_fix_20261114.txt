@@ -1,0 +1,45 @@
+ENTRY-ONLY TWO-STRUCTURE LB GATE - 2026-11-14
+
+Behavior
+- A BL-LB entry setup, whether BSL, IND, or the combined type, remains unavailable
+  until a valid mitigated BL-IND is followed by two consecutive bullish market
+  structure events (BL-BOS or BL-CHoCH) on the setup timeframe.
+- A BR-LB entry setup follows the mirror rule using a valid mitigated BR-IND and
+  two consecutive bearish events (BR-BOS or BR-CHoCH).
+- An opposite BOS/CHoCH resets the consecutive count. Sweep labels are ignored;
+  they are not counted as bullish/bearish structure events. If a previously
+  counted event is renamed as a sweep, it no longer qualifies.
+- The newest same-side IND mitigation starts the sequence used by an unarmed setup.
+- Eligibility is calculated only from closed setup-timeframe bars. An eligible LB
+  becomes available after the second event candle closes.
+
+Scope separation
+- Raw LB creation and chart-zone logic are unchanged.
+- Entry-prevention/rejection histories continue to receive raw LBs immediately.
+- Open-position partial/full exits, structural exits, opposing TP discovery and
+  new-LB TP extension continue to use the old raw-LB behavior.
+- Only new entry scanning, M1 touch arming and setup pre-confirmation auditing use
+  the delayed entryTriggerTime.
+- Live bootstrap reconstructs the same entryTriggerTime when the EA is restarted.
+
+Versions
+- marco_live_auto_ea 1.36
+- marco_backtest_ea 1.57
+- marco_backtest_trades 2.15, cache format 15
+- liquduity_block remains 1.21 because its raw-zone display behavior is unchanged
+- shared liquidity_blocks.mqh 1.31
+
+Validation
+- 34 causal entry-trigger checks passed in both directions.
+- 21 production raw-LB context checks passed, including exit-only sources.
+- 244 M1 touch/IND waiting/pivot/expiry checks passed.
+- 73 cache/lifecycle checks passed.
+- 88 IND structure checks passed.
+- 3,895 history/rollover checks passed.
+- 72,368 previous-day structure-only checks passed across M1 through H1.
+- All four MetaEditor builds completed with zero errors.
+
+Installation
+Extract the accompanying ZIP into the terminal MQL5 folder while preserving paths.
+Reload the indicators and reattach/reload the EAs when ready. The package creation
+does not execute or attach an EA.

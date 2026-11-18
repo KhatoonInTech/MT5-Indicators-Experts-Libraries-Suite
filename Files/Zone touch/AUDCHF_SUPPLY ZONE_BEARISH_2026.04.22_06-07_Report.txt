@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     AUDCHF (D1)
+Type:       BEARISH SUPPLY ZONE TOUCHED
+Bid / Ask:  0.55864 / 0.55874
+Zone:       0.56133 – 0.55563
+Zone Age:   822h 7m ago
+Touches:    0
+Trend:      BULLISH | Higher Highs & Higher Lows
+Last BOS:   Structural Break @ 00:00
+Tick Vol:   10489
+Real Vol:   0
+Cumul Vol:  6753141
+ZZ Reversal:0.56227 (chg 174.5 pips)
+Settings:   Lookback: 3000, Deviation: 1.00%, Depth: 15
+Quality:    65/100
+Reasoning:  SUPPLY ZONE zone tapped by wick. Current structure is BULLISH.

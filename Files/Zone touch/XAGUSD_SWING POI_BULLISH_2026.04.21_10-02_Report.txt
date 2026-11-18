@@ -1,0 +1,17 @@
+SMC TOUCHED — ANALYSIS REPORT
+======================================
+Symbol:     XAGUSD (M15)
+Type:       BULLISH SWING POI TOUCHED
+Bid / Ask:  78.748 / 78.823
+Zone:       78.750 – 77.732
+Zone Age:   102h 2m ago
+Touches:    0
+Trend:      BEARISH | Lower Highs & Lower Lows
+Last BOS:   Structural Break @ 23:30
+Tick Vol:   307
+Real Vol:   0
+Cumul Vol:  7196107
+ZZ Reversal:79.319 (chg 80.8 pips)
+Settings:   Lookback: 5000, Deviation: 1.00%, Depth: 5
+Quality:    65/100
+Reasoning:  SWING POI zone tapped by wick. Current structure is BEARISH.
