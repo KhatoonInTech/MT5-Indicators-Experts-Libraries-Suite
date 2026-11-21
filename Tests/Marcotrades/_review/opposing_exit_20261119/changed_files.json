@@ -1,0 +1,34 @@
+[
+  {
+    "file": "Include/Custom/Marcotrades/opposing_sequence.mqh",
+    "sha256": "4fb49cde6fb052711da15f421c19fbf1f9b6da9230b74ef4bc0253cd35c76f9f"
+  },
+  {
+    "file": "Tests/Marcotrades/run_opposing_sequence_tests.py",
+    "sha256": "ae05afd6721f03cf46687501ed87e791135703b65c816528c08d658119fc2275"
+  },
+  {
+    "file": "Indicators/Custom/Marcotrades/marco_backtest_trades.mq5",
+    "sha256": "aedf770c2f10f5574cc42a93512d18a9e92dc09bdcc3b120c46f094926d45785"
+  },
+  {
+    "file": "Indicators\\Custom\\Marcotrades\\marco_backtest_trades.ex5",
+    "sha256": "818e9f16fdddfd4f9665a0e3a688634c9845454b42300d20add18686844a64e4"
+  },
+  {
+    "file": "Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5",
+    "sha256": "7125c6a9f5e521f3898bbf9bf1a0a54f64f4e2b49b7eabadbe3fe2877bb256d6"
+  },
+  {
+    "file": "Experts\\Custom EAs\\Backtesting\\marco_backtest_ea.ex5",
+    "sha256": "6810098a5784594fbfb75d61c2eabdd710f152c7ce28faf5bd549edf12a9bfff"
+  },
+  {
+    "file": "Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5",
+    "sha256": "04c33caa9c6888d3f8a9eb0c0a6096aea454d35305c1e56efc830bab128a01f1"
+  },
+  {
+    "file": "Experts\\Custom EAs\\Marcotrades\\marco_live_auto_ea.ex5",
+    "sha256": "70dc487bce075647ac1b3b56901539d73e88be628ec63bcd5b30152f1f1d3d56"
+  }
+]

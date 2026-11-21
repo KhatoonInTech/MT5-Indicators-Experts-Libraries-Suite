@@ -47,6 +47,7 @@ string IntegerToString(long long x){return std::to_string(x);}string DoubleToStr
 string TimeToString(datetime t,int=0){time_t n=t;char b[30];std::strftime(b,sizeof(b),"%Y.%m.%d %H:%M",std::gmtime(&n));return b;}
 string EnumToString(int tf){return std::to_string(tf);}int PeriodSeconds(int tf){return tf*60;}datetime TimeCurrent(){return 1794528000;}
 template<class...A>void Print(A...){}template<class...A>void PrintFormat(A...){}
+template<class...A>string StringFormat(string format,A...){return format;}
 template<class...A>int ObjectFind(A...){return -1;}template<class...A>bool ObjectDelete(A...){return true;}
 template<class...A>void ObjectsDeleteAll(A...){}template<class...A>void ObjectSetString(A...){}
 template<class...A>void ObjectSetInteger(A...){}template<class...A>void ObjectSetDouble(A...){}
@@ -3137,6 +3138,10 @@ public:
       bool validTime = origin >= created && (mitigation == 0 || origin <= mitigation + seconds);
       return (validTime || origin == created) && price >= zLow - buffer && price <= zHigh + buffer;
      }
+   // Direction is an unconditional symbol-level veto, independent of overlap/TP progress.
+   // Callers restrict this to positions that are still open on the candidate symbol.
+   static bool OppositeDirection(bool candidateBull, int openDirection)
+     { return openDirection == (candidateBull ? -1 : 1); }
    static bool Overlap(bool allowed, double tpDistance, double covered)
      { return !allowed || tpDistance <= 0.0 || covered < 0.5 * tpDistance; }
    static bool InvalidSL(bool bull, double entry, double sl)
@@ -3187,29 +3192,68 @@ class CTradeRejectionHistory
 public:
    std::vector<SRejectionEvent> events;
    std::vector<SRejectionLB> zones;
+   // Sorted identity indexes; public snapshot arrays retain their append order.
+   std::vector<datetime> eventKeys;
+   std::vector<int> eventHeads;
+   std::vector<int> eventPrevious;
+   std::vector<string> zoneKeys;
+   std::vector<int> zoneHeads;
+   std::vector<int> zonePrevious;
+   int EventSlot(datetime key)
+     {
+      int lo=0,hi=ArraySize(eventKeys);
+      while(lo<hi) { int mid=(lo+hi)/2; if(eventKeys[mid]<key) lo=mid+1; else hi=mid; }
+      return lo;
+     }
+   int ZoneSlot(string key)
+     {
+      int lo=0,hi=ArraySize(zoneKeys);
+      while(lo<hi) { int mid=(lo+hi)/2; if(zoneKeys[mid]<key) lo=mid+1; else hi=mid; }
+      return lo;
+     }
+   bool PreviousEvent(datetime before,datetime now,SRejectionEvent &event)
+     {
+      for(int slot=EventSlot(before)-1;slot>=0;slot--)
+         for(int i=eventHeads[slot];i>=0;i=eventPrevious[i])
+            if(EventAt(i,now,event)) return true;
+      return false;
+     }
    STradeRejection AllowWithTrace(string reason, bool diagnostics)
      {
       if(diagnostics) Print("[CHOCH AUDIT] decision=ALLOW reason=", reason);
       return CTradeRejection::Decision(TRADE_ALLOW, REJECT_NONE);
      }
 public:
-   void Reset() { ArrayResize(events, 0); ArrayResize(zones, 0); }
+   void Reset()
+     {
+      ArrayResize(events,0); ArrayResize(zones,0);
+      ArrayResize(eventKeys,0); ArrayResize(eventHeads,0); ArrayResize(eventPrevious,0);
+      ArrayResize(zoneKeys,0); ArrayResize(zoneHeads,0); ArrayResize(zonePrevious,0);
+     }
    void Observe(string name, datetime time, datetime available, datetime originTime, double originPrice, double linePrice = 0.0)
      {
       if(time == 0 || name == "") return;
       int n = ArraySize(events);
       // A previous event may be reclassified after a newer event is recorded.
       // Keep its source and an availability-bounded version; do not reorder the market.
-      for(int i=n-1;i>=0;i--)
-         if(events[i].time==time)
-           {
-            if(events[i].name==name) return;
-            originTime=events[i].originTime;
-            originPrice=events[i].originPrice;
-            events[i].until=available;
-            break;
-           }
-      ArrayResize(events, n+1);
+      int slot=EventSlot(time),count=ArraySize(eventKeys),previous=-1;
+      if(slot<count && eventKeys[slot]==time)
+        {
+         previous=eventHeads[slot];
+         if(events[previous].name==name) return;
+         originTime=events[previous].originTime;
+         originPrice=events[previous].originPrice;
+         events[previous].until=available;
+        }
+      else
+        {
+         ArrayResize(eventKeys,count+1); ArrayResize(eventHeads,count+1);
+         for(int j=count;j>slot;j--) { eventKeys[j]=eventKeys[j-1]; eventHeads[j]=eventHeads[j-1]; }
+         eventKeys[slot]=time;
+        }
+      eventHeads[slot]=n;
+      ArrayResize(eventPrevious,n+1); eventPrevious[n]=previous;
+      ArrayResize(events,n+1);
       events[n].name=name; events[n].time=time; events[n].available=available;
       events[n].originTime=originTime; events[n].originPrice=originPrice;
       events[n].linePrice=linePrice; events[n].until=0;
@@ -3223,14 +3267,10 @@ public:
      }
    bool Latest(datetime now, SRejectionEvent &event)
      {
-      bool found=false;
-      for(int i=ArraySize(events)-1;i>=0;i--)
-        {
-         SRejectionEvent candidate;
-         if(!EventAt(i,now,candidate)) continue;
-         if(!found || candidate.time>event.time) { event=candidate; found=true; }
-        }
-      return found;
+      for(int slot=ArraySize(eventKeys)-1;slot>=0;slot--)
+         for(int i=eventHeads[slot];i>=0;i=eventPrevious[i])
+            if(EventAt(i,now,event)) return true;
+      return false;
      }
    int ZoneCount() { return ArraySize(zones); }
    bool ZoneAt(int index, SRejectionLB &zone)
@@ -3245,16 +3285,27 @@ public:
    void Zone(string id, bool bull, double low, double high, datetime created,
              datetime mitigation, datetime choch, datetime now, bool entryVetoed = false)
      {
-      for(int i=ArraySize(zones)-1; i>=0; i--)
+      int slot=ZoneSlot(id),count=ArraySize(zoneKeys),previous=-1;
+      if(slot<count && zoneKeys[slot]==id)
         {
-         if(zones[i].id != id || zones[i].until != 0) continue;
-         zones[i].seen=true;
-         if(zones[i].bull==bull && zones[i].low==low && zones[i].high==high &&
-            zones[i].created==created && zones[i].mitigation==mitigation && zones[i].choch==choch && zones[i].entryVetoed==entryVetoed) return;
-         zones[i].until=now;
-         break;
+         previous=zoneHeads[slot];
+         int i=previous;
+         if(zones[i].until==0)
+           {
+            zones[i].seen=true;
+            if(zones[i].bull==bull && zones[i].low==low && zones[i].high==high &&
+               zones[i].created==created && zones[i].mitigation==mitigation && zones[i].choch==choch && zones[i].entryVetoed==entryVetoed) return;
+            zones[i].until=now;
+           }
+        }
+      else
+        {
+         ArrayResize(zoneKeys,count+1); ArrayResize(zoneHeads,count+1);
+         for(int j=count;j>slot;j--) { zoneKeys[j]=zoneKeys[j-1]; zoneHeads[j]=zoneHeads[j-1]; }
+         zoneKeys[slot]=id;
         }
       int n=ArraySize(zones); ArrayResize(zones,n+1);
+      ArrayResize(zonePrevious,n+1); zonePrevious[n]=previous; zoneHeads[slot]=n;
       zones[n].entryVetoed=entryVetoed;
       zones[n].id=id; zones[n].bull=bull; zones[n].low=low; zones[n].high=high;
       zones[n].created=created; zones[n].mitigation=mitigation; zones[n].choch=choch;
@@ -3265,6 +3316,34 @@ public:
       for(int i=0; i<ArraySize(zones); i++)
          if(zones[i].until==0 && !zones[i].seen) zones[i].until=now;
      }
+   static int StructureDirection(string name)
+     {
+      if(name=="BL-CHoCH" || name=="BL-BOS" || name=="BSL-Swept") return 1;
+      if(name=="BR-CHoCH" || name=="BR-BOS" || name=="SSL-Swept") return -1;
+      return 0;
+     }
+   bool ActiveSource(const SRejectionLB &lb,bool candidateBull,datetime now,ENUM_TIMEFRAMES tf)
+     {
+      return lb->bull!=candidateBull && lb->available<=now && (lb->until==0 || now<lb->until) &&
+             (lb->mitigation==0 || now<lb->mitigation+PeriodSeconds(tf));
+     }
+   // Consult the same available/qualified LB snapshots as structural prevention.
+   bool IncomingLeg(bool candidateBull,datetime origin,double price,datetime now,
+                    ENUM_TIMEFRAMES tf,double buffer,string &id)
+     {
+      id="";
+      if(origin<=0 || origin>now) return false;
+      for(int b=ArraySize(zones)-1;b>=0;b--)
+        {
+         SRejectionLB lb=zones[b];
+         if(!ActiveSource(lb,candidateBull,now,tf)) continue;
+         if(CTradeRejection::OriginInside(origin,price,lb->created,lb->mitigation,PeriodSeconds(tf),lb->low,lb->high,buffer))
+           { id=lb->id; return true; }
+        }
+      return false;
+     }
+   // Name retained for existing callers. The veto follows an uninterrupted
+   // opposing CHoCH/BOS/sweep sequence, not just an immediately latest CHoCH.
    STradeRejection OpposingChoch(bool candidateBull, datetime legOrigin, datetime legEnd,
                                 datetime touch, datetime now, ENUM_TIMEFRAMES tf, double buffer, bool diagnostics = false)
      {
@@ -3278,52 +3357,57 @@ public:
       if(now<touch) return AllowWithTrace("TOUCH_NOT_YET_AVAILABLE", diagnostics);
       if(legOrigin==0) return AllowWithTrace("NO_MATCHING_INCOMING_LEG", diagnostics);
       if(legOrigin>touch) return AllowWithTrace("LEG_STARTED_AFTER_RECORDED_TOUCH", diagnostics);
-      SRejectionEvent ev;
-      if(!Latest(now,ev)) return AllowWithTrace("NO_AVAILABLE_STRUCTURE", diagnostics);
+      SRejectionEvent latest;
+      if(!Latest(now,latest)) return AllowWithTrace("NO_AVAILABLE_STRUCTURE", diagnostics);
+      int opposing=candidateBull ? -1 : 1;
       if(diagnostics)
          PrintFormat("[CHOCH AUDIT] latest=%s event=%s available=%s source_pivot=%s source_price=%.8f",
-                     ev.name, TimeToString(ev.time, TIME_DATE|TIME_SECONDS), TimeToString(ev.available, TIME_DATE|TIME_SECONDS),
-                     TimeToString(ev.originTime, TIME_DATE|TIME_SECONDS), ev.originPrice);
-      if(ev.name != (candidateBull ? "BR-CHoCH" : "BL-CHoCH"))
-         return AllowWithTrace("LATEST_STRUCTURE_IS_NOT_OPPOSING_CHOCH", diagnostics);
-      // The latest CHoCH remains the structural context across intervening pullbacks.
-      // Its source pivot may precede the final touching leg; the CHoCH need not occur inside that leg.
-      // A later structure is already excluded by selecting only the latest available event above.
-      if(ev.originTime==0) return AllowWithTrace("NO_CHOCH_SOURCE_PIVOT", diagnostics);
-      if(ev.originTime>legOrigin) return AllowWithTrace("CHOCH_SOURCE_AFTER_INCOMING_LEG_ORIGIN", diagnostics);
-      if(legEnd>0 && ev.time>legEnd) return AllowWithTrace("CHOCH_AFTER_TOUCHING_LEG_ENDED", diagnostics);
-      // An IND-vetoed LB cannot be traded, but its causal opposing structure still blocks entry.
-      int knownOpposing = 0;
-      for(int b=ArraySize(zones)-1;b>=0;b--)
+                     latest.name, TimeToString(latest.time, TIME_DATE|TIME_SECONDS), TimeToString(latest.available, TIME_DATE|TIME_SECONDS),
+                     TimeToString(latest.originTime, TIME_DATE|TIME_SECONDS), latest.originPrice);
+      if(StructureDirection(latest.name)!=opposing)
+         return AllowWithTrace("LATEST_STRUCTURE_IS_NOT_OPPOSING", diagnostics);
+      if(legEnd>0 && latest.time>legEnd)
+         return AllowWithTrace("STRUCTURE_AFTER_TOUCHING_LEG_ENDED", diagnostics);
+      SRejectionEvent ev=latest;
+      for(int chain=0;chain<ArraySize(events);chain++)
         {
-         SRejectionLB lb=zones[b];
-         if(lb->bull==candidateBull || lb->available>now || (lb->until>0 && now>=lb->until)) continue;
-         knownOpposing++;
-         bool produced=lb->choch==ev.time;
-         bool stemmed=false;
-         if(!produced)
-            for(int v=b; v>=0; v--)
+         // A candidate-direction event or reclassification ends the chain.
+         if(StructureDirection(ev.name)!=opposing) break;
+         if(ev.originTime>0 && ev.originTime<=legOrigin)
+            for(int b=ArraySize(zones)-1;b>=0;b--)
               {
-               SRejectionLB source=zones[v];
-               if(source->id!=lb->id || source->available>ev.available ||
-                  (source->until>0 && ev.available>=source->until)) continue;
-               stemmed=CTradeRejection::OriginInside(ev.originTime, ev.originPrice, source->created,
-                         source->mitigation, PeriodSeconds(tf), source->low, source->high, buffer);
-               break;
+               SRejectionLB lb=zones[b];
+               if(!ActiveSource(lb,candidateBull,now,tf)) continue;
+               bool produced=lb->choch==ev.time;
+               bool stemmed=false;
+               if(!produced)
+                  for(int v=b;v>=0;v=zonePrevious[v])
+                    {
+                     SRejectionLB source=zones[v];
+                     if(source->id!=lb->id || source->available>ev.available ||
+                        (source->until>0 && ev.available>=source->until)) continue;
+                     stemmed=CTradeRejection::OriginInside(ev.originTime,ev.originPrice,source->created,
+                               source->mitigation,PeriodSeconds(tf),source->low,source->high,buffer);
+                     break;
+                    }
+               if(!produced && !stemmed) continue;
+               result->action=TRADE_RETIRE_ZONE; result->reason=REJECT_OPPOSING_CHOCH_LB;
+               result->sourceTF=tf; result->opposingId=lb->id; result->eventTime=ev.time;
+               if(diagnostics)
+                  PrintFormat("[CHOCH AUDIT] decision=REJECT reason=OPPOSING_STRUCTURE_LB source=%s LB=%s latest=%s linked=%s linked_at=%s origin=%s price=%.8f",
+                              EnumToString(tf),lb->id,latest.name,ev.name,TimeToString(ev.time,TIME_DATE|TIME_SECONDS),
+                              TimeToString(ev.originTime,TIME_DATE|TIME_SECONDS),ev.originPrice);
+               return result;
               }
-         if(diagnostics)
-            PrintFormat("[CHOCH AUDIT] opposing=%s created=%s available=%s zone=[%.8f,%.8f] causal_choch=%s produced=%s stemmed=%s",
-                        lb->id, TimeToString(lb->created, TIME_DATE|TIME_SECONDS), TimeToString(lb->available, TIME_DATE|TIME_SECONDS),
-                        lb->low, lb->high, TimeToString(lb->choch, TIME_DATE|TIME_SECONDS), produced ? "true" : "false", stemmed ? "true" : "false");
-         if(!produced && !stemmed) continue;
-         result->action=TRADE_RETIRE_ZONE; result->reason=REJECT_OPPOSING_CHOCH_LB;
-         result->sourceTF=tf; result->opposingId=lb->id; result->eventTime=ev.time;
-         if(diagnostics) Print("[CHOCH AUDIT] decision=REJECT reason=OPPOSING_CHOCH_LB");
-         return result;
+         // Event revisions are appended out of order. Select the preceding event
+         // by its structural time, using only the version available at entry.
+         SRejectionEvent previous;
+         if(!PreviousEvent(ev.time,now,previous)) break;
+         ev=previous;
         }
-      if(diagnostics) PrintFormat("[CHOCH AUDIT] known_opposing_LBs=%d", knownOpposing);
-      return AllowWithTrace("NO_AVAILABLE_OPPOSING_LB_LINKED_TO_CHOCH", diagnostics);
+      return AllowWithTrace("NO_ACTIVE_OPPOSING_LB_LINKED_TO_STRUCTURE_CHAIN", diagnostics);
      }
+
   };
 #endif
 
@@ -3438,7 +3522,7 @@ public:
    double            m_clusterTolerancePips;
    bool              m_expandBounds;
 
-   CArrayString      m_registered_keys;
+   std::vector<string> m_registered_keys;
    datetime          m_last_evaluated_pivot_time;
 
    int               FindBarIndexByTime(datetime targetTime, const std::vector<datetime> &time, int rates_total)
@@ -3503,7 +3587,7 @@ public:
    void              ResetState()
      {
       m_zones.Clear();
-      m_registered_keys.Clear();
+      ArrayResize(m_registered_keys,0);
       m_last_evaluated_pivot_time = 0;
      }
 
@@ -3512,20 +3596,35 @@ public:
       ResetState();
      }
 
-   bool              IsKeyRegistered(string key)
+   int RegisteredIndex(string key)
      {
-      for(int i = 0; i < m_registered_keys.Total(); i++)
-        {
-         if(m_registered_keys.At(i) == key)
-            return true;
-        }
-      return false;
+      int lo=0,hi=ArraySize(m_registered_keys);
+      while(lo<hi) { int mid=(lo+hi)/2; if(m_registered_keys[mid]<key) lo=mid+1; else hi=mid; }
+      return lo;
+     }
+   bool IsKeyRegistered(string key)
+     {
+      int i=RegisteredIndex(key);
+      return i<ArraySize(m_registered_keys) && m_registered_keys[i]==key;
+     }
+   void RegisterKey(string key)
+     {
+      int i=RegisteredIndex(key),n=ArraySize(m_registered_keys);
+      if(i<n && m_registered_keys[i]==key) return;
+      ArrayResize(m_registered_keys,n+1);
+      for(int k=n;k>i;k--) m_registered_keys[k]=m_registered_keys[k-1];
+      m_registered_keys[i]=key;
      }
 
    // Registers zone with strict origin polarity and cluster suppression
    void              RegisterZone(string sType, bool isBull, double zHigh, double zLow, datetime zTime, int barIdx, ZigZag* zz, double pipSize)
      {
       if(zz != NULL && zTime < zz->zoneStartTime) return;
+      string key = sType + string("_") + (isBull ? "BULL_" : "BEAR_") + IntegerToString((long)zTime);
+      if(IsKeyRegistered(key))
+         return;
+      // A registered ID is terminal: the old path returned after the same lookup.
+      // Unregistered candidates still undergo every pivot/structure validation.
       // 1. STRICT ORIGIN VALIDATION
       // Buyers' Inducement MUST strictly originate from a ZigZag Pivot LOW.
       // Sellers' Inducement MUST strictly originate from a ZigZag Pivot HIGH.
@@ -3543,9 +3642,6 @@ public:
            }
         }
 
-      string key = sType + string("_") + (isBull ? "BULL_" : "BEAR_") + IntegerToString((long)zTime);
-      if(IsKeyRegistered(key))
-         return;
 
       double clusterTol = m_clusterTolerancePips * pipSize;
 
@@ -3571,7 +3667,7 @@ public:
                   existing->zoneHigh = MathMax(existing->zoneHigh, zHigh);
                   existing->zoneLow  = MathMin(existing->zoneLow, zLow);
                  }
-               m_registered_keys.Add(key); // Suppress candidate zone
+               RegisterKey(key); // Suppress candidate zone
                return;
               }
            }
@@ -3588,7 +3684,7 @@ public:
       zone->createdBarIndex = barIdx;
 
       m_zones.Add(zone);
-      m_registered_keys.Add(key);
+      RegisterKey(key);
      }
 
    // --- STEP 1: HARVEST DETECTED SMC ZONES ---
@@ -3926,6 +4022,7 @@ public:
    datetime          sweepLineTime;
    datetime          inducementOriginTime;
    datetime          causalChochTime; // Event which initiated this LB, distinct from its origin candle.
+   datetime          guardQualifiedTime; // Structural eligibility, independent of the new-entry IND veto.
 
    bool              isMitigated;
    datetime          mitigationTime;
@@ -3946,6 +4043,7 @@ public:
       sweepLineTime        = 0;
       inducementOriginTime = 0;
       causalChochTime = 0;
+      guardQualifiedTime = 0;
       isMitigated          = false;
       mitigationTime       = 0;
       mitigationBarIndex   = 0;
@@ -4105,8 +4203,7 @@ public:
      return false;
      }
 
-   // Entry-trigger policy only. Raw LBs remain available immediately to the
-   // rejection and open-position engines under their existing rules.
+   // Entry qualification; also used by prevention/exits when their policy input is enabled.
    datetime          EntryTriggerStructureTime(bool isBullish, ENUM_LB_TRIGGER triggerType,
                                                datetime sweepLineTime, CInducementLogic* indLogic,
                                                CMarketStructure* structure, datetime cutoff)
@@ -4124,8 +4221,9 @@ public:
          return 0;
 
       // Sweep-triggered entry setups have their own, lighter gate. The
-      // registered BSL/SSL event must still exist and its immediately adjacent
-      // structural event must support the LB direction. No IND is required.
+      // registered BSL/SSL event must still exist-> The CHoCH which renames the
+      // older line into a sweep is recognition, not the extra structure-> Require
+      // its next adjacent structural event to support the LB. No IND is required.
       // A merged IND-BSL/IND-SSL LB follows this sweep path because it still
       // has a concrete sweep trigger.
       if(sweepTrigger)
@@ -4147,12 +4245,16 @@ public:
          if(!sweepExists)
             return 0;
 
+         datetime confirmingTime=structure->GetSweepConfirmingChochTime(sweepLineTime,!isBullish);
+         if(confirmingTime<=sweepLineTime || confirmingTime>cutoff)
+            return 0;
+
          datetime adjacentTime = 0;
          int adjacentDirection = 0;
          for(int e = 0; e < structure->all_event_times.Total(); e++)
            {
             datetime eventTime = (datetime)structure->all_event_times.At(e);
-            if(eventTime <= sweepLineTime || eventTime > cutoff ||
+            if(eventTime <= confirmingTime || eventTime > cutoff ||
                (adjacentTime > 0 && eventTime >= adjacentTime))
                continue;
 
@@ -4221,6 +4323,28 @@ public:
             consecutive = 0;
         }
       return 0;
+     }
+
+   // IND overlap forbids opening a trade from this source; it does not erase
+   // its opposing structural context. Apply the requested structure gate before
+   // admitting it to prevention history, and never backdate availability.
+   bool GuardSourceReady(CLiquidityBlock* source,CInducementLogic* inducements,
+                         CMarketStructure* structure,datetime cutoff,datetime available,
+                         bool applyPolicy)
+     {
+      if(source==NULL || available<=0 || cutoff>available) return false;
+      if(!applyPolicy) return true;
+      if(source->guardQualifiedTime<=0)
+        {
+         datetime qualified=EntryTriggerStructureTime(source->isBullish,source->triggerType,
+                                source->sweepLineTime,inducements,structure,cutoff);
+         if(qualified<=0) return false;
+         source->guardQualifiedTime=available;
+         PrintFormat("[LB GUARD ARMED] source=%s side=%s trigger=%s structure=%s available=%s; entry remains vetoed by IND overlap",
+                     source->id,source->isBullish ? "BL" : "BR",EnumToString(source->triggerType),
+                     TimeToString(qualified,TIME_DATE|TIME_SECONDS),TimeToString(available,TIME_DATE|TIME_SECONDS));
+        }
+      return source->guardQualifiedTime<=available;
      }
 
    CLiquidityBlock*  GetContainingLiquidityBlock(CInducementZone* ind)
@@ -4840,9 +4964,9 @@ public:
 enum ENUM_MARCO_IND_ENTRY_FILTER
   {
    IND_ENTRY_OFF = 0,        // Off
-   IND_ENTRY_PIVOT = 1,      // Confirmation pivot inside M1 IND
-   IND_ENTRY_PRICE = 2,      // Executable entry price inside M1 IND
-   IND_ENTRY_EITHER = 3      // Pivot OR entry price inside M1 IND
+   IND_ENTRY_PIVOT = 1,      // Pivot inside setup TF or entry TF IND
+   IND_ENTRY_PRICE = 2,      // Entry price inside setup TF or entry TF IND
+   IND_ENTRY_EITHER = 3      // Pivot OR entry price inside either TF IND
   };
 
 struct SMarcoIndWait
@@ -4876,6 +5000,8 @@ public:
    double lastLow, lastHigh;
    datetime knownThrough;
    CMarcoIndEntryFilter() { lastLow=0; lastHigh=0; knownThrough=0; }
+   void Clear()
+     { ArrayResize(zones,0); ArrayResize(events,0); lastLow=0; lastHigh=0; knownThrough=0; }
    static void Configure(ENUM_MARCO_IND_ENTRY_FILTER selected) { mode=selected; }
    static bool Enabled() { return mode!=IND_ENTRY_OFF; }
    static bool CheckPivot() { return mode==IND_ENTRY_PIVOT || mode==IND_ENTRY_EITHER; }
@@ -4943,7 +5069,8 @@ public:
         }
       return found;
      }
-   void Audit(string symbol, ENUM_TIMEFRAMES tf, bool bull, datetime now, double price)
+   void Audit(string symbol, ENUM_TIMEFRAMES tf, bool bull, datetime now, double price,
+              ENUM_TIMEFRAMES sourceTF=PERIOD_M1)
      {
       if(!CheckPrice()) return;
       int active=0, nearest=-1, ended=-1;
@@ -4961,14 +5088,14 @@ public:
          double gap=MathMax(zones[i].low-price,MathMax(price-zones[i].high,0.0));
          if(nearest<0 || gap<distance) { nearest=i; distance=gap; }
         }
-      PrintFormat("[M1 IND CHECK] %s %s at=%s %s entry=%.8f known_through=%s active=%d nearest=%s bounds=[%.8f,%.8f] inside=%s",
-                  symbol,EnumToString(tf),TimeToString(now,TIME_DATE|TIME_SECONDS),bull ? "BUY" : "SELL",price,
+      Print(StringFormat("[IND CHECK] %s setup=%s source=%s at=%s %s entry=%.8f known_through=%s active=%d nearest=%s bounds=[%.8f,%.8f] inside=%s",
+                  symbol,EnumToString(tf),EnumToString(sourceTF),TimeToString(now,TIME_DATE|TIME_SECONDS),bull ? "BUY" : "SELL",price,
                   TimeToString(knownThrough,TIME_DATE|TIME_SECONDS),active,nearest<0 ? "none" : zones[nearest].id,
                   nearest<0 ? 0.0 : zones[nearest].low,nearest<0 ? 0.0 : zones[nearest].high,
-                  nearest>=0 && distance==0.0 ? "yes" : "no");
+                  nearest>=0 && distance==0.0 ? "yes" : "no"));
       if(ended>=0)
-         PrintFormat("[M1 IND CHECK] historical overlapping IND=%s bounds=[%.8f,%.8f] stopped being active at=%s; not an active entry blocker.",
-                     zones[ended].id,zones[ended].low,zones[ended].high,TimeToString(zones[ended].until,TIME_DATE|TIME_SECONDS));
+         PrintFormat("[IND CHECK] source=%s historical overlapping IND=%s bounds=[%.8f,%.8f] stopped being active at=%s; not an active entry blocker.",
+                     EnumToString(sourceTF),zones[ended].id,zones[ended].low,zones[ended].high,TimeToString(zones[ended].until,TIME_DATE|TIME_SECONDS));
      }
    static void Wait(SMarcoIndWait &state, datetime pivot, datetime available,
                     datetime now, double low, double high)
@@ -4978,12 +5105,12 @@ public:
       state.rejectedAvailable=available; state.low=low; state.high=high;
      }
    bool SkipPivot(SMarcoIndWait &state, bool bull, datetime pivot, double price,
-                  datetime available, string &id)
+                  datetime available, string &id, ENUM_TIMEFRAMES pivotTF=PERIOD_M1)
      {
       double low=0,high=0;
       // Was the pivot formed inside an IND known at that candle's close?
       // Do not erase that fact if the IND is swept before pivot confirmation.
-      datetime formed=pivot+PeriodSeconds(PERIOD_M1);
+      datetime formed=pivot+PeriodSeconds(pivotTF);
       if(formed>available) formed=available;
       if(!CheckPivot() || !Inside(bull,price,formed,low,high,id)) return false;
       Wait(state,pivot,available,available,low,high);
@@ -5029,6 +5156,16 @@ ENUM_MARCO_IND_ENTRY_FILTER CMarcoIndEntryFilter::mode=IND_ENTRY_OFF;
 // Shared partial-exit policy with durable target extensions. Kind: 0=LB, 1=IND, 2=RR, 3=RR+1.
 #ifndef MARCO_STAGED_TP_MQH
 #define MARCO_STAGED_TP_MQH
+struct SMarcoOpposingSequence
+  { public: SMarcoOpposingSequence* operator->(){return this;} const SMarcoOpposingSequence* operator->()const{return this;}
+   datetime seen[2];
+   int step, tf;
+   datetime firstEvent;
+   bool firstProfit, pending;
+   double share, requestedLots;
+   double closed[2], price[2];
+   datetime time[2];
+  };
 struct SMarcoTPPlan
   { public: SMarcoTPPlan* operator->(){return this;} const SMarcoTPPlan* operator->()const{return this;}
    int count, direction;
@@ -5043,6 +5180,7 @@ struct SMarcoTPPlan
    double protectedSL; // Profit-side stop requested by a same-direction LB.
    int extensionCount;
    datetime extensionTime;
+   SMarcoOpposingSequence sequence;
   };
 
 // Kept outside the fixed-size plan so indicator cache records remain serializable.
@@ -5199,7 +5337,8 @@ public:
      }
 
    // A stage closes a share of ORIGINAL volume, never a share of the remainder.
-   static double Exit(SMarcoTPPlan &plan, int stage, double fraction, double price, datetime time)
+   static double Exit(SMarcoTPPlan &plan, int stage, double fraction, double price, datetime time,
+                      bool normalTarget=true)
      {
       fraction = MathMin(fraction, plan.remaining);
       if(stage>=0) fraction=MathMin(fraction, plan.fraction[stage]-plan.closed[stage]);
@@ -5212,21 +5351,41 @@ public:
          plan.exitPrice[stage]=(plan.exitPrice[stage]*plan.closed[stage]+price*fraction)/(plan.closed[stage]+fraction);
          plan.closed[stage]+=fraction;
          plan.exitTime[stage]=time;
-         plan.breakeven=true;
+         // Only the normal, entry-time TP allocation is subject to this gate.
+         // Structure exits can redistribute fractions and LB extensions have
+         // their own stop rules; preserve their existing later-TP behaviour.
+         bool otherScenario=!normalTarget || plan.extensionCount>0 ||
+                            plan.structureClosed[0]>0 || plan.structureClosed[1]>0 ||
+                            plan.sequence.closed[0]>0 || plan.sequence.closed[1]>0;
+         // Until another scenario intervenes, fractions are the frozen entry
+         // allocations: 50/25/25 or 75/25. The exception is two fully closed
+         // quarter targets: together they protect the remaining half at BE.
+         // A touch or an incomplete broker execution does not complete a stage.
+         int completedQuarters=0;
+         for(int i=0;i<plan.count;i++)
+            if(MathAbs(plan.fraction[i]-0.25)<1e-9 &&
+               plan.closed[i]+1e-9>=plan.fraction[i]) completedQuarters++;
+         if(otherScenario || completedQuarters>=2 || (plan.fraction[stage]>=0.5 &&
+                              plan.closed[stage]+1e-9>=plan.fraction[stage]))
+            plan.breakeven=true;
         }
       return reward;
      }
 
-   // Half of currently open volume, rounded down to a broker-valid lot amount.
-   static double HalfLots(double remainingLots, double step, double minimum)
+   // A share of currently open volume; neither side may violate the broker lot grid.
+   static double PartialLots(double remainingLots, double share, double step, double minimum)
      {
-      if(step<=0 || minimum<=0) return 0;
-      double lots=NormalizeDouble(MathFloor(remainingLots*0.5/step+1e-8)*step,8);
+      if(step<=0 || minimum<=0 || share<=0 || share>=1 || remainingLots<=0) return 0;
+      double lots=NormalizeDouble(MathFloor(remainingLots*share/step+1e-8)*step,8);
       return lots+1e-9>=minimum && remainingLots-lots+1e-9>=minimum ? lots : 0.0;
      }
 
+   static double HalfLots(double remainingLots, double step, double minimum)
+     { return PartialLots(remainingLots,0.5,step,minimum); }
+
    static void StructureExit(SMarcoTPPlan &plan, bool full, double fraction, double price,
-                             datetime time, double originalLots, double step, double minimum)
+                             datetime time, double originalLots, double step, double minimum,
+                             bool moveToBreakeven=true)
      {
       double before=plan.remaining;
       fraction=MathMin(fraction,before);
@@ -5236,7 +5395,7 @@ public:
       plan.structurePrice[index]=(plan.structurePrice[index]*prior+price*fraction)/(prior+fraction);
       plan.structureClosed[index]+=fraction; plan.structureTime[index]=time;
       Exit(plan,-1,fraction,price,time);
-      if(!full) plan.breakeven=true;
+      if(!full && moveToBreakeven) plan.breakeven=true;
       // Reduce outstanding allocations proportionally, respecting broker volume steps.
       // Any indivisible residue stays at the farthest still-outstanding target.
       int last=-1; double allocated=0;
@@ -5251,6 +5410,27 @@ public:
          allocated+=lots/originalLots;
         }
       if(last>=0) plan.fraction[last]+=MathMax(0.0,plan.remaining-allocated);
+     }
+
+   static void SequenceFill(SMarcoTPPlan &plan, double lots, double price, datetime time,
+                            double originalLots, double step, double minimum)
+     {
+      int index=plan.sequence.step-1;
+      if(index<0 || index>1 || lots<=0 || originalLots<=0) return;
+      double fraction=MathMin(lots/originalLots,plan.remaining);
+      if(fraction<=1e-9) return;
+      double prior=plan.sequence.closed[index];
+      plan.sequence.price[index]=(plan.sequence.price[index]*prior+price*fraction)/(prior+fraction);
+      plan.sequence.closed[index]+=fraction; plan.sequence.time[index]=time;
+      // Reuse allocation accounting without labelling these fills as legacy CHoCH exits.
+      double oldClosed[2],oldPrice[2]; datetime oldTime[2];
+      for(int i=0;i<2;i++) { oldClosed[i]=plan.structureClosed[i]; oldPrice[i]=plan.structurePrice[i]; oldTime[i]=plan.structureTime[i]; }
+      StructureExit(plan,plan.sequence.share>=1,fraction,price,time,originalLots,step,minimum,
+                    plan.direction*(price-plan.entry)>0);
+      for(int i=0;i<2;i++) { plan.structureClosed[i]=oldClosed[i]; plan.structurePrice[i]=oldPrice[i]; plan.structureTime[i]=oldTime[i]; }
+      plan.sequence.requestedLots=MathMax(0.0,plan.sequence.requestedLots-lots);
+      if(plan.remaining<=1e-9 || plan.sequence.requestedLots<step*0.1)
+        { plan.sequence.pending=false; plan.sequence.requestedLots=0; }
      }
 
    // OHLC fallback: bullish candle O-L-H-C; bearish candle O-H-L-C.
@@ -5286,7 +5466,7 @@ public:
             if(plan.vicinityTime[i]>0 &&
                plan.closed[i]+1e-9<plan.fraction[i])
               {
-               Exit(plan,i,plan.fraction[i]-plan.closed[i],close,time);
+               Exit(plan,i,plan.fraction[i]-plan.closed[i],close,time,false);
                lastExit=close;
               }
      }
@@ -5361,6 +5541,133 @@ public:
   };
 #endif
 
+#ifndef MARCO_RAW_EXIT_CONTEXT_MQH
+#define MARCO_RAW_EXIT_CONTEXT_MQH
+
+
+
+// Early exit observation is independent of the stricter entry-prevention registry.
+class CMarcoRawExitHistory
+  { public: CMarcoRawExitHistory* operator->(){return this;} const CMarcoRawExitHistory* operator->()const{return this;}
+public:
+   static void Capture(CMarketStructure* ms, CLiquidityBlockLogic* lbs, datetime available,
+                       CTradeRejectionHistory &history)
+     {
+      int n=ms->all_event_names.Total();
+      for(int e=MathMax(0,n-3);e<n;e++)
+         history.Observe(ms->all_event_names.At(e),(datetime)ms->all_event_times.At(e),available,
+                         (datetime)ms->all_event_origin_times.At(e),ms->all_event_origin_prices.At(e),ms->all_event_prices.At(e));
+      history.BeginZones();
+      for(int group=0;group<2;group++)
+        {
+         int count=group==0 ? lbs->m_exit_sources.Total() : lbs->m_liquidity_blocks.Total();
+         for(int i=0;i<count;i++)
+           {
+            CLiquidityBlock* lb=group==0 ? (CLiquidityBlock*)lbs->m_exit_sources.At(i) :
+                                         (CLiquidityBlock*)lbs->m_liquidity_blocks.At(i);
+            if(lb!=NULL) history.Zone(lb->id,lb->isBullish,lb->zoneLow,lb->zoneHigh,lb->createdTime,
+                                     lb->mitigationTime,lb->causalChochTime,available,group==0);
+           }
+        }
+      history.EndZones(available);
+     }
+  };
+#endif
+
+#ifndef MARCO_OPPOSING_SEQUENCE_MQH
+#define MARCO_OPPOSING_SEQUENCE_MQH
+
+
+
+struct SMarcoSequenceSignal
+  { public: SMarcoSequenceSignal* operator->(){return this;} const SMarcoSequenceSignal* operator->()const{return this;}
+   int action, step, tf; // 0=no close, 1=partial, 2=full remaining close.
+   datetime eventTime;
+   string lbId;
+   double share;
+   bool profit;
+  };
+
+class CMarcoOpposingSequence
+  { public: CMarcoOpposingSequence* operator->(){return this;} const CMarcoOpposingSequence* operator->()const{return this;}
+public:
+   static int Direction(string name)
+     {
+      if(name=="BL-BOS" || name=="BL-CHoCH" || name=="BSL-Swept") return 1;
+      if(name=="BR-BOS" || name=="BR-CHoCH" || name=="SSL-Swept") return -1;
+      return 0;
+     }
+
+   static bool Source(CTradeRejectionHistory &history, const SRejectionEvent &event,
+                      int direction, ENUM_TIMEFRAMES tf, string &id)
+     {
+      for(int i=history.ZoneCount()-1;i>=0;i--)
+        {
+         SRejectionLB lb;
+         if(!history.ZoneAt(i,lb) || lb->bull!=(direction==1) || lb->available>event.available ||
+            (lb->until>0 && event.available>=lb->until)) continue;
+         if(lb->choch!=event.time &&
+            !CTradeRejection::OriginInside(event.originTime,event.originPrice,lb->created,
+                                          lb->mitigation,PeriodSeconds(tf),lb->low,lb->high,0)) continue;
+         id=lb->id; return true;
+        }
+      return false;
+     }
+
+   static SMarcoSequenceSignal Advance(CTradeRejectionHistory &history, SMarcoOpposingSequence &state,
+                                       int slot, ENUM_TIMEFRAMES tf, int direction, double entry,
+                                       double executionPrice, datetime opened, datetime now)
+     {
+      SMarcoSequenceSignal result; ZeroMemory(result);
+      if(state.pending || state.step>=2 || (state.step==1 && state.tf!=(int)tf)) return result;
+      // Select by event time, not insertion order: label revisions are appended
+      // to history but must never become another first/second structure->
+      for(int pass=0;pass<history.EventCount();pass++)
+        {
+         SRejectionEvent next; bool found=false;
+         for(int i=0;i<history.EventCount();i++)
+           {
+            SRejectionEvent event;
+            if(!history.EventAt(i,now,event) || event.time<=state.seen[slot] ||
+               event.time<opened || event.available<=opened || Direction(event.name)==0) continue;
+            if(!found || event.time<next.time) { next=event; found=true; }
+           }
+         if(!found) break;
+         state.seen[slot]=next.time;
+         int opposing=-direction;
+         if(state.step==1)
+           {
+            for(int i=0;i<history.EventCount();i++)
+              {
+               SRejectionEvent first;
+               if(history.EventAt(i,now,first) && first.time==state.firstEvent && Direction(first.name)!=opposing)
+                 { state.step=2; return result; }
+              }
+            // The next structural event must be adjacent on the SAME timeframe.
+            // A return to the trade's direction cancels the outstanding second exit.
+            state.step=2;
+            if(Direction(next.name)!=opposing) return result;
+            result->profit=direction*(executionPrice-entry)>0;
+            result->share=result->profit ? (state.firstProfit ? 0.25 : 0.0) : 1.0;
+           }
+         else
+           {
+            if(Direction(next.name)!=opposing || !Source(history,next,opposing,tf,result->lbId)) continue;
+            state.step=1; state.tf=(int)tf; state.firstEvent=next.time;
+            state.firstProfit=direction*(executionPrice-entry)>0;
+            result->profit=state.firstProfit;
+            result->share=result->profit ? 0.25 : 0.50;
+           }
+         result->step=state.step; result->tf=(int)tf; result->eventTime=next.time;
+         result->action=result->share>=1 ? 2 : (result->share>0 ? 1 : 0);
+         state.pending=result->action>0; state.share=result->share; state.requestedLots=0;
+         return result;
+        }
+      return result;
+     }
+  };
+#endif
+
 class CMarcoM1LBContext
   { public: CMarcoM1LBContext* operator->(){return this;} const CMarcoM1LBContext* operator->()const{return this;}
 public:
@@ -5376,6 +5683,9 @@ public:
    std::vector<double> opens, highs, lows, closes;
    std::vector<string> knownIds;
    std::vector<datetime> availableTimes;
+   std::vector<string> entryPolicyIds;
+   std::vector<datetime> entryPolicyTimes;
+   bool applyEntryPolicyToPreventionExits;
 
    int KnownIndex(string id)
      {
@@ -5385,8 +5695,40 @@ public:
       return -1;
      }
 
+   int EntryPolicyIndex(string id)
+     {
+      for(int i = 0; i < ArraySize(entryPolicyIds); i++)
+         if(entryPolicyIds[i] == id)
+            return i;
+      return -1;
+     }
+
+   bool EntryPolicyReady(CLiquidityBlock* lb, datetime cutoff, datetime available)
+     {
+      if(!applyEntryPolicyToPreventionExits)
+         return true;
+      int index=EntryPolicyIndex(lb->id);
+      if(index<0)
+        {
+         index=ArraySize(entryPolicyIds);
+         ArrayResize(entryPolicyIds,index+1);
+         ArrayResize(entryPolicyTimes,index+1);
+         entryPolicyIds[index]=lb->id;
+         entryPolicyTimes[index]=0;
+        }
+      if(entryPolicyTimes[index]<=0)
+        {
+         datetime structureTime=lbs->EntryTriggerStructureTime(lb->isBullish,lb->triggerType,
+                                      lb->sweepLineTime,ind,ms,cutoff);
+         if(structureTime>0)
+            entryPolicyTimes[index]=available;
+        }
+      return entryPolicyTimes[index]>0 && entryPolicyTimes[index]<=available;
+     }
+
 public:
    CTradeRejectionHistory rejectionHistory;
+   CTradeRejectionHistory rawExitHistory;
    CMarcoIndEntryFilter indEntry;
    CMarcoM1LBContext()
      {
@@ -5399,6 +5741,7 @@ public:
       bb = new CBreakerBlockLogic();
       ind = new CInducementLogic();
       lbs = new CLiquidityBlockLogic();
+      applyEntryPolicyToPreventionExits=false;
      }
 
    ~CMarcoM1LBContext()
@@ -5415,8 +5758,10 @@ public:
 
    void Init(bool sweeps, bool postInd, int minTouches, double proximity,
              bool strictOrigin, bool mergeClusters, double tolerance, bool expandBounds,
-             bool checkDS, bool checkOB, bool checkSP, bool checkFZ, bool checkBB, double symbolPoint)
+             bool checkDS, bool checkOB, bool checkSP, bool checkFZ, bool checkBB, double symbolPoint,
+             bool applyEntryPolicy=false)
      {
+      applyEntryPolicyToPreventionExits=applyEntryPolicy;
       ind->Init(minTouches, proximity, checkDS, checkOB, checkSP, checkFZ, checkBB,
                strictOrigin, mergeClusters, tolerance, expandBounds);
       lbs->Init(sweeps, postInd, symbolPoint);
@@ -5469,22 +5814,24 @@ public:
                                   available, (datetime)ms->all_event_origin_times.At(e), ms->all_event_origin_prices.At(e),
                                   ms->all_event_prices.At(e));
       rejectionHistory.BeginZones();
-      // Entry-vetoed sources protect existing trades and reject entries against their structure->
+      // An IND-vetoed source can protect against opposing entries after its
+      // structural gate qualifies; it remains unavailable as an entry setup.
       for(int b=0;b<lbs->m_exit_sources.Total();b++)
         {
          CLiquidityBlock* source=(CLiquidityBlock*)lbs->m_exit_sources.At(b);
-         if(source!=NULL)
+         if(lbs->GuardSourceReady(source,ind,ms,barTime,available,applyEntryPolicyToPreventionExits))
             rejectionHistory.Zone(source->id,source->isBullish,source->zoneLow,source->zoneHigh,source->createdTime,
-                         source->mitigationTime,source->causalChochTime,available,true);
+                                  source->mitigationTime,source->causalChochTime,available,true);
         }
       for(int b = 0; b < lbs->m_liquidity_blocks.Total(); b++)
         {
          CLiquidityBlock* lb = (CLiquidityBlock*)lbs->m_liquidity_blocks.At(b);
-         if(lb != NULL)
+         if(lb != NULL && EntryPolicyReady(lb,barTime,available))
             rejectionHistory.Zone(lb->id, lb->isBullish, lb->zoneLow, lb->zoneHigh, lb->createdTime,
                                   lb->mitigationTime, lb->causalChochTime, available);
         }
       rejectionHistory.EndZones(available);
+      CMarcoRawExitHistory::Capture(ms,lbs,available,rawExitHistory);
       // A zone's origin can predate its confirmation. Never backdate its availability.
       for(int b = 0; b < lbs->m_liquidity_blocks.Total(); b++)
         {
@@ -5510,6 +5857,10 @@ public:
             continue;
          int known = KnownIndex(lb->id);
          if(known < 0 || availableTimes[known] > now)
+            continue;
+         int policy=EntryPolicyIndex(lb->id);
+         if(applyEntryPolicyToPreventionExits &&
+            (policy<0 || entryPolicyTimes[policy]<=0 || entryPolicyTimes[policy]>now))
             continue;
          // Match the existing origin rule, using M1 for the mitigation candle.
          if(CTradeRejection::OriginInside(originTime, originPrice, lb->createdTime, lb->mitigationTime,

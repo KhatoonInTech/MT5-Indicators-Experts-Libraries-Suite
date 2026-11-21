@@ -1,0 +1,16 @@
+{
+  "baseline": {
+    "total_calculation_ms": 46352.35499999999,
+    "median_candle_ms": 22.442,
+    "p95_candle_ms": 88.146,
+    "max_candle_ms": 675.553,
+    "peak_process_working_set_bytes": 7458816
+  },
+  "optimized": {
+    "total_calculation_ms": 7485.372999999997,
+    "median_candle_ms": 3.629,
+    "p95_candle_ms": 14.514,
+    "max_candle_ms": 20.954,
+    "peak_process_working_set_bytes": 7483392
+  }
+}

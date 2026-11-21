@@ -1,0 +1,3764 @@
+﻿//+------------------------------------------------------------------+
+//|                                             marco_live_auto.mqh  |
+//|                 SMC Dual-Timeframe LB & Inducement LIVE TRADER   |
+//|                 Strict Session Sourcing (00:00 - 23:59)          |
+//|                 With Opposing Leg Filter & Daily Trade Journal   |
+//|                 With 50% TP Overlap Progress & Dynamic SL Choice |
+//|                 With Spread-Inclusive TP & Vicinity Rejection    |
+//+------------------------------------------------------------------+
+#property copyright "Marcotrades SMC Architecture"
+#property version   "2.70"
+
+#ifndef MARCO_LIVE_AUTO_MQH
+#define MARCO_LIVE_AUTO_MQH
+
+#include <Trade\Trade.mqh>
+#include <Trade\PositionInfo.mqh>
+#include <Arrays\ArrayString.mqh>
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\history_context.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\lb_entry_clusters_live.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\risk_capital.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\trade_rejection.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\m1_ind_entry.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\pivot_entry.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\broker_execution.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\structure_exit.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\opposing_sequence.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\raw_exit_context.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\lb_extension.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\symbol_units.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\staged_tp_live.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\liquidity_blocks.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\Marcotrades\Inducements.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\ZigZag\ZigZag.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\ZigZag\market_structure.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\ZigZag\demand_supply.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\ZigZag\swing_pois.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\ZigZag\order_blocks.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\ZigZag\flipzone.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\ZigZag\breaker_blocks.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\General\WA_agent.mqh"
+#include "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\_review\latency\compile_baseline\Include\Custom\General\report.mqh"
+
+#ifndef GET_WA_HEADER_DEF
+#define GET_WA_HEADER_DEF
+inline string GetWAHeader()
+  {
+   return "🏛️ *MARCOTRADES LIVE ENGINE (RISKY)*\n━━━━━━━━━━━━━━━━━━━━━━\n";
+  }
+#endif
+
+// Independent M1 structure context; TP timeframe must not select the entry filter's zones.
+#ifndef MARCO_M1_LB_CONTEXT_DEF
+#define MARCO_M1_LB_CONTEXT_DEF
+class CMarcoM1LBContext
+  {
+private:
+   CMarketStructure* ms;
+   CDemandSupplyLogic* ds;
+   CSwingPOILogic* sp;
+   COrderBlockLogic* ob;
+   CFlipZoneLogic* fz;
+   CBreakerBlockLogic* bb;
+   CInducementLogic* ind;
+   CLiquidityBlockLogic* lbs;
+   datetime times[];
+   double opens[], highs[], lows[], closes[];
+   string knownIds[];
+   datetime availableTimes[];
+   string entryPolicyIds[];
+   datetime entryPolicyTimes[];
+   bool applyEntryPolicyToPreventionExits;
+
+   int KnownIndex(string id)
+     {
+      for(int i = 0; i < ArraySize(knownIds); i++)
+         if(knownIds[i] == id)
+            return i;
+      return -1;
+     }
+
+   int EntryPolicyIndex(string id)
+     {
+      for(int i = 0; i < ArraySize(entryPolicyIds); i++)
+         if(entryPolicyIds[i] == id)
+            return i;
+      return -1;
+     }
+
+   bool EntryPolicyReady(CLiquidityBlock* lb, datetime cutoff, datetime available)
+     {
+      if(!applyEntryPolicyToPreventionExits)
+         return true;
+      int index=EntryPolicyIndex(lb.id);
+      if(index<0)
+        {
+         index=ArraySize(entryPolicyIds);
+         ArrayResize(entryPolicyIds,index+1);
+         ArrayResize(entryPolicyTimes,index+1);
+         entryPolicyIds[index]=lb.id;
+         entryPolicyTimes[index]=0;
+        }
+      if(entryPolicyTimes[index]<=0)
+        {
+         datetime structureTime=lbs.EntryTriggerStructureTime(lb.isBullish,lb.triggerType,
+                                      lb.sweepLineTime,ind,ms,cutoff);
+         if(structureTime>0)
+            entryPolicyTimes[index]=available;
+        }
+      return entryPolicyTimes[index]>0 && entryPolicyTimes[index]<=available;
+     }
+
+public:
+   CTradeRejectionHistory rejectionHistory;
+   CTradeRejectionHistory rawExitHistory;
+   CMarcoIndEntryFilter indEntry;
+   CMarcoM1LBContext()
+     {
+      ms = new CMarketStructure();
+      ms.Init(false, false, PERIOD_M1);
+      ds = new CDemandSupplyLogic();
+      sp = new CSwingPOILogic();
+      ob = new COrderBlockLogic();
+      fz = new CFlipZoneLogic();
+      bb = new CBreakerBlockLogic();
+      ind = new CInducementLogic();
+      lbs = new CLiquidityBlockLogic();
+      applyEntryPolicyToPreventionExits=false;
+     }
+
+   ~CMarcoM1LBContext()
+     {
+      delete lbs;
+      delete ind;
+      delete bb;
+      delete fz;
+      delete ob;
+      delete sp;
+      delete ds;
+      delete ms;
+     }
+
+   void Init(bool sweeps, bool postInd, int minTouches, double proximity,
+             bool strictOrigin, bool mergeClusters, double tolerance, bool expandBounds,
+             bool checkDS, bool checkOB, bool checkSP, bool checkFZ, bool checkBB, double symbolPoint,
+             bool applyEntryPolicy=false)
+     {
+      applyEntryPolicyToPreventionExits=applyEntryPolicy;
+      ind.Init(minTouches, proximity, checkDS, checkOB, checkSP, checkFZ, checkBB,
+               strictOrigin, mergeClusters, tolerance, expandBounds);
+      lbs.Init(sweeps, postInd, symbolPoint);
+     }
+
+   void Update(datetime barTime, double open, double high, double low, double close,
+               ZigZag* zz, double pipSize)
+     {
+      int i = ArraySize(times);
+      if(zz == NULL || (i > 0 && barTime <= times[i - 1]))
+         return;
+      ArrayResize(times, i + 1, 2048);
+      ArrayResize(opens, i + 1, 2048);
+      ArrayResize(highs, i + 1, 2048);
+      ArrayResize(lows, i + 1, 2048);
+      ArrayResize(closes, i + 1, 2048);
+      times[i] = barTime;
+      opens[i] = open;
+      highs[i] = high;
+      lows[i] = low;
+      closes[i] = close;
+      ms.Update(i, times, highs, lows, closes, zz);
+      ds.DetectPOIs(i, times, highs, lows, zz);
+      ds.UpdateMitigation(close);
+      sp.DetectPOIs(i, times, highs, lows, zz);
+      sp.UpdateMitigation(close);
+      ob.DetectPOIs(i, times, highs, lows, zz);
+      ob.UpdateMitigation(close);
+      fz.DetectFlipZones(i, times, highs, lows, closes, zz, ms, ds);
+      fz.UpdateMitigation(close);
+      bb.DetectBreakers(zz, ds, sp, ob, fz);
+      bb.UpdateMitigation(high, low, barTime);
+      ind.Process(i, times, opens, highs, lows, closes, zz, ms, ds, sp, ob, fz, bb, pipSize);
+      lbs.Process(i, times, highs, lows, ms, sp, ind, zz);
+      datetime available = barTime + PeriodSeconds(PERIOD_M1);
+      indEntry.Begin(low,high);
+      for(int z=0;z<ind.m_zones.Total();z++)
+        {
+         CInducementZone* zone=(CInducementZone*)ind.m_zones.At(z);
+         if(zone!=NULL && zone.isInducement && !zone.isMitigated)
+            indEntry.Zone(zone.id,zone.isBullish,zone.zoneLow,zone.zoneHigh,available);
+        }
+      indEntry.End(available);
+      int eventCount = ms.all_event_names.Total();
+      for(int e=MathMax(0,eventCount-3);e<eventCount;e++)
+         indEntry.Observe(ms.all_event_names.At(e),(datetime)ms.all_event_times.At(e),available);
+      // Renaming can change either of the previous two events as well as the newest one.
+      for(int e=MathMax(0,eventCount-3);e<eventCount;e++)
+         rejectionHistory.Observe(ms.all_event_names.At(e), (datetime)ms.all_event_times.At(e),
+                                  available, (datetime)ms.all_event_origin_times.At(e), ms.all_event_origin_prices.At(e),
+                                  ms.all_event_prices.At(e));
+      rejectionHistory.BeginZones();
+      // An IND-vetoed source can protect against opposing entries after its
+      // structural gate qualifies; it remains unavailable as an entry setup.
+      for(int b=0;b<lbs.m_exit_sources.Total();b++)
+        {
+         CLiquidityBlock* source=(CLiquidityBlock*)lbs.m_exit_sources.At(b);
+         if(lbs.GuardSourceReady(source,ind,ms,barTime,available,applyEntryPolicyToPreventionExits))
+            rejectionHistory.Zone(source.id,source.isBullish,source.zoneLow,source.zoneHigh,source.createdTime,
+                                  source.mitigationTime,source.causalChochTime,available,true);
+        }
+      for(int b = 0; b < lbs.m_liquidity_blocks.Total(); b++)
+        {
+         CLiquidityBlock* lb = (CLiquidityBlock*)lbs.m_liquidity_blocks.At(b);
+         if(lb != NULL && EntryPolicyReady(lb,barTime,available))
+            rejectionHistory.Zone(lb.id, lb.isBullish, lb.zoneLow, lb.zoneHigh, lb.createdTime,
+                                  lb.mitigationTime, lb.causalChochTime, available);
+        }
+      rejectionHistory.EndZones(available);
+      CMarcoRawExitHistory::Capture(ms,lbs,available,rawExitHistory);
+      // A zone's origin can predate its confirmation. Never backdate its availability.
+      for(int b = 0; b < lbs.m_liquidity_blocks.Total(); b++)
+        {
+         CLiquidityBlock* lb = (CLiquidityBlock*)lbs.m_liquidity_blocks.At(b);
+         if(lb == NULL || KnownIndex(lb.id) >= 0)
+            continue;
+         int n = ArraySize(knownIds);
+         ArrayResize(knownIds, n + 1);
+         ArrayResize(availableTimes, n + 1);
+         knownIds[n] = lb.id;
+         availableTimes[n] = barTime + PeriodSeconds(PERIOD_M1);
+        }
+     }
+
+   bool FindOpposingOrigin(bool candidateIsBull, datetime originTime, double originPrice,
+                           datetime now, double buffer, string &opposingId)
+     {
+      opposingId = "";
+      for(int b = 0; b < lbs.m_liquidity_blocks.Total(); b++)
+        {
+         CLiquidityBlock* lb = (CLiquidityBlock*)lbs.m_liquidity_blocks.At(b);
+         if(lb == NULL || lb.isBullish == candidateIsBull)
+            continue;
+         int known = KnownIndex(lb.id);
+         if(known < 0 || availableTimes[known] > now)
+            continue;
+         int policy=EntryPolicyIndex(lb.id);
+         if(applyEntryPolicyToPreventionExits &&
+            (policy<0 || entryPolicyTimes[policy]<=0 || entryPolicyTimes[policy]>now))
+            continue;
+         // Match the existing origin rule, using M1 for the mitigation candle.
+         if(CTradeRejection::OriginInside(originTime, originPrice, lb.createdTime, lb.mitigationTime,
+                                           PeriodSeconds(PERIOD_M1), lb.zoneLow, lb.zoneHigh, buffer))
+           {
+            opposingId = lb.id;
+            return true;
+           }
+        }
+      return false;
+     }
+  };
+#endif
+
+#ifndef ENUM_TP_PRIORITY_DEF
+#define ENUM_TP_PRIORITY_DEF
+enum ENUM_TP_PRIORITY
+  {
+   TP_PRIORITY_LB,       // Opposing LB (Liquidity Block)
+   TP_PRIORITY_IND,      // Opposing IND (Inducement)
+   TP_PRIORITY_FALLBACK  // Fallback R:R
+  };
+#endif
+
+#ifndef ENUM_MARCO_ENTRY_TF_DEF
+#define ENUM_MARCO_ENTRY_TF_DEF
+enum ENUM_MARCO_ENTRY_TF
+  {
+   ENTRY_TF_M1 = 1, // M1
+   ENTRY_TF_LB = 0  // LB TF
+  };
+#endif
+
+#ifndef ENUM_SL_LOCATION_DEF
+#define ENUM_SL_LOCATION_DEF
+enum ENUM_SL_LOCATION
+  {
+   SL_LOCATION_LB_BOUNDARIES,     // LB boundaries
+   SL_LOCATION_CONFIRM_PIVOT      // Confirmation pivot
+  };
+#endif
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+inline ENUM_TIMEFRAMES StringToEnumTF(string tfStr)
+  {
+   if(tfStr == "PERIOD_M1"  || tfStr == "1")
+      return PERIOD_M1;
+   if(tfStr == "PERIOD_M3"  || tfStr == "3")
+      return PERIOD_M3;
+   if(tfStr == "PERIOD_M5"  || tfStr == "5")
+      return PERIOD_M5;
+   if(tfStr == "PERIOD_M10" || tfStr == "10")
+      return PERIOD_M10;
+   if(tfStr == "PERIOD_M15" || tfStr == "15")
+      return PERIOD_M15;
+   if(tfStr == "PERIOD_M30" || tfStr == "30")
+      return PERIOD_M30;
+   if(tfStr == "PERIOD_H1"  || tfStr == "60")
+      return PERIOD_H1;
+   if(tfStr == "PERIOD_H4"  || tfStr == "240")
+      return PERIOD_H4;
+   if(tfStr == "PERIOD_D1"  || tfStr == "1440")
+      return PERIOD_D1;
+   return PERIOD_M15;
+  }
+
+struct SLiveAutoTrade
+  {
+   ulong             ticket;
+   ulong             positionId;
+   string            symbol;
+   ENUM_TIMEFRAMES   tf;
+   string            setupType;
+   int               direction;
+
+   datetime          openTime;
+   double            openPrice;
+   double            slPrice;
+   double            tpPrice;
+
+   double            lots;
+   double            riskAmount;
+   bool              isOpen;
+
+   datetime          closeTime;
+   double            closePrice;
+   double            realizedProfit;
+
+   // Vicinity Engine State
+   bool              hasEnteredVicinity;
+   datetime          lastVicinityCheckedBar;
+  };
+
+// First availability of each confirmed pivot in this engine's chronological stream.
+struct SLivePivotConfirmation
+  {
+   datetime pivotTime;
+   double   price;
+   bool     isHigh;
+   datetime availableTime;
+  };
+
+struct SLiveHTFLB
+  {
+   string            id;
+   bool              isBullish;
+   ENUM_LB_TRIGGER   triggerType;
+   double            zoneHigh;
+   double            zoneLow;
+   datetime          createdTime;
+   datetime          confirmedTime;
+   datetime          entryTriggerTime; // Entry-only gate; policy depends on the LB trigger type.
+   bool              sourceActive; // Still present in the authoritative LB engine.
+   datetime          firstTouchTime;
+   datetime          m1TouchTime;
+   SMarcoIndWait     indWait;
+   SMarcoPivotEntry  pivotEntry;
+   SMarcoPivotWatch  pivotWatch;
+   datetime          rejectionTouchTime;
+   datetime          rejectionHTFTouchTime;
+   datetime          m1PivotTime;
+   double            m1PivotPrice;
+   datetime          m1ConfirmTime;
+   datetime          sweepLineTime;
+   datetime          inducementOriginTime;
+   int               touchCount;
+   bool              isMitigated;
+   datetime          mitigationTime;
+   string            nomenclature;
+  };
+
+//+------------------------------------------------------------------+
+//| Class CMarcoLiveAutoInstance                                     |
+//+------------------------------------------------------------------+
+class CMarcoLiveAutoInstance
+  {
+public:
+   string            m_symbol;
+   ENUM_TIMEFRAMES   m_tradeTF;
+   ENUM_TIMEFRAMES   m_tpTF;
+   ENUM_MARCO_ENTRY_TF m_entryTF;
+   ZigZag*           zzEntry;
+   CMarcoM1LBContext* m1LBContext;
+   CMarcoIndEntryFilter m_setupIndEntry;
+   CTradeRejectionHistory m_htfRejection;
+   CTradeRejectionHistory m_htfRawExit;
+   int               m_entryBarCount;
+   datetime          m_last_entry_bar;
+
+   double            m_riskPercent;
+   double            m_slBufferPips;
+   int               m_zzDepth;
+   double            m_zzDev;
+   ulong             m_magic;
+   bool              m_riskyMode;
+   bool              m_applyEntryPolicyToPreventionExits;
+   bool              m_requireZZConfirmation;
+   bool              m_useFallbackTP;
+   double            m_fallbackRR;
+   bool              m_blockLessRR;
+   ENUM_TP_PRIORITY  m_tpPriority1;
+   bool              m_allowOverlappingTrades;
+   ENUM_SL_LOCATION  m_slLocation;
+   string            m_startTime;
+   string            m_priceDiff;
+
+   // Take Profit Protection & Execution Controls
+   bool              m_adjustTPForSpread;
+   bool              m_enableVicinityExit;
+   double            m_tpVicinityPips;
+   ENUM_TIMEFRAMES   m_tpVicinityTF;
+
+   datetime          m_historyStart; // Fixed initialization boundary; never moved at midnight.
+   datetime          m_last_htf_bar;
+   datetime          m_last_ltf_bar;
+
+   datetime          m_htf_time[];
+   double            m_htf_open[];
+   double            m_htf_high[];
+   double            m_htf_low[];
+   double            m_htf_close[];
+   long              m_htf_vol[];
+   int               m_htf_bars_count;
+
+   datetime          m_ltf_time[];
+   double            m_ltf_open[];
+   double            m_ltf_high[];
+   double            m_ltf_low[];
+   double            m_ltf_close[];
+   long              m_ltf_vol[];
+   int               m_ltf_bars_count;
+
+   bool              m_trackSweepsAnywhere;
+   bool              m_trackPostIndCHoCH;
+   int               m_minTouches;
+   double            m_proxPips;
+   bool              m_strictOrigin;
+   bool              m_mergeClustered;
+   double            m_clusterTol;
+   bool              m_expandBounds;
+   bool              m_chkDS;
+   bool              m_chkOB;
+   bool              m_chkSP;
+   bool              m_chkFZ;
+   bool              m_chkBB;
+
+   ZigZag*                zzHtf;
+   CMarketStructure*      msHtf;
+   CDemandSupplyLogic*    dsHtf;
+   CSwingPOILogic*        spHtf;
+   COrderBlockLogic*      obHtf;
+   CFlipZoneLogic*        fzHtf;
+   CBreakerBlockLogic*    bbHtf;
+   CInducementLogic*      indHtf;
+   CLiquidityBlockLogic*  lbLogicHtf;
+
+   ZigZag*                zzLtf;
+   CMarketStructure*      msLtf;
+   CDemandSupplyLogic*    dsLtf;
+   CSwingPOILogic*        spLtf;
+   COrderBlockLogic*      obLtf;
+   CFlipZoneLogic*        fzLtf;
+   CBreakerBlockLogic*    bbLtf;
+   CInducementLogic*      indLtf;
+   CLiquidityBlockLogic*  lbLogicLtf;
+
+   SLiveAutoTrade         m_trades[];
+   CArrayString           m_taken_setups;
+   SLiveHTFLB             m_htf_lbs[];
+   int                    m_htf_lb_count;
+
+                     CMarcoLiveAutoInstance()
+     {
+      m_entryTF = ENTRY_TF_LB;
+      m_historyStart=0;
+      zzEntry = NULL;
+      m1LBContext = NULL;
+      m_entryBarCount = 0;
+      m_last_entry_bar = 0;
+      zzHtf       = NULL;
+      msHtf       = NULL;
+      dsHtf       = NULL;
+      spHtf       = NULL;
+      obHtf       = NULL;
+      fzHtf       = NULL;
+      bbHtf       = NULL;
+      indHtf      = NULL;
+      lbLogicHtf  = NULL;
+
+      zzLtf       = NULL;
+      msLtf       = NULL;
+      dsLtf       = NULL;
+      spLtf       = NULL;
+      obLtf       = NULL;
+      fzLtf       = NULL;
+      bbLtf       = NULL;
+      indLtf      = NULL;
+      lbLogicLtf  = NULL;
+
+      m_riskyMode              = false;
+      m_applyEntryPolicyToPreventionExits = false;
+      m_requireZZConfirmation  = true;
+      m_useFallbackTP          = true;
+      m_fallbackRR             = 1.0;
+      m_blockLessRR            = false;
+      m_tpPriority1            = TP_PRIORITY_IND;
+      m_allowOverlappingTrades = false;
+      m_slLocation             = SL_LOCATION_LB_BOUNDARIES;
+      m_htf_lb_count           = 0;
+      m_nextEntryAttempt       = 0;
+      m_lastOppositeBlockTime  = 0;
+      m_lastOppositeBlockTicket = 0;
+      m_clusterSyncedBar=0; m_clusterSyncedDay=0;
+      m_last_htf_bar           = 0;
+      m_last_ltf_bar           = 0;
+      m_startTime              = "00:00";
+      m_priceDiff              = "Absolute";
+
+      m_adjustTPForSpread      = true;
+      m_enableVicinityExit     = true;
+      m_tpVicinityPips         = 1.0;
+      m_tpVicinityTF           = PERIOD_M1;
+
+      m_htf_bars_count         = 0;
+      m_ltf_bars_count         = 0;
+      ArrayResize(m_htf_time, 0);
+      ArrayResize(m_htf_open, 0);
+      ArrayResize(m_htf_high, 0);
+      ArrayResize(m_htf_low, 0);
+      ArrayResize(m_htf_close, 0);
+      ArrayResize(m_htf_vol, 0);
+
+      ArrayResize(m_ltf_time, 0);
+      ArrayResize(m_ltf_open, 0);
+      ArrayResize(m_ltf_high, 0);
+      ArrayResize(m_ltf_low, 0);
+      ArrayResize(m_ltf_close, 0);
+      ArrayResize(m_ltf_vol, 0);
+     }
+
+                    ~CMarcoLiveAutoInstance() { CleanupEngines(); }
+
+   void              CleanupEngines()
+     {
+      if(CheckPointer(m1LBContext) == POINTER_DYNAMIC)
+         delete m1LBContext;
+      m1LBContext = NULL;
+      if(CheckPointer(zzEntry) == POINTER_DYNAMIC)
+         delete zzEntry;
+      zzEntry = NULL;
+      if(CheckPointer(zzHtf) == POINTER_DYNAMIC)
+        {
+         delete zzHtf;
+         zzHtf = NULL;
+        }
+      if(CheckPointer(msHtf) == POINTER_DYNAMIC)
+        {
+         delete msHtf;
+         msHtf = NULL;
+        }
+      if(CheckPointer(dsHtf) == POINTER_DYNAMIC)
+        {
+         delete dsHtf;
+         dsHtf = NULL;
+        }
+      if(CheckPointer(spHtf) == POINTER_DYNAMIC)
+        {
+         delete spHtf;
+         spHtf = NULL;
+        }
+      if(CheckPointer(obHtf) == POINTER_DYNAMIC)
+        {
+         delete obHtf;
+         obHtf = NULL;
+        }
+      if(CheckPointer(fzHtf) == POINTER_DYNAMIC)
+        {
+         delete fzHtf;
+         fzHtf = NULL;
+        }
+      if(CheckPointer(bbHtf) == POINTER_DYNAMIC)
+        {
+         delete bbHtf;
+         bbHtf = NULL;
+        }
+      if(CheckPointer(indHtf) == POINTER_DYNAMIC)
+        {
+         delete indHtf;
+         indHtf = NULL;
+        }
+      if(CheckPointer(lbLogicHtf) == POINTER_DYNAMIC)
+        {
+         delete lbLogicHtf;
+         lbLogicHtf = NULL;
+        }
+
+      if(CheckPointer(zzLtf) == POINTER_DYNAMIC)
+        {
+         delete zzLtf;
+         zzLtf = NULL;
+        }
+      if(CheckPointer(msLtf) == POINTER_DYNAMIC)
+        {
+         delete msLtf;
+         msLtf = NULL;
+        }
+      if(CheckPointer(dsLtf) == POINTER_DYNAMIC)
+        {
+         delete dsLtf;
+         dsLtf = NULL;
+        }
+      if(CheckPointer(spLtf) == POINTER_DYNAMIC)
+        {
+         delete spLtf;
+         spLtf = NULL;
+        }
+      if(CheckPointer(obLtf) == POINTER_DYNAMIC)
+        {
+         delete obLtf;
+         obLtf = NULL;
+        }
+      if(CheckPointer(fzLtf) == POINTER_DYNAMIC)
+        {
+         delete fzLtf;
+         fzLtf = NULL;
+        }
+      if(CheckPointer(bbLtf) == POINTER_DYNAMIC)
+        {
+         delete bbLtf;
+         bbLtf = NULL;
+        }
+      if(CheckPointer(indLtf) == POINTER_DYNAMIC)
+        {
+         delete indLtf;
+         indLtf = NULL;
+        }
+      if(CheckPointer(lbLogicLtf) == POINTER_DYNAMIC)
+        {
+         delete lbLogicLtf;
+         lbLogicLtf = NULL;
+        }
+     }
+
+   datetime          GetSessionStartTime()
+     {
+      datetime now = TimeCurrent();
+      MqlDateTime dt;
+      TimeToStruct(now, dt);
+      int h = (int)StringToInteger(StringSubstr(m_startTime, 0, 2));
+      int m = (int)StringToInteger(StringSubstr(m_startTime, 3, 2));
+      dt.hour = h;
+      dt.min  = m;
+      dt.sec  = 0;
+      return StructToTime(dt);
+     }
+
+   double            GetPipSize(string sym)
+     {
+      double pip=CMarcoSymbolUnits::PipSize(sym), buffer=0.0;
+      return CMarcoSymbolUnits::Buffer(m_slBufferPips, pip, buffer) ? pip : 0.0;
+     }
+
+   int               CountTouchingPivots(bool isBullish, double zHigh, double zLow, double buffer,
+                                         datetime confirmedTime, datetime currentTime, ZigZag* zzHtfRef,
+                                         datetime &outFirstPivotTime, double &outFirstPivotPrice,
+                                         datetime &outFirstPivotConfirmTime)
+     {
+      outFirstPivotTime        = 0;
+      outFirstPivotPrice       = 0.0;
+      outFirstPivotConfirmTime = 0;
+      if(zzHtfRef == NULL || zzHtfRef.pivots.Total() == 0)
+         return 0;
+
+      int count = 0;
+      int totalP = zzHtfRef.pivots.Total();
+      for(int p = 0; p < totalP; p++)
+        {
+         Pivot* pv = (Pivot*)zzHtfRef.pivots.At(p);
+         if(pv == NULL || pv == zzHtfRef.projection)
+            continue;
+         if(StringFind(pv.ln, "ZZ_Proj") >= 0)
+            continue;
+
+         if(pv.end.time <= confirmedTime)
+            continue;
+
+         if(p >= ArraySize(m_pivotConfirmations))
+            continue;
+         datetime pivotConfirmTime = m_pivotConfirmations[p].availableTime;
+         if(pivotConfirmTime == 0 || pivotConfirmTime > currentTime)
+            continue;
+         if(pv.end.time > currentTime)
+            break;
+
+         if(isBullish)
+           {
+            if(!pv.isHigh && pv.end.price <= zHigh && pv.end.price >= (zLow - buffer))
+              {
+               count++;
+               if(count == 1)
+                 {
+                  outFirstPivotTime        = pv.end.time;
+                  outFirstPivotPrice       = pv.end.price;
+                  outFirstPivotConfirmTime = pivotConfirmTime;
+                 }
+              }
+           }
+         else
+           {
+            if(pv.isHigh && pv.end.price >= zLow && pv.end.price <= (zHigh + buffer))
+              {
+               count++;
+               if(count == 1)
+                 {
+                  outFirstPivotTime        = pv.end.time;
+                  outFirstPivotPrice       = pv.end.price;
+                  outFirstPivotConfirmTime = pivotConfirmTime;
+                 }
+              }
+           }
+        }
+      return count;
+     }
+
+   int               FindCachedLB(string id)
+     {
+      for(int k = 0; k < m_htf_lb_count; k++)
+         if(m_htf_lbs[k].id == id) return k;
+      return -1;
+     }
+
+   bool              IsLegComingFromOppositeLB(bool candidateIsBull, datetime touchPivotTime, ZigZag* zzHtfRef, double buffer, datetime now)
+     {
+      if(zzHtfRef == NULL || zzHtfRef.pivots.Total() < 2)
+         return false;
+
+      int touchIdx = -1;
+      for(int p = zzHtfRef.pivots.Total() - 1; p >= 0; p--)
+        {
+         Pivot* pv = (Pivot*)zzHtfRef.pivots.At(p);
+         if(pv == NULL || pv == zzHtfRef.projection || pv.end == NULL || StringFind(pv.ln,"ZZ_Proj")>=0)
+            continue;
+         if(pv.end.time == touchPivotTime)
+           {
+            touchIdx = p;
+            break;
+           }
+        }
+
+      if(touchIdx < 0)
+         return false;
+
+      Pivot* selected=(Pivot*)zzHtfRef.pivots.At(touchIdx);
+      if(selected==NULL || selected.start==NULL) return false;
+      double prevPrice=selected.start.price;
+      datetime prevTime=selected.start.time;
+
+      string opposingId="";
+      ENUM_TIMEFRAMES sourceTF=m_tradeTF;
+      bool blocked=m_htfRejection.IncomingLeg(candidateIsBull,prevTime,prevPrice,now,m_tradeTF,buffer,opposingId);
+      if(!blocked && m1LBContext!=NULL && m_tradeTF!=PERIOD_M1)
+        {
+         sourceTF=PERIOD_M1;
+         blocked=m1LBContext.rejectionHistory.IncomingLeg(candidateIsBull,prevTime,prevPrice,now,PERIOD_M1,buffer,opposingId);
+        }
+      if(blocked)
+        {
+         PrintFormat("[ENTRY LEG BLOCK] %s %s source=%s LB=%s origin=%s price=%.8f at=%s",
+                     m_symbol,EnumToString(m_tradeTF),EnumToString(sourceTF),opposingId,
+                     TimeToString(prevTime,TIME_DATE|TIME_SECONDS),prevPrice,TimeToString(now,TIME_DATE|TIME_SECONDS));
+         return true;
+        }
+
+      return false;
+     }
+
+   SLivePivotConfirmation m_pivotConfirmations[];
+
+   void              CapturePivotConfirmations(ZigZag* zz, datetime availableTime)
+     {
+      int oldSize = ArraySize(m_pivotConfirmations);
+      int count = zz.pivots.Total();
+      ArrayResize(m_pivotConfirmations, count);
+      for(int p = 0; p < count; p++)
+        {
+         Pivot* pv = (Pivot*)zz.pivots.At(p);
+         if(pv == NULL || pv == zz.projection || StringFind(pv.ln, "ZZ_Proj") >= 0)
+           {
+            m_pivotConfirmations[p].availableTime = 0;
+            continue;
+           }
+         if(p >= oldSize || m_pivotConfirmations[p].availableTime == 0 ||
+            m_pivotConfirmations[p].pivotTime != pv.end.time ||
+            m_pivotConfirmations[p].price != pv.end.price ||
+            m_pivotConfirmations[p].isHigh != pv.isHigh)
+           {
+            m_pivotConfirmations[p].pivotTime = pv.end.time;
+            m_pivotConfirmations[p].price = pv.end.price;
+            m_pivotConfirmations[p].isHigh = pv.isHigh;
+            m_pivotConfirmations[p].availableTime = availableTime;
+           }
+        }
+     }
+
+   SLivePivotConfirmation m_m1PivotConfirmations[];
+
+   void              CaptureM1PivotConfirmations(ZigZag* zz, datetime availableTime)
+     {
+      int oldSize = ArraySize(m_m1PivotConfirmations);
+      int count = zz.pivots.Total();
+      ArrayResize(m_m1PivotConfirmations, count);
+      for(int p = 0; p < count; p++)
+        {
+         Pivot* pv = (Pivot*)zz.pivots.At(p);
+         if(pv == NULL || pv == zz.projection || StringFind(pv.ln, "ZZ_Proj") >= 0)
+           {
+            m_m1PivotConfirmations[p].availableTime = 0;
+            continue;
+           }
+         if(p >= oldSize || m_m1PivotConfirmations[p].availableTime == 0 ||
+            m_m1PivotConfirmations[p].pivotTime != pv.end.time ||
+            m_m1PivotConfirmations[p].price != pv.end.price ||
+            m_m1PivotConfirmations[p].isHigh != pv.isHigh)
+           {
+            m_m1PivotConfirmations[p].pivotTime = pv.end.time;
+            m_m1PivotConfirmations[p].price = pv.end.price;
+            m_m1PivotConfirmations[p].isHigh = pv.isHigh;
+            m_m1PivotConfirmations[p].availableTime = availableTime;
+           }
+        }
+     }
+
+   void              ResetM1EntryEngine()
+     {
+      m_htfRejection.Reset();
+      m_setupIndEntry.Clear();
+      m_htfRawExit.Reset();
+      if(CheckPointer(m1LBContext) == POINTER_DYNAMIC)
+         delete m1LBContext;
+      if(CheckPointer(zzEntry) == POINTER_DYNAMIC)
+         delete zzEntry;
+      zzEntry = NULL;
+      m1LBContext = NULL;
+      m_entryBarCount = 0;
+      m_last_entry_bar = 0;
+      ArrayResize(m_m1PivotConfirmations, 0);
+      // Observe M1 rejection context in both entry modes.
+      Settings* entrySettings = new Settings(m_zzDev, m_zzDepth, clrNONE, false, false, false, false, m_priceDiff);
+      entrySettings.draw = false;
+      zzEntry = newInstance(entrySettings);
+      zzEntry.zoneStartTime = GetSessionStartTime();
+     }
+
+   void              FeedM1EntryBar(datetime barTime, double open, double high, double low, double close, long volume)
+     {
+      if(zzEntry == NULL || barTime <= m_last_entry_bar || GetPipSize(m_symbol) <= 0.0)
+         return;
+      zzEntry.update(high, low, barTime, volume, m_entryBarCount++, true, false);
+      if(m1LBContext != NULL)
+         m1LBContext.Update(barTime, open, high, low, close, zzEntry, GetPipSize(m_symbol));
+      CaptureM1PivotConfirmations(zzEntry, barTime + PeriodSeconds(PERIOD_M1));
+      m_last_entry_bar = barTime;
+      if(CMarcoPivotEntry::Enabled())
+         for(int k=0;k<m_htf_lb_count;k++)
+           {
+            if(ObservePivotEntryRange(k,barTime,low,high)) continue;
+            datetime pivot=0,confirmed=0; double price=0;
+            if(m_entryTF==ENTRY_TF_M1 && m_htf_lbs[k].m1TouchTime>0)
+               GetLatestEntryPivot(k,barTime+PeriodSeconds(PERIOD_M1),zzEntry,true,pivot,price,confirmed);
+           }
+      if(m1LBContext != NULL)
+         AuditChochTouches(barTime, low, high, barTime + PeriodSeconds(PERIOD_M1), zzEntry,
+                          PERIOD_M1, m1LBContext.rejectionHistory);
+      // Latch the first eligible pivot before a later catch-up candle can replace it.
+      for(int k = 0; k < m_htf_lb_count; k++)
+        {
+         if(m_htf_lbs[k].entryTriggerTime <= 0)
+            continue;
+         if(CheckIndWaitBoundary(k,barTime+PeriodSeconds(PERIOD_M1),low,high)) continue;
+         if(m_entryTF != ENTRY_TF_M1) continue;
+         if(CTradeRejection::Used(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated) ||
+            barTime < m_htf_lbs[k].entryTriggerTime + PeriodSeconds(m_tradeTF))
+            continue;
+         // Match the simulator's closed-M1 range checks. A scan of the current
+         // quote can miss a brief wick touch (or a wick that invalidates the LB).
+         if(CTradeRejection::BoundaryBroken(m_htf_lbs[k].isBullish, low, high,
+                                           m_htf_lbs[k].zoneLow, m_htf_lbs[k].zoneHigh,
+                                           m_slBufferPips * GetPipSize(m_symbol)))
+           {
+            CTradeRejection::Mitigate(m_htf_lbs[k].isMitigated, m_htf_lbs[k].mitigationTime, barTime);
+            continue;
+           }
+         ArmM1Entry(k, barTime, low, high);
+         if(m_htf_lbs[k].m1TouchTime == 0 || m_htf_lbs[k].m1ConfirmTime != 0)
+            continue;
+         datetime pivotTime = 0, confirmTime = 0;
+         double pivotPrice = 0.0;
+         GetM1EntryPivot(k, barTime + PeriodSeconds(PERIOD_M1), pivotTime, pivotPrice, confirmTime);
+        }
+     }
+
+   void              ArmM1Entry(int k, datetime sampleTime, double sampleLow, double sampleHigh)
+     {
+      if(m_entryTF != ENTRY_TF_M1 || m_htf_lbs[k].m1TouchTime != 0 ||
+         m_htf_lbs[k].entryTriggerTime <= 0 ||
+         CTradeRejection::Used(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated) ||
+         sampleTime < m_htf_lbs[k].entryTriggerTime + PeriodSeconds(m_tradeTF))
+         return;
+      double pip = GetPipSize(m_symbol); // Exactly one pip, independent of the SL buffer.
+      int digits = (int)SymbolInfoInteger(m_symbol, SYMBOL_DIGITS);
+      bool near = CTradeRejection::NearEntry(m_htf_lbs[k].isBullish, sampleLow, sampleHigh,
+                            m_htf_lbs[k].zoneLow, m_htf_lbs[k].zoneHigh, pip, digits);
+      if(!near)
+         return;
+      m_htf_lbs[k].m1TouchTime = sampleTime;
+      PrintFormat("[M1 ARMED] %s %s LB=%s touch=%s zone=[%.8f, %.8f]",
+                  m_symbol, EnumToString(m_tradeTF), m_htf_lbs[k].id, TimeToString(sampleTime, TIME_DATE|TIME_SECONDS),
+                  m_htf_lbs[k].zoneLow, m_htf_lbs[k].zoneHigh);
+     }
+
+   void CaptureRejectionContext(CMarketStructure* ms, CLiquidityBlockLogic* lbs, CInducementLogic* inducements,
+                                datetime available, CTradeRejectionHistory &history)
+     {
+      int n = ms.all_event_names.Total();
+      for(int e=MathMax(0,n-3);e<n;e++)
+         history.Observe(ms.all_event_names.At(e), (datetime)ms.all_event_times.At(e),
+                         available, (datetime)ms.all_event_origin_times.At(e), ms.all_event_origin_prices.At(e),
+                         ms.all_event_prices.At(e));
+      history.BeginZones();
+      // Structural qualification and the source's own entry veto are independent.
+      for(int b=0;b<lbs.m_exit_sources.Total();b++)
+        {
+         CLiquidityBlock* source=(CLiquidityBlock*)lbs.m_exit_sources.At(b);
+         if(lbs.GuardSourceReady(source,inducements,ms,available-PeriodSeconds(m_tradeTF),
+                                 available,m_applyEntryPolicyToPreventionExits))
+            history.Zone(source.id,source.isBullish,source.zoneLow,source.zoneHigh,source.createdTime,
+                         source.mitigationTime,source.causalChochTime,available,true);
+        }
+      for(int b = 0; b < lbs.m_liquidity_blocks.Total(); b++)
+        {
+         CLiquidityBlock* lb = (CLiquidityBlock*)lbs.m_liquidity_blocks.At(b);
+         int cached=(lb==NULL ? -1 : FindCachedLB(lb.id));
+         if(lb != NULL && (!m_applyEntryPolicyToPreventionExits ||
+                           (cached>=0 && m_htf_lbs[cached].entryTriggerTime>0 && m_htf_lbs[cached].sourceActive)))
+            history.Zone(lb.id, lb.isBullish, lb.zoneLow, lb.zoneHigh, lb.createdTime,
+                         lb.mitigationTime, lb.causalChochTime, available);
+        }
+      history.EndZones(available);
+      CMarcoRawExitHistory::Capture(ms,lbs,available,m_htfRawExit);
+     }
+
+   SMarcoSequenceSignal ObserveOpposingSequence(SMarcoTPPlan &plan, datetime opened, datetime now, double price)
+     {
+      SMarcoSequenceSignal signal; ZeroMemory(signal);
+      bool preferM1=m_entryTF==ENTRY_TF_M1;
+      for(int pass=0;pass<2;pass++)
+        {
+         bool m1=(pass==0 ? preferM1 : !preferM1);
+         if(m1)
+           {
+            if(m1LBContext==NULL || m_tradeTF==PERIOD_M1) continue;
+            signal=CMarcoOpposingSequence::Advance(m1LBContext.rawExitHistory,plan.sequence,1,PERIOD_M1,
+                                                  plan.direction,plan.entry,price,opened,now);
+           }
+         else signal=CMarcoOpposingSequence::Advance(m_htfRawExit,plan.sequence,0,m_tradeTF,
+                                                     plan.direction,plan.entry,price,opened,now);
+         if(signal.step>0 || plan.sequence.step>=2) break;
+        }
+      return signal;
+     }
+
+   void ObserveRejectionTouch(int k, datetime sampleBar, double low, double high, datetime knownAt, ENUM_TIMEFRAMES tf)
+     {
+      if(CTradeRejection::Used(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated) ||
+         sampleBar < m_htf_lbs[k].confirmedTime + PeriodSeconds(m_tradeTF)) return;
+      if(!CTradeRejection::Intersects(low, high, m_htf_lbs[k].zoneLow, m_htf_lbs[k].zoneHigh)) return;
+      // Independent clocks prevent an HTF catch-up bar from hiding earlier M1 touches.
+      if(tf == PERIOD_M1)
+         m_htf_lbs[k].rejectionTouchTime = MathMax(m_htf_lbs[k].rejectionTouchTime, knownAt);
+      else
+         m_htf_lbs[k].rejectionHTFTouchTime = MathMax(m_htf_lbs[k].rejectionHTFTouchTime, knownAt);
+     }
+
+   bool CheckChochRejection(int k, datetime now, ZigZag* zz, ENUM_TIMEFRAMES tf,
+                            CTradeRejectionHistory &history)
+     {
+      datetime touch = tf == PERIOD_M1 ? m_htf_lbs[k].rejectionTouchTime : m_htf_lbs[k].rejectionHTFTouchTime;
+      if(zz == NULL || touch == 0 ||
+         CTradeRejection::Used(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated)) return false;
+      // In M1 entry mode the actual touching leg belongs to M1. The history below
+      // still belongs to tf (LB TF or M1); an unconfirmed LB-TF swing must not bypass it.
+      ZigZag* legZZ = (m_entryTF == ENTRY_TF_M1 && zzEntry != NULL) ? zzEntry : zz;
+      ENUM_TIMEFRAMES legTF = (m_entryTF == ENTRY_TF_M1 && zzEntry != NULL) ? PERIOD_M1 : tf;
+      datetime legTouch = (m_entryTF == ENTRY_TF_M1 && m_htf_lbs[k].m1TouchTime > 0) ?
+                          m_htf_lbs[k].m1TouchTime : touch;
+      datetime selectedPivot = (m_entryTF == ENTRY_TF_M1 && m_htf_lbs[k].m1ConfirmTime > 0) ?
+                               m_htf_lbs[k].m1PivotTime : 0;
+      datetime origin = 0, legEnd = 0;
+      for(int p = legZZ.pivots.Total()-1; p >= 0; p--)
+        {
+         Pivot* pv = (Pivot*)legZZ.pivots.At(p);
+         if(pv == NULL || pv == legZZ.projection || pv.end == NULL || StringFind(pv.ln, "ZZ_Proj") >= 0) continue;
+         if(selectedPivot > 0 && pv.end.time != selectedPivot) continue;
+         if(pv.isHigh == m_htf_lbs[k].isBullish)
+            origin = pv.end.time;
+         // M1 confirmation may close several candles after the touch; retain its selected leg.
+         else if(pv.start != NULL &&
+                 ((m_entryTF == ENTRY_TF_M1 && (selectedPivot > 0 ||
+                   pv.end.time >= legTouch - legTouch % PeriodSeconds(legTF))) ||
+                  (m_entryTF != ENTRY_TF_M1 && pv.end.time + PeriodSeconds(tf) >= touch)))
+           { origin = pv.start.time; legEnd = pv.end.time; }
+         break;
+        }
+      STradeRejection result = history.OpposingChoch(m_htf_lbs[k].isBullish, origin, legEnd,
+                        touch, now, tf, m_slBufferPips * GetPipSize(m_symbol));
+      if(result.action != TRADE_RETIRE_ZONE) return false;
+      CTradeRejection::Retire(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated, m_htf_lbs[k].mitigationTime, now);
+      m_htf_lbs[k].m1PivotTime = 0; m_htf_lbs[k].m1PivotPrice = 0.0; m_htf_lbs[k].m1ConfirmTime = 0;
+      PrintFormat("[TRADE REJECTED] %s %s LB=%s reason=OPPOSING_STRUCTURE_LB source=%s opposing=%s event=%s at=%s",
+                  m_symbol, EnumToString(m_tradeTF), m_htf_lbs[k].id, EnumToString(result.sourceTF),
+                  result.opposingId, TimeToString(result.eventTime, TIME_DATE|TIME_SECONDS), TimeToString(now, TIME_DATE|TIME_SECONDS));
+      return true;
+     }
+
+   void AuditChochTouches(datetime barTime, double low, double high, datetime available,
+                           ZigZag* zz, ENUM_TIMEFRAMES tf, CTradeRejectionHistory &history)
+     {
+      for(int k = 0; k < m_htf_lb_count; k++)
+        {
+         ObserveRejectionTouch(k, barTime, low, high, available, tf);
+         CheckChochRejection(k, available, zz, tf, history);
+        }
+     }
+
+   bool              BlockM1OpposingLeg(int k, datetime now)
+     {
+      if(m_entryTF != ENTRY_TF_M1 || m1LBContext == NULL || zzEntry == NULL ||
+         m_htf_lbs[k].m1TouchTime == 0 || now < m_htf_lbs[k].m1TouchTime)
+         return false;
+      if(CTradeRejection::Used(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated))
+         return true;
+      datetime touchMinute = m_htf_lbs[k].m1TouchTime - m_htf_lbs[k].m1TouchTime % 60;
+      datetime originTime = 0;
+      double originPrice = 0.0;
+      bool isBull = m_htf_lbs[k].isBullish;
+      for(int p = zzEntry.pivots.Total() - 1; p >= 0; p--)
+        {
+         Pivot* pv = (Pivot*)zzEntry.pivots.At(p);
+         if(pv == NULL || pv == zzEntry.projection || pv.end == NULL ||
+            StringFind(pv.ln, "ZZ_Proj") >= 0)
+            continue;
+         // If already latched, inspect that exact entry leg, not a subsequent leg.
+         if(m_htf_lbs[k].m1ConfirmTime != 0 && pv.end.time != m_htf_lbs[k].m1PivotTime)
+            continue;
+         if(pv.isHigh == isBull)
+           {
+            // Incoming low/high is not confirmed yet: the latest opposite pivot is its origin.
+            originTime = pv.end.time;
+            originPrice = pv.end.price;
+           }
+         else if(pv.end.time >= touchMinute && pv.start != NULL && pv.start.time < pv.end.time)
+           {
+            originTime = pv.start.time;
+            originPrice = pv.start.price;
+           }
+         break;
+        }
+      if(originTime == 0)
+         return false;
+      string opposingId;
+      if(!m1LBContext.FindOpposingOrigin(isBull, originTime, originPrice, now,
+                                        m_slBufferPips * GetPipSize(m_symbol), opposingId))
+         return false;
+      CTradeRejection::Retire(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated, m_htf_lbs[k].mitigationTime, now);
+      m_htf_lbs[k].m1PivotTime = 0;
+      m_htf_lbs[k].m1PivotPrice = 0.0;
+      m_htf_lbs[k].m1ConfirmTime = 0;
+      PrintFormat("[M1 OPPOSING LB BLOCK] %s %s LB=%s opposing=%s origin=%s price=%.8f blocked=%s touches=%d",
+                  m_symbol, EnumToString(m_tradeTF), m_htf_lbs[k].id, opposingId,
+                  TimeToString(originTime, TIME_DATE|TIME_SECONDS), originPrice,
+                  TimeToString(now, TIME_DATE|TIME_SECONDS), m_htf_lbs[k].touchCount);
+      return true;
+     }
+
+   bool CheckIndWaitBoundary(int k, datetime now, double low, double high)
+     {
+      if(CTradeRejection::Used(m_htf_lbs[k].touchCount,m_htf_lbs[k].isMitigated)) return false;
+      if(!CMarcoIndEntryFilter::Broken(m_htf_lbs[k].indWait,m_htf_lbs[k].isBullish,
+                                       low,high,m_htf_lbs[k].zoneLow,m_htf_lbs[k].zoneHigh)) return false;
+      CTradeRejection::Retire(m_htf_lbs[k].touchCount,m_htf_lbs[k].isMitigated,m_htf_lbs[k].mitigationTime,now);
+      PrintFormat("[M1 IND WAIT CANCELLED] %s %s LB=%s: setup outer boundary breached.",
+                  m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id);
+      return true;
+     }
+
+   // Snapshot existing setup-TF results; do not run another calculation engine.
+   void CaptureSetupIndContext(CInducementLogic* ind, CMarketStructure* ms,
+                               datetime available, double low, double high)
+     {
+      if(!CMarcoIndEntryFilter::Enabled()) return;
+      m_setupIndEntry.Begin(low,high);
+      for(int z=0;z<ind.m_zones.Total();z++)
+        {
+         CInducementZone* zone=(CInducementZone*)ind.m_zones.At(z);
+         if(zone!=NULL && zone.isInducement && !zone.isMitigated)
+            m_setupIndEntry.Zone(zone.id,zone.isBullish,zone.zoneLow,zone.zoneHigh,available);
+        }
+      m_setupIndEntry.End(available);
+      int n=ms.all_event_names.Total();
+      for(int e=MathMax(0,n-3);e<n;e++)
+         m_setupIndEntry.Observe(ms.all_event_names.At(e),(datetime)ms.all_event_times.At(e),available);
+     }
+
+   bool IndEntryReady(int k, datetime pivot, double price, datetime available, datetime now)
+     {
+      if(!CMarcoIndEntryFilter::Enabled() || !m_htf_lbs[k].indWait.waiting) return true;
+      if(m_entryTF==ENTRY_TF_M1)
+         return m1LBContext!=NULL && m1LBContext.indEntry.Ready(m_htf_lbs[k].indWait,
+                   m_htf_lbs[k].isBullish,pivot,price,available,m_htf_lbs[k].zoneLow,m_htf_lbs[k].zoneHigh,now);
+      return m_setupIndEntry.Ready(m_htf_lbs[k].indWait,m_htf_lbs[k].isBullish,
+                   pivot,price,available,m_htf_lbs[k].zoneLow,m_htf_lbs[k].zoneHigh,now);
+     }
+
+   bool SkipIndPivot(int k, datetime pivot, double price, datetime available)
+     {
+      if(!CMarcoIndEntryFilter::CheckPivot() || pivot<=0) return false;
+      bool bull=m_htf_lbs[k].isBullish, blocked=false;
+      ENUM_TIMEFRAMES entryTF=m_entryTF==ENTRY_TF_M1 ? PERIOD_M1 : m_tradeTF;
+      string id="";
+      if(m_setupIndEntry.SkipPivot(m_htf_lbs[k].indWait,bull,pivot,price,available,id,entryTF))
+        {
+         blocked=true;
+         PrintFormat("[IND PIVOT WAIT] %s setup=%s source=%s IND=%s pivot=%s price=%.8f",
+                     m_symbol,EnumToString(m_tradeTF),EnumToString(m_tradeTF),id,
+                     TimeToString(pivot,TIME_DATE|TIME_SECONDS),price);
+        }
+      // Same timeframe is checked once. Both blockers contribute to the wait bounds.
+      if(entryTF!=m_tradeTF && m1LBContext!=NULL &&
+         m1LBContext.indEntry.SkipPivot(m_htf_lbs[k].indWait,bull,pivot,price,available,id,entryTF))
+        {
+         blocked=true;
+         PrintFormat("[IND PIVOT WAIT] %s setup=%s source=%s IND=%s pivot=%s price=%.8f",
+                     m_symbol,EnumToString(m_tradeTF),EnumToString(entryTF),id,
+                     TimeToString(pivot,TIME_DATE|TIME_SECONDS),price);
+        }
+      return blocked;
+     }
+
+   bool SkipIndEntryPrice(int k, datetime now, double entry, datetime pivot=0, datetime confirmed=0)
+     {
+      if(!CMarcoIndEntryFilter::CheckPrice()) return false;
+      bool bull=m_htf_lbs[k].isBullish, blocked=false;
+      if(m_entryTF==ENTRY_TF_M1)
+        { pivot=m_htf_lbs[k].m1PivotTime; confirmed=m_htf_lbs[k].m1ConfirmTime; }
+      string id="";
+      m_setupIndEntry.Audit(m_symbol,m_tradeTF,bull,now,entry,m_tradeTF);
+      if(m_setupIndEntry.SkipPrice(m_htf_lbs[k].indWait,bull,pivot,confirmed,now,entry,id))
+        {
+         blocked=true;
+         PrintFormat("[IND PRICE WAIT] %s setup=%s source=%s IND=%s entry=%.8f",
+                     m_symbol,EnumToString(m_tradeTF),EnumToString(m_tradeTF),id,entry);
+        }
+      if(m_entryTF==ENTRY_TF_M1 && m_tradeTF!=PERIOD_M1 && m1LBContext!=NULL)
+        {
+         m1LBContext.indEntry.Audit(m_symbol,m_tradeTF,bull,now,entry,PERIOD_M1);
+         if(m1LBContext.indEntry.SkipPrice(m_htf_lbs[k].indWait,bull,pivot,confirmed,now,entry,id))
+           {
+            blocked=true;
+            PrintFormat("[IND PRICE WAIT] %s setup=%s source=%s IND=%s entry=%.8f",
+                        m_symbol,EnumToString(m_tradeTF),EnumToString(PERIOD_M1),id,entry);
+           }
+        }
+      if(!blocked) return false;
+      PrintFormat("[IND WAIT] %s setup=%s LB=%s: waiting for a new %s CHoCH and pivot beyond blocking INDs.",
+                  m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,
+                  EnumToString(m_entryTF==ENTRY_TF_M1 ? PERIOD_M1 : m_tradeTF));
+      m_htf_lbs[k].m1PivotTime=0; m_htf_lbs[k].m1PivotPrice=0; m_htf_lbs[k].m1ConfirmTime=0;
+      if(m_entryTF==ENTRY_TF_M1 && m1LBContext!=NULL)
+         CheckIndWaitBoundary(k,now,m1LBContext.indEntry.lastLow,m1LBContext.indEntry.lastHigh);
+      else CheckIndWaitBoundary(k,now,m_setupIndEntry.lastLow,m_setupIndEntry.lastHigh);
+      return true;
+     }
+
+   // After an IND rejection, ignore the rejected pivot and require a new
+   // entry-TF pivot after the directional CHoCH, still within the setup LB.
+   bool GetSetupIndWaitPivot(int k, datetime now, ZigZag* zz,
+                             datetime &pivot, double &price, datetime &confirmed)
+     {
+      pivot=0; price=0; confirmed=0;
+      if(zz==NULL) return false;
+      for(int p=0;p<zz.pivots.Total() && p<ArraySize(m_pivotConfirmations);p++)
+        {
+         Pivot* pv=(Pivot*)zz.pivots.At(p);
+         if(pv==NULL || pv==zz.projection || StringFind(pv.ln,"ZZ_Proj")>=0 ||
+            pv.isHigh==m_htf_lbs[k].isBullish) continue;
+         datetime available=m_pivotConfirmations[p].availableTime;
+         if(available<=0 || available>now || !IndEntryReady(k,pv.end.time,pv.end.price,available,now)) continue;
+         if(confirmed==0 || available<confirmed)
+           { pivot=pv.end.time; price=pv.end.price; confirmed=available; }
+        }
+      return confirmed>0;
+     }
+
+
+   void DiscardPivotEntry(int k, datetime now, string reason)
+     {
+      if(!m_htf_lbs[k].pivotWatch.invalid && m_htf_lbs[k].pivotWatch.confirmed>0)
+         PrintFormat("[PIVOT DISCARDED] %s setup=%s LB=%s pivot=%s price=%.8f at=%s reason=%s; waiting for latest confirmed pivot",
+                     m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,
+                     TimeToString(m_htf_lbs[k].pivotWatch.pivot,TIME_DATE|TIME_SECONDS),m_htf_lbs[k].pivotWatch.price,
+                     TimeToString(now,TIME_DATE|TIME_SECONDS),reason);
+      m_htf_lbs[k].pivotWatch.invalid=true;
+      ZeroMemory(m_htf_lbs[k].pivotEntry);
+      m_htf_lbs[k].m1PivotTime=0; m_htf_lbs[k].m1PivotPrice=0; m_htf_lbs[k].m1ConfirmTime=0;
+     }
+
+   bool ObservePivotEntryRange(int k, datetime sampleTime, double low, double high)
+     {
+      if(!CMarcoPivotEntry::Enabled() || m_htf_lbs[k].entryTriggerTime<=0 ||
+         sampleTime<m_htf_lbs[k].entryTriggerTime+PeriodSeconds(m_tradeTF)) return false;
+      if(CTradeRejection::Used(m_htf_lbs[k].touchCount,m_htf_lbs[k].isMitigated)) return true;
+      bool bull=m_htf_lbs[k].isBullish;
+      // A waiting edge entry never receives the SL buffer as extra LB validity.
+      if(CTradeRejection::BoundaryBroken(bull,low,high,m_htf_lbs[k].zoneLow,m_htf_lbs[k].zoneHigh,0))
+        {
+         DiscardPivotEntry(k,sampleTime,"SETUP_LB_MITIGATED");
+         CTradeRejection::Retire(m_htf_lbs[k].touchCount,m_htf_lbs[k].isMitigated,m_htf_lbs[k].mitigationTime,sampleTime);
+         PrintFormat("[PIVOT WAIT CANCELLED] %s setup=%s LB=%s: setup LB boundary broken at %s",
+                     m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,TimeToString(sampleTime,TIME_DATE|TIME_SECONDS));
+         return true;
+        }
+      if(m_htf_lbs[k].pivotWatch.confirmed>0 && sampleTime>=m_htf_lbs[k].pivotWatch.confirmed &&
+         (bull ? low<m_htf_lbs[k].pivotWatch.price : high>m_htf_lbs[k].pivotWatch.price))
+         DiscardPivotEntry(k,sampleTime,"PIVOT_EXTREME_BROKEN");
+      return false;
+     }
+
+   bool GetLatestEntryPivot(int k, datetime now, ZigZag* zz, bool m1,
+                            datetime &pivot, double &price, datetime &confirmed)
+     {
+      pivot=0; price=0; confirmed=0;
+      if(zz==NULL || CTradeRejection::Used(m_htf_lbs[k].touchCount,m_htf_lbs[k].isMitigated)) return false;
+      int selected=-1; datetime latest=0, known=0;
+      int count=m1 ? ArraySize(m_m1PivotConfirmations) : ArraySize(m_pivotConfirmations);
+      for(int p=0;p<zz.pivots.Total() && p<count;p++)
+        {
+         Pivot* pv=(Pivot*)zz.pivots.At(p);
+         if(pv==NULL || pv==zz.projection || StringFind(pv.ln,"ZZ_Proj")>=0 ||
+            pv.isHigh==m_htf_lbs[k].isBullish) continue;
+         datetime available=m1 ? m_m1PivotConfirmations[p].availableTime : m_pivotConfirmations[p].availableTime;
+         datetime at=m1 ? m_m1PivotConfirmations[p].pivotTime : m_pivotConfirmations[p].pivotTime;
+         double value=m1 ? m_m1PivotConfirmations[p].price : m_pivotConfirmations[p].price;
+         bool high=m1 ? m_m1PivotConfirmations[p].isHigh : m_pivotConfirmations[p].isHigh;
+         // The availability record must describe this exact current endpoint.
+         if(available<=0 || available>now || at!=pv.end.time || value!=pv.end.price || high!=pv.isHigh) continue;
+         if(selected<0 || at>latest || (at==latest && available>known))
+           { selected=p; latest=at; known=available; }
+        }
+      if(selected<0)
+        { DiscardPivotEntry(k,now,"NO_CURRENT_CONFIRMED_PIVOT"); return false; }
+      Pivot* current=(Pivot*)zz.pivots.At(selected);
+      SMarcoPivotWatch previous=m_htf_lbs[k].pivotWatch;
+      bool same=previous.pivot==latest && previous.price==current.end.price && previous.confirmed==known;
+      if(previous.confirmed>0 && (latest<previous.pivot || known<previous.confirmed))
+        { DiscardPivotEntry(k,now,"PIVOT_REMOVED_NO_NEW_CONFIRMATION"); return false; }
+      if(same && previous.invalid) return false;
+      if(!same)
+        {
+         if(previous.confirmed>0)
+            PrintFormat("[PIVOT REPLACED] %s setup=%s LB=%s old=%s/%.8f latest=%s/%.8f confirmed=%s; recalculate entry edge and SL",
+                        m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,
+                        TimeToString(previous.pivot,TIME_DATE|TIME_SECONDS),previous.price,
+                        TimeToString(latest,TIME_DATE|TIME_SECONDS),current.end.price,TimeToString(known,TIME_DATE|TIME_SECONDS));
+         ZeroMemory(m_htf_lbs[k].pivotEntry);
+         m_htf_lbs[k].m1PivotTime=0; m_htf_lbs[k].m1PivotPrice=0; m_htf_lbs[k].m1ConfirmTime=0;
+         m_htf_lbs[k].pivotWatch.pivot=latest;
+         m_htf_lbs[k].pivotWatch.price=current.end.price;
+         m_htf_lbs[k].pivotWatch.confirmed=known;
+         m_htf_lbs[k].pivotWatch.invalid=false;
+        }
+      bool bull=m_htf_lbs[k].isBullish;
+      // Pick the latest endpoint FIRST. Never fall back to an older in-zone pivot
+      // just because the latest pivot fails zone, IND, touch or CHoCH eligibility.
+      if(current.end.price<m_htf_lbs[k].zoneLow || current.end.price>m_htf_lbs[k].zoneHigh) return false;
+      if(m1)
+        {
+         if(!CTradeRejection::M1Pivot(bull,current.isHigh,latest,current.end.price,
+                                     m_htf_lbs[k].m1TouchTime,known,now,m_htf_lbs[k].zoneLow,m_htf_lbs[k].zoneHigh)) return false;
+        }
+      else if(latest<=m_htf_lbs[k].entryTriggerTime) return false;
+      if(!IndEntryReady(k,latest,current.end.price,known,now) || SkipIndPivot(k,latest,current.end.price,known)) return false;
+      pivot=latest; price=current.end.price; confirmed=known;
+      if(m1)
+        {
+         m_htf_lbs[k].m1PivotTime=pivot; m_htf_lbs[k].m1PivotPrice=price; m_htf_lbs[k].m1ConfirmTime=confirmed;
+         if(BlockM1OpposingLeg(k,now)) return false;
+        }
+      return true;
+     }
+
+   bool              GetM1EntryPivot(int k, datetime now, datetime &pivotTime,
+                                     double &pivotPrice, datetime &confirmTime)
+     {
+      pivotTime = 0;
+      pivotPrice = 0.0;
+      confirmTime = 0;
+      if(zzEntry == NULL || m_htf_lbs[k].m1TouchTime == 0)
+         return false;
+      if(CMarcoPivotEntry::Enabled())
+         return GetLatestEntryPivot(k,now,zzEntry,true,pivotTime,pivotPrice,confirmTime);
+      // Opposing M1 origin invalidates the setup before pivot confirmation or execution.
+      if(BlockM1OpposingLeg(k, now))
+         return false;
+      while(m_htf_lbs[k].m1ConfirmTime == 0)
+        {
+         int selected = -1;
+         datetime earliest = 0;
+         for(int p = 0; p < zzEntry.pivots.Total() && p < ArraySize(m_m1PivotConfirmations); p++)
+           {
+            Pivot* pv = (Pivot*)zzEntry.pivots.At(p);
+            if(pv == NULL || pv == zzEntry.projection || StringFind(pv.ln, "ZZ_Proj") >= 0)
+               continue;
+            datetime available = m_m1PivotConfirmations[p].availableTime;
+            if(m_htf_lbs[k].indWait.waiting &&
+               (pv.end.time<=m_htf_lbs[k].indWait.rejectedPivot || available<=m_htf_lbs[k].indWait.rejectedAvailable)) continue;
+            if(!IndEntryReady(k,pv.end.time,pv.end.price,available,now)) continue;
+            if(!CTradeRejection::M1Pivot(m_htf_lbs[k].isBullish, pv.isHigh, pv.end.time, pv.end.price,
+                                        m_htf_lbs[k].m1TouchTime, available, now, m_htf_lbs[k].zoneLow, m_htf_lbs[k].zoneHigh))
+               continue;
+            if(selected < 0 || available < earliest)
+              {
+               selected = p;
+               earliest = available;
+              }
+           }
+         if(selected < 0)
+            return false;
+         Pivot* first = (Pivot*)zzEntry.pivots.At(selected);
+         if(SkipIndPivot(k,first.end.time,first.end.price,earliest))
+           {
+            if(m1LBContext!=NULL && CheckIndWaitBoundary(k,now,m1LBContext.indEntry.lastLow,m1LBContext.indEntry.lastHigh)) return false;
+            continue;
+           }
+         m_htf_lbs[k].m1PivotTime = first.end.time;
+         m_htf_lbs[k].m1PivotPrice = first.end.price;
+         m_htf_lbs[k].m1ConfirmTime = earliest;
+         PrintFormat("[M1 CONFIRMED] %s %s LB=%s pivot=%s price=%.8f confirmed=%s",
+                     m_symbol, EnumToString(m_tradeTF), m_htf_lbs[k].id,
+                     TimeToString(first.end.time, TIME_DATE|TIME_SECONDS), first.end.price,
+                     TimeToString(earliest, TIME_DATE|TIME_SECONDS));
+        }
+      if(!IndEntryReady(k,m_htf_lbs[k].m1PivotTime,m_htf_lbs[k].m1PivotPrice,m_htf_lbs[k].m1ConfirmTime,now))
+        {
+         m_htf_lbs[k].m1PivotTime=0; m_htf_lbs[k].m1PivotPrice=0; m_htf_lbs[k].m1ConfirmTime=0;
+         return false;
+        }
+      // Freeze the first qualifying confirmed pivot; a later one must not replace it.
+      pivotTime = m_htf_lbs[k].m1PivotTime;
+      pivotPrice = m_htf_lbs[k].m1PivotPrice;
+      confirmTime = m_htf_lbs[k].m1ConfirmTime;
+      return pivotPrice >= m_htf_lbs[k].zoneLow && pivotPrice <= m_htf_lbs[k].zoneHigh && confirmTime <= now;
+     }
+
+
+
+   datetime          m_nextEntryAttempt;
+   datetime          m_lastOppositeBlockTime;
+   ulong             m_lastOppositeBlockTicket;
+
+   bool              HasOppositePosition(bool isBull)
+     {
+      // Account-wide on this exact broker symbol: manual/other-EA positions count too.
+      // Do not filter by magic, setup timeframe, TP progress or remaining percentage.
+      for(int p=PositionsTotal()-1;p>=0;p--)
+        {
+         ulong ticket=PositionGetTicket(p);
+         if(ticket==0 || PositionGetString(POSITION_SYMBOL)!=m_symbol) continue;
+         int direction=PositionGetInteger(POSITION_TYPE)==POSITION_TYPE_BUY ? 1 : -1;
+         if(!CTradeRejection::OppositeDirection(isBull,direction)) continue;
+         datetime now=TimeCurrent();
+         if(ticket!=m_lastOppositeBlockTicket || now-m_lastOppositeBlockTime>=60)
+           {
+            PrintFormat("[OPPOSITE POSITION BLOCK] %s %s: %s entry skipped; %s position #%I64u remains open (%.8f lots, magic=%I64d).",
+                        m_symbol,EnumToString(m_tradeTF),isBull ? "BUY" : "SELL",isBull ? "SELL" : "BUY",
+                        ticket,PositionGetDouble(POSITION_VOLUME),PositionGetInteger(POSITION_MAGIC));
+            m_lastOppositeBlockTime=now;
+            m_lastOppositeBlockTicket=ticket;
+           }
+         return true;
+        }
+      return false;
+     }
+
+   static bool       EntryVolumeRejected(uint code)
+     { return code==TRADE_RETCODE_INVALID_VOLUME || code==TRADE_RETCODE_LIMIT_VOLUME; }
+
+   bool              EntryVolumeLimits(bool isBull, double &minimum, double &maximum, double &step,
+                                       double &limit, double &used, double &capacity)
+     {
+      used=0.0; capacity=0.0;
+      if(!SymbolInfoDouble(m_symbol,SYMBOL_VOLUME_MIN,minimum) ||
+         !SymbolInfoDouble(m_symbol,SYMBOL_VOLUME_MAX,maximum) ||
+         !SymbolInfoDouble(m_symbol,SYMBOL_VOLUME_STEP,step) ||
+         !SymbolInfoDouble(m_symbol,SYMBOL_VOLUME_LIMIT,limit) ||
+         !MathIsValidNumber(minimum) || !MathIsValidNumber(maximum) ||
+         !MathIsValidNumber(step) || !MathIsValidNumber(limit) ||
+         minimum<=0 || maximum<minimum || step<=0 || limit<0) return false;
+      // The directional limit belongs to the entire account, including manual
+      // positions and other EAs; never filter this exposure by our magic number.
+      for(int i=PositionsTotal()-1;i>=0;i--)
+        {
+         if(PositionGetTicket(i)==0) return false;
+         if(PositionGetString(POSITION_SYMBOL)!=m_symbol) continue;
+         bool buy=PositionGetInteger(POSITION_TYPE)==POSITION_TYPE_BUY;
+         if(buy==isBull)
+           {
+            double volume=PositionGetDouble(POSITION_VOLUME);
+            if(!MathIsValidNumber(volume) || volume<0) return false;
+            used+=volume;
+           }
+        }
+      for(int i=OrdersTotal()-1;i>=0;i--)
+        {
+         if(OrderGetTicket(i)==0) return false;
+         if(OrderGetString(ORDER_SYMBOL)!=m_symbol) continue;
+         ENUM_ORDER_TYPE type=(ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
+         bool buy=type==ORDER_TYPE_BUY || type==ORDER_TYPE_BUY_LIMIT ||
+                  type==ORDER_TYPE_BUY_STOP || type==ORDER_TYPE_BUY_STOP_LIMIT;
+         bool sell=type==ORDER_TYPE_SELL || type==ORDER_TYPE_SELL_LIMIT ||
+                   type==ORDER_TYPE_SELL_STOP || type==ORDER_TYPE_SELL_STOP_LIMIT;
+         if((isBull && buy) || (!isBull && sell))
+           {
+            double volume=OrderGetDouble(ORDER_VOLUME_CURRENT);
+            if(!MathIsValidNumber(volume) || volume<0) return false;
+            used+=volume;
+           }
+        }
+      if(!MathIsValidNumber(used)) return false;
+      capacity=limit>0 ? MathMin(maximum,MathMax(0.0,limit-used)) : maximum;
+      return true;
+     }
+
+   double            CalculateLotSize(bool isBull, double entryPrice, double slPrice,
+                                      double &riskLots, double &marginLots)
+     {
+      riskLots = 0.0;
+      marginLots = 0.0;
+      double freeMargin = AccountInfoDouble(ACCOUNT_MARGIN_FREE);
+      double riskBudget=CMarcoRiskCapital::Budget(CMarcoRiskCapital::LiveBase(),m_riskPercent);
+      double step=0, minLot=0, maxLot=0, limit=0, used=0, capacity=0;
+      if(!EntryVolumeLimits(isBull,minLot,maxLot,step,limit,used,capacity) ||
+         !MathIsValidNumber(freeMargin) || riskBudget<=0.0 || !MathIsValidNumber(m_riskPercent) ||
+         !CTradeRejection::SizingInputs(freeMargin, m_riskPercent, step, minLot, maxLot) ||
+         !MathIsValidNumber(entryPrice) || !MathIsValidNumber(slPrice) ||
+         entryPrice<=0 || slPrice<=0 || (isBull ? slPrice>=entryPrice : slPrice<=entryPrice))
+         return 0.0;
+
+      ENUM_ORDER_TYPE side = isBull ? ORDER_TYPE_BUY : ORDER_TYPE_SELL;
+      double loss = 0.0, margin = 0.0;
+      ResetLastError();
+      if(!OrderCalcProfit(side, m_symbol, minLot, entryPrice, slPrice, loss) || !MathIsValidNumber(loss) || loss >= 0.0 ||
+         !OrderCalcMargin(side, m_symbol, minLot, entryPrice, margin) || !MathIsValidNumber(margin) || margin < 0.0)
+        {
+         PrintFormat("[SIZING FAILED] %s %s: error=%d; no estimated-leverage fallback used.",
+                     m_symbol, EnumToString(side), GetLastError());
+         return 0.0;
+        }
+      riskLots = riskBudget * minLot / (-loss);
+      marginLots = (margin > 0.0) ? freeMargin * 0.90 * minLot / margin : maxLot;
+      if(!MathIsValidNumber(riskLots) || !MathIsValidNumber(marginLots)) return 0.0;
+      double cap = MathMin(capacity, MathMin(riskLots, marginLots));
+      double lots = NormalizeDouble(MathFloor(cap / step + 1e-8) * step, 8);
+      return (lots >= minLot && lots <= cap + 1e-10) ? lots : 0.0;
+     }
+
+   bool              SendCheckedEntry(CTrade &trade, bool isBull, double entryPrice, double slPrice,
+                                      double tpPrice, string setupKey, double &lots, MqlTradeResult &result)
+     {
+      double riskLots = 0.0, marginLots = 0.0;
+      double sizingCapital=CMarcoRiskCapital::LiveBase();
+      ZeroMemory(result);
+      lots=0.0;
+      if(HasOppositePosition(isBull)) return false;
+      uint permission=CMarcoBrokerExecution::CurrentEntryCode(m_symbol,isBull);
+      if(permission!=0)
+        {
+         result.retcode=permission;
+         PrintFormat("[BROKER ENTRY BLOCK] %s %s code=%u: symbol does not permit this new position.",
+                     m_symbol,isBull ? "BUY" : "SELL",permission);
+         return false;
+        }
+      lots = CalculateLotSize(isBull, entryPrice, slPrice, riskLots, marginLots);
+      lots=CMarcoStagedTP::Lots(lots,SymbolInfoDouble(m_symbol,SYMBOL_VOLUME_STEP),SymbolInfoDouble(m_symbol,SYMBOL_VOLUME_MIN));
+      if(lots <= 0.0)
+        {
+         PrintFormat("[ENTRY SKIPPED] %s: riskBase=%s capital=%.2f free=%.2f riskLots=%.8f marginLots=%.8f; no affordable valid volume.",
+                     m_symbol,CMarcoRiskCapital::Name(),sizingCapital,AccountInfoDouble(ACCOUNT_MARGIN_FREE),riskLots,marginLots);
+         return false;
+        }
+      MqlTradeRequest request = {};
+      request.action = TRADE_ACTION_DEAL;
+      request.magic = m_magic;
+      request.symbol = m_symbol;
+      request.type = isBull ? ORDER_TYPE_BUY : ORDER_TYPE_SELL;
+      request.price = entryPrice;
+      request.sl = slPrice;
+      request.tp = tpPrice;
+      request.deviation = 10; // Preserve the CTrade default used by this EA.
+      request.comment = setupKey;
+      long filling = SymbolInfoInteger(m_symbol, SYMBOL_FILLING_MODE);
+      long execution = SymbolInfoInteger(m_symbol, SYMBOL_TRADE_EXEMODE);
+      if((filling & SYMBOL_FILLING_FOK) == 0 && execution!=SYMBOL_TRADE_EXECUTION_INSTANT && execution!=SYMBOL_TRADE_EXECUTION_REQUEST)
+        {
+         PrintFormat("[ENTRY SKIPPED] %s: exact quarter exits require FOK fills; broker does not support FOK.",m_symbol);
+         return false;
+        }
+      request.type_filling=ORDER_FILLING_FOK;
+      double step = 4.0*SymbolInfoDouble(m_symbol, SYMBOL_VOLUME_STEP);
+      double minLot = 4.0*SymbolInfoDouble(m_symbol, SYMBOL_VOLUME_MIN);
+      long lowUnits = (long)MathCeil(minLot / step - 1e-8);
+      long highUnits = (long)MathRound(lots / step);
+      long candidate = highUnits, bestUnits = 0;
+      MqlTradeCheckResult check = {};
+      // Search only valid, smaller step volumes; never increase the risk cap.
+      while(lowUnits <= highUnits)
+        {
+         request.volume = NormalizeDouble(candidate * step, 8);
+         double candidateLoss=0.0;
+         double budget=CMarcoRiskCapital::Budget(MathMin(sizingCapital,CMarcoRiskCapital::LiveBase()),m_riskPercent);
+         if(!MathIsValidNumber(budget) || budget<=0 ||
+            !OrderCalcProfit(request.type,m_symbol,request.volume,entryPrice,slPrice,candidateLoss) ||
+            !MathIsValidNumber(candidateLoss) || candidateLoss>=0) return false;
+         if(-candidateLoss>budget+MathMax(1e-8,budget*1e-10))
+           {
+            highUnits=candidate-1;
+            candidate=lowUnits+(highUnits-lowUnits)/2;
+            continue;
+           }
+         ZeroMemory(check);
+         ResetLastError();
+         bool checked = OrderCheck(request, check);
+         bool passed = CTradeRejection::CheckPassed(checked, check.retcode);
+         double reserve = AccountInfoDouble(ACCOUNT_MARGIN_FREE) * 0.10;
+         if(passed && check.margin_free + 1e-8 >= reserve)
+           {
+            bestUnits = candidate;
+            if(candidate == highUnits)
+               break;
+            lowUnits = candidate + 1;
+           }
+         else if(check.retcode == TRADE_RETCODE_NO_MONEY || passed)
+            highUnits = candidate - 1;
+         else
+           {
+            PrintFormat("[ORDER CHECK FAILED] %s %s: volume=%.8f code=%u error=%d %s",
+                        m_symbol, EnumToString(request.type), request.volume, check.retcode, GetLastError(), check.comment);
+            if(CMarcoBrokerExecution::Supported(check.retcode))
+              { result.retcode=check.retcode; result.comment=check.comment; lots=request.volume; }
+            return false;
+           }
+         candidate = lowUnits + (highUnits - lowUnits) / 2;
+        }
+      if(bestUnits == 0)
+        {
+         PrintFormat("[ENTRY SKIPPED] %s: minimum volume cannot pass the margin reserve check.", m_symbol);
+         return false;
+        }
+      lots = NormalizeDouble(bestUnits * step, 8);
+      request.volume = lots;
+      // Refresh account-wide exposure and cash risk immediately before submission.
+      double minimum=0, maximum=0, lotStep=0, limit=0, used=0, capacity=0, stopLoss=0;
+      double capitalNow=CMarcoRiskCapital::LiveBase();
+      double riskBudget=CMarcoRiskCapital::Budget(MathMin(sizingCapital,capitalNow),m_riskPercent);
+      if(!EntryVolumeLimits(isBull,minimum,maximum,lotStep,limit,used,capacity) ||
+         lots<minimum || lots>capacity+1e-10 ||
+         MathAbs(lots/lotStep-MathRound(lots/lotStep))>1e-7 ||
+         !MathIsValidNumber(riskBudget) || riskBudget<=0 ||
+         !OrderCalcProfit(request.type,m_symbol,lots,entryPrice,slPrice,stopLoss) ||
+         !MathIsValidNumber(stopLoss) || stopLoss>=0 ||
+         -stopLoss>riskBudget+MathMax(1e-8,riskBudget*1e-10))
+        {
+         PrintFormat("[ENTRY SKIPPED] %s: volume limits or selected-capital risk changed; recalculation required.",m_symbol);
+         return false;
+        }
+      ZeroMemory(check);
+      bool finalChecked = OrderCheck(request, check);
+      if(!CTradeRejection::CheckPassed(finalChecked, check.retcode) ||
+         !CTradeRejection::ReserveFits(check.margin_free, AccountInfoDouble(ACCOUNT_MARGIN_FREE)))
+        {
+         PrintFormat("[FINAL CHECK FAILED] %s: code=%u %s", m_symbol, check.retcode, check.comment);
+         if(CMarcoBrokerExecution::Supported(check.retcode)) { result.retcode=check.retcode; result.comment=check.comment; }
+         return false;
+        }
+      double margin = 0.0;
+      if(!OrderCalcMargin(request.type, m_symbol, lots, entryPrice, margin))
+         return false;
+      // OrderCheck can take time: re-read the selected capital after the final
+      // broker check as well, immediately before submission. Never grow the cap.
+      capitalNow=CMarcoRiskCapital::LiveBase();
+      riskBudget=CMarcoRiskCapital::Budget(MathMin(sizingCapital,capitalNow),m_riskPercent);
+      if(riskBudget<=0.0 || -stopLoss>riskBudget+MathMax(1e-8,riskBudget*1e-10))
+        {
+         PrintFormat("[ENTRY SKIPPED] %s: selected capital changed during final broker check; recalculation required.",m_symbol);
+         return false;
+        }
+      Print(StringFormat("[ENTRY CHECK] %s %s: free=%.2f riskLots=%.8f marginLots=%.8f finalLots=%.8f margin=%.2f remaining=%.2f code=%u",
+                  m_symbol, EnumToString(request.type), AccountInfoDouble(ACCOUNT_MARGIN_FREE),
+                  riskLots, marginLots, lots, margin, check.margin_free, check.retcode));
+      Print(StringFormat("[ENTRY SIZING] %s: riskBase=%s capital=%.2f riskPercent=%.4f budget=%.2f estimatedSLRisk=%.2f entry=%.8f bufferedSL=%.8f min=%.8f max=%.8f step=%.8f directionalLimit=%.8f used=%.8f capacity=%.8f",
+                  m_symbol,CMarcoRiskCapital::Name(),MathMin(sizingCapital,capitalNow),m_riskPercent,riskBudget,-stopLoss,entryPrice,slPrice,minimum,maximum,lotStep,limit,used,capacity));
+      trade.SetAsyncMode(false);
+      // Refresh after sizing and broker checks: a different setup/EA may have opened.
+      if(HasOppositePosition(isBull)) return false;
+      bool sent = trade.OrderSend(request, result);
+      PrintFormat("[ENTRY RESULT] %s: sent=%s code=%u order=%I64u deal=%I64u volume=%.8f %s",
+                  m_symbol, sent ? "true" : "false", result.retcode, result.order, result.deal, result.volume, result.comment);
+      return sent && (result.retcode == TRADE_RETCODE_DONE || result.retcode == TRADE_RETCODE_DONE_PARTIAL) &&
+             result.deal > 0 && result.volume > 0.0 && result.price > 0.0;
+     }
+
+   void ObserveEntryClusters(CMarcoLBEntryClusters &book,datetime now,CLiquidityBlockLogic* logic,int pass)
+     {
+      for(int k=0;k<m_htf_lb_count;k++)
+        {
+         if(m_htf_lbs[k].entryTriggerTime<=0 || m_htf_lbs[k].createdTime<CMarcoLBEntryClusters::Day(now)) continue;
+         for(int z=0;z<logic.m_liquidity_blocks.Total();z++)
+           {
+            CLiquidityBlock* lb=(CLiquidityBlock*)logic.m_liquidity_blocks.At(z);
+            if(lb==NULL || lb.id!=m_htf_lbs[k].id || (pass==0)!=lb.isMitigated) continue;
+            book.Observe(m_symbol,(int)m_tradeTF,lb.id,lb.isBullish ? 1 : -1,lb.zoneLow,lb.zoneHigh,now,lb.isMitigated,lb.createdTime);
+            break;
+           }
+        }
+
+      // Reclassification can remove a source object. Its recorded premises must
+      // still be allowed to mitigate; disappearance alone does not reset a cluster.
+      if(pass==0)
+         for(int n=0;n<ArraySize(book.nodes);n++)
+           {
+            SMarcoLBClusterNode node=book.nodes[n];
+            if(node.symbol!=m_symbol || node.tf!=(int)m_tradeTF || node.day!=CMarcoLBEntryClusters::Day(now) || node.mitigated || node.retired) continue;
+            bool found=false;
+            for(int z=0;z<logic.m_liquidity_blocks.Total();z++)
+              {
+               CLiquidityBlock* lb=(CLiquidityBlock*)logic.m_liquidity_blocks.At(z);
+               if(lb!=NULL && lb.id==node.id) { found=true; break; }
+              }
+            if(found) continue;
+            for(int r=m_htf_bars_count-1;r>=0 && m_htf_time[r]>node.formed;r--)
+               if(m_htf_time[r]+PeriodSeconds(m_tradeTF)<=now &&
+                  CTradeRejection::BoundaryBroken(node.side==1,m_htf_low[r],m_htf_high[r],node.low,node.high,0.0))
+                 { book.nodes[n].mitigated=true; break; }
+           }
+     }
+
+   datetime m_clusterSyncedBar;
+   datetime m_clusterSyncedDay;
+
+   bool              HasTakenSetup(string setupKey)
+     {
+      for(int i = 0; i < m_taken_setups.Total(); i++)
+         if(m_taken_setups.At(i) == setupKey)
+            return true;
+      return false;
+     }
+
+   void              RegisterTrade(ulong ticket, int dir, string type, double entry, double sl, double tp, double lots, double risk, const SMarcoTPPlan &plan)
+     {
+      int sz = ArraySize(m_trades);
+      ArrayResize(m_trades, sz + 1);
+      ZeroMemory(m_trades[sz]);
+      m_trades[sz].ticket = ticket;
+      m_trades[sz].positionId = ticket;
+      if(ticket > 0 && HistoryOrderSelect(ticket))
+        {
+         ulong posId = (ulong)HistoryOrderGetInteger(ticket, ORDER_POSITION_ID);
+         if(posId > 0)
+            m_trades[sz].positionId = posId;
+        }
+      m_trades[sz].symbol = m_symbol;
+      m_trades[sz].tf = m_tradeTF;
+      m_trades[sz].direction = dir;
+      m_trades[sz].setupType = type;
+      m_trades[sz].openTime = TimeCurrent();
+      m_trades[sz].openPrice = entry;
+      m_trades[sz].slPrice = sl;
+      m_trades[sz].tpPrice = tp;
+      m_trades[sz].lots = lots;
+      m_trades[sz].riskAmount = risk;
+      m_trades[sz].isOpen = true;
+      m_trades[sz].closeTime = 0;
+      m_trades[sz].closePrice = 0.0;
+      m_trades[sz].realizedProfit = 0.0;
+      m_trades[sz].hasEnteredVicinity = false;
+      m_trades[sz].lastVicinityCheckedBar = 0;
+      SMarcoLiveTPState state; ZeroMemory(state);
+      state.plan=plan; state.lots=lots; state.riskCash=risk; state.pendingStage=-1;
+      if(!CMarcoLiveStagedTP::Save(m_magic,m_trades[sz].positionId,state))
+         PrintFormat("[TP STATE ERROR] %s #%I64u: cannot persist partial exits; broker SL/final TP remain active.",m_symbol,m_trades[sz].positionId);
+
+     }
+
+   void              RecordClosedTrade(ulong positionId, datetime closeTime, double closePrice, double profit)
+     {
+      for(int i=0;i<ArraySize(m_trades);i++)
+        {
+         if(m_trades[i].positionId!=positionId && m_trades[i].ticket!=positionId) continue;
+         RefreshTradeHistory(i);
+        }
+     }
+
+   void              RefreshTradeHistory(int index)
+     {
+      ulong identifier=m_trades[index].positionId;
+      if(identifier==0 || !HistorySelectByPosition(identifier)) return;
+      double profit=0;
+      datetime lastTime=0; double lastPrice=0;
+      for(int d=0;d<HistoryDealsTotal();d++)
+        {
+         ulong deal=HistoryDealGetTicket(d);
+         profit+=HistoryDealGetDouble(deal,DEAL_PROFIT)+HistoryDealGetDouble(deal,DEAL_SWAP)+
+                 HistoryDealGetDouble(deal,DEAL_COMMISSION)+HistoryDealGetDouble(deal,DEAL_FEE);
+         long entry=HistoryDealGetInteger(deal,DEAL_ENTRY);
+         if(entry==DEAL_ENTRY_OUT || entry==DEAL_ENTRY_OUT_BY || entry==DEAL_ENTRY_INOUT)
+           {
+            lastTime=(datetime)HistoryDealGetInteger(deal,DEAL_TIME);
+            lastPrice=HistoryDealGetDouble(deal,DEAL_PRICE);
+           }
+        }
+      m_trades[index].realizedProfit=profit;
+      if(CMarcoLiveStagedTP::Select(identifier)==0 && lastTime>0)
+        {
+         m_trades[index].isOpen=false;
+         m_trades[index].closeTime=lastTime;
+         m_trades[index].closePrice=lastPrice;
+        }
+     }
+
+   double ExtensionSourcePivot(const SMarcoExtensionSource &source, int direction, datetime now)
+     {
+      bool m1=source.tf==PERIOD_M1;
+      int count=m1 ? ArraySize(m_m1PivotConfirmations) : ArraySize(m_pivotConfirmations);
+      for(int p=0;p<count;p++)
+        {
+         datetime at=m1 ? m_m1PivotConfirmations[p].pivotTime : m_pivotConfirmations[p].pivotTime;
+         datetime known=m1 ? m_m1PivotConfirmations[p].availableTime : m_pivotConfirmations[p].availableTime;
+         bool high=m1 ? m_m1PivotConfirmations[p].isHigh : m_pivotConfirmations[p].isHigh;
+         if(at==source.created && known>0 && known<=now && high==(direction==-1))
+            return m1 ? m_m1PivotConfirmations[p].price : m_pivotConfirmations[p].price;
+        }
+      return 0.0;
+     }
+
+   bool ExtendFromNewLB(SMarcoTPPlan &plan, SMarcoExtensionState &state, datetime opened, datetime now)
+     {
+      if(plan.remaining<=1e-9) return false;
+      SMarcoExtensionSource source; source.tf=0; source.id=""; source.created=0; source.available=0;
+      int preferred=m_entryTF==ENTRY_TF_M1 ? (int)PERIOD_M1 : (int)m_tradeTF;
+      string before=state.seen;
+      int count=CMarcoLBExtension::Observe(m_htfRejection,plan,state,opened,now,(int)m_tradeTF,preferred,source);
+      if(m1LBContext!=NULL && m_tradeTF!=PERIOD_M1)
+         count+=CMarcoLBExtension::Observe(m1LBContext.rejectionHistory,plan,state,opened,now,(int)PERIOD_M1,preferred,source);
+      if(count>0)
+        {
+         double tick=SymbolInfoDouble(m_symbol,SYMBOL_TRADE_TICK_SIZE);
+         int digits=(int)SymbolInfoInteger(m_symbol,SYMBOL_DIGITS);
+         if(CMarcoStagedTP::Extend(plan,1,m_fallbackRR,tick,digits,now))
+           {
+            double pivot=0.0;
+            if(plan.remaining<=0.25+1e-9)
+              {
+               pivot=ExtensionSourcePivot(source,plan.direction,now);
+               double stop=plan.entry;
+               if(pivot>0) CMarcoSymbolUnits::BufferedStop(m_symbol,pivot,m_slBufferPips,plan.direction==1,stop);
+               CMarcoStagedTP::TightenStop(plan,stop);
+              }
+            Print(StringFormat("[LB TP EXTEND] %s %s entry=%s new_LBs=%d total=%d last_TP=%.8f remaining=%.2f%% source=%s LB=%s source_pivot=%.8f SL=%.8f",
+                        m_symbol,EnumToString(m_tradeTF),TimeToString(opened,TIME_DATE|TIME_SECONDS),count,plan.extensionCount,
+                        plan.price[CMarcoStagedTP::LastPending(plan)],100.0*plan.remaining,
+                        EnumToString((ENUM_TIMEFRAMES)source.tf),source.id,pivot,CMarcoStagedTP::Stop(plan)));
+           }
+         else PrintFormat("[LB TP EXTEND SKIPPED] %s: extended target is invalid for this symbol.",m_symbol);
+        }
+      return state.seen!=before;
+     }
+
+   bool              ManageStagedTP(CTrade &trade)
+     {
+      bool changed=false;
+      bool hasOpen=false;
+      for(int i=0;i<ArraySize(m_trades);i++) if(m_trades[i].isOpen) { hasOpen=true; break; }
+      if(!hasOpen) return false;
+      // Open-position protection runs every engine tick, independently of entry scan throttling.
+      UpdateLiveEngines();
+      UpdateM1EntryEngine();
+      for(int i=0;i<ArraySize(m_trades);i++)
+         if(m_trades[i].isOpen)
+           {
+            int action=0;
+            SMarcoLiveTPState state;
+            if(CMarcoLiveStagedTP::Load(m_magic,m_trades[i].positionId,state))
+              {
+               SMarcoStructureExit signal; ZeroMemory(signal);
+               if(m_applyEntryPolicyToPreventionExits)
+                 {
+                  if(state.pendingStage<0 && state.structureAction==0 && !state.plan.sequence.pending)
+                    {
+                     MqlTick quote={};
+                     if(SymbolInfoTick(m_symbol,quote))
+                       {
+                        datetime seen0=state.plan.sequence.seen[0],seen1=state.plan.sequence.seen[1];
+                        int previousStep=state.plan.sequence.step;
+                        SMarcoSequenceSignal sequence=ObserveOpposingSequence(state.plan,m_trades[i].openTime,TimeCurrent(),state.plan.direction==1 ? quote.bid : quote.ask);
+                        bool advanced=previousStep!=state.plan.sequence.step || seen0!=state.plan.sequence.seen[0] || seen1!=state.plan.sequence.seen[1];
+                        if(advanced && !CMarcoLiveStagedTP::Save(m_magic,m_trades[i].positionId,state))
+                          { Print("[OPPOSING SEQUENCE ERROR] Cannot save event progress; no close submitted."); continue; }
+                        if(sequence.step>0)
+                           PrintFormat("[OPPOSING SEQUENCE SIGNAL] %s step=%d region=%s share=%.0f%% source=%s event=%s",
+                                       m_symbol,sequence.step,sequence.profit ? "TP" : "SL",sequence.share*100,
+                                       EnumToString((ENUM_TIMEFRAMES)sequence.tf),TimeToString(sequence.eventTime,TIME_DATE|TIME_SECONDS));
+                       }
+                    }
+                 }
+               else signal=CMarcoStructureExit::Evaluate(m_htfRejection,state.plan,m_trades[i].openTime,TimeCurrent(),m_tradeTF);
+               if(!m_applyEntryPolicyToPreventionExits && m1LBContext!=NULL)
+                 {
+                  SMarcoStructureExit m1=CMarcoStructureExit::Evaluate(m1LBContext.rejectionHistory,state.plan,m_trades[i].openTime,TimeCurrent(),PERIOD_M1);
+                  if(m1.action>signal.action) signal=m1;
+                 }
+               action=signal.action;
+               // Never move targets underneath an unresolved market-close request.
+               if(action==0 && state.structureAction==0 && state.pendingStage<0 && !state.plan.sequence.pending &&
+                  CMarcoLiveStagedTP::Select(m_trades[i].positionId)>0 &&
+                  MathAbs(PositionGetDouble(POSITION_VOLUME)-state.lots*state.plan.remaining)<SymbolInfoDouble(m_symbol,SYMBOL_VOLUME_STEP)*0.1)
+                 {
+                  if(ExtendFromNewLB(state.plan,state.extension,m_trades[i].openTime,TimeCurrent()) &&
+                     !CMarcoLiveStagedTP::Save(m_magic,m_trades[i].positionId,state))
+                     PrintFormat("[LB TP EXTEND ERROR] %s #%I64u: state save failed; broker protection unchanged.",m_symbol,m_trades[i].positionId);
+                 }
+               if(action>state.structureAction)
+                  PrintFormat("[CHOCH EXIT SIGNAL] %s #%I64u %s source=%s LB=%s event=%s line=%.8f",
+                              m_symbol,m_trades[i].positionId,action==2 ? "FULL" : "HALF + BE",EnumToString(signal.tf),
+                              signal.lbId,TimeToString(signal.eventTime,TIME_DATE|TIME_SECONDS),signal.level);
+              }
+            bool updated=CMarcoLiveStagedTP::Manage(trade,m_magic,m_trades[i].positionId,m_symbol,
+                           m_enableVicinityExit,m_tpVicinityPips*GetPipSize(m_symbol),m_tpVicinityTF,action);
+            if(updated || CMarcoLiveStagedTP::Select(m_trades[i].positionId)==0)
+              { RefreshTradeHistory(i); changed=true; }
+           }
+      return changed;
+     }
+
+   double            FindOpposingIND_TP(bool isBull, double entryPx, datetime sessionStart, datetime sessionEnd)
+     {
+      double tp = 0.0;
+      double bestDist = DBL_MAX;
+      if(indLtf == NULL)
+         return 0.0;
+
+      for(int z = 0; z < indLtf.m_zones.Total(); z++)
+        {
+         CInducementZone* ind = (CInducementZone*)indLtf.m_zones.At(z);
+         if(ind == NULL || !ind.isInducement || ind.isMitigated)
+            continue;
+
+         datetime indTime = (ind.inducementTime > 0) ? ind.inducementTime : ind.createdTime;
+         if(indTime < sessionStart || indTime > sessionEnd)
+            continue;
+
+         if(isBull)
+           {
+            if(!ind.isBullish && ind.zoneHigh > entryPx)
+              {
+               double dist = ind.zoneHigh - entryPx;
+               if(dist < bestDist)
+                 {
+                  bestDist = dist;
+                  tp       = ind.zoneHigh;
+                 }
+              }
+           }
+         else
+           {
+            if(ind.isBullish && ind.zoneLow < entryPx)
+              {
+               double dist = entryPx - ind.zoneLow;
+               if(dist < bestDist)
+                 {
+                  bestDist = dist;
+                  tp       = ind.zoneLow;
+                 }
+              }
+           }
+        }
+      return tp;
+     }
+
+   double            FindOpposingLB_TP(bool isBull, double entryPx, datetime sessionStart, datetime sessionEnd)
+     {
+      double tp = 0.0;
+      double bestDist = DBL_MAX;
+      if(lbLogicLtf == NULL)
+         return 0.0;
+
+      for(int b = 0; b < lbLogicLtf.m_liquidity_blocks.Total(); b++)
+        {
+         CLiquidityBlock* lb = (CLiquidityBlock*)lbLogicLtf.m_liquidity_blocks.At(b);
+         if(lb == NULL || lb.isMitigated)
+            continue;
+
+         if(lb.createdTime < sessionStart || lb.createdTime > sessionEnd)
+            continue;
+
+         if(isBull)
+           {
+            if(!lb.isBullish && lb.zoneLow > entryPx)
+              {
+               double dist = lb.zoneLow - entryPx;
+               if(dist < bestDist)
+                 {
+                  bestDist = dist;
+                  tp       = lb.zoneLow;
+                 }
+              }
+           }
+         else
+           {
+            if(lb.isBullish && lb.zoneHigh < entryPx)
+              {
+               double dist = entryPx - lb.zoneHigh;
+               if(dist < bestDist)
+                 {
+                  bestDist = dist;
+                  tp       = lb.zoneHigh;
+                 }
+              }
+           }
+        }
+      return tp;
+     }
+
+   double            FindFallback_TP(bool isBull, double entryPx, double riskDist)
+     {
+      if(m_fallbackRR > 0.0)
+         return isBull ? (entryPx + m_fallbackRR * riskDist) : (entryPx - m_fallbackRR * riskDist);
+      return 0.0;
+     }
+
+   void              Init(string sym, ENUM_TIMEFRAMES trdTF, ENUM_TIMEFRAMES tpTF, double riskPct, double slPips,
+                          int zzDep, double zzDev, ulong magic, string startTime, string endTime,
+                          bool trkSwp, bool trkPost, int minTch, double prox, bool strctOrg, bool mrgCls,
+                          double clsTol, bool expBnd, bool cDS, bool cOB, bool cSP, bool cFZ, bool cBB,
+                          bool riskyMode = false, bool requireZZConf = true,
+                          bool useFallbackTP = true, double fallbackRR = 1.0, string priceDiff = "Absolute",
+                          bool blockLessRR = false, ENUM_TP_PRIORITY tpPriority1 = TP_PRIORITY_IND,
+                          bool allowOverlapping = false, ENUM_SL_LOCATION slLocation = SL_LOCATION_LB_BOUNDARIES,
+                          bool adjustTPForSpread = true, bool enableVicinityExit = true,
+                          double tpVicinityPips = 1.0, ENUM_TIMEFRAMES tpVicinityTF = PERIOD_M1,
+                          ENUM_MARCO_ENTRY_TF entryTF = ENTRY_TF_LB,
+                          bool applyEntryPolicyToPreventionExits = false)
+     {
+      m_symbol                 = sym;
+      m_tradeTF                = trdTF;
+      m_tpTF                   = PERIOD_M1; // Staged structural targets are always M1.
+      m_entryTF                = entryTF;
+      m_riskPercent            = riskPct;
+      m_slBufferPips           = slPips;
+      m_zzDepth                = zzDep;
+      m_zzDev                  = zzDev;
+      m_magic                  = magic;
+      m_startTime              = startTime;
+      m_riskyMode              = riskyMode;
+      m_applyEntryPolicyToPreventionExits = applyEntryPolicyToPreventionExits;
+      m_requireZZConfirmation  = requireZZConf;
+      m_useFallbackTP          = useFallbackTP;
+      m_fallbackRR             = fallbackRR;
+      m_blockLessRR            = blockLessRR;
+      m_tpPriority1            = tpPriority1;
+      m_allowOverlappingTrades = allowOverlapping;
+      m_slLocation             = slLocation;
+      m_priceDiff              = priceDiff;
+      m_trackSweepsAnywhere     = trkSwp;
+      m_trackPostIndCHoCH      = trkPost;
+      m_minTouches             = minTch;
+      m_proxPips               = prox;
+      m_strictOrigin           = strctOrg;
+      m_mergeClustered         = mrgCls;
+      m_clusterTol             = clsTol;
+      m_expandBounds           = expBnd;
+      m_chkDS                  = cDS;
+      m_chkOB                  = cOB;
+      m_chkSP                  = cSP;
+      m_chkFZ                  = cFZ;
+      m_chkBB                  = cBB;
+
+      m_adjustTPForSpread      = adjustTPForSpread;
+      m_enableVicinityExit     = enableVicinityExit;
+      m_tpVicinityPips         = tpVicinityPips;
+      m_tpVicinityTF           = tpVicinityTF;
+
+      SMarcoSymbolUnits symbolUnits;
+      double slBuffer=0.0;
+      if(CMarcoSymbolUnits::Load(m_symbol, symbolUnits) &&
+         CMarcoSymbolUnits::Buffer(m_slBufferPips, symbolUnits.pip, slBuffer))
+         PrintFormat("[PIP UNITS] %s: pip=%.8f tick=%.8f SL buffer=%.8f pips -> %.8f price; stops round outward to ticks.",
+                     m_symbol, symbolUnits.pip, symbolUnits.tick, m_slBufferPips, slBuffer);
+      else
+         PrintFormat("[PIP UNITS] %s: invalid price units or InpSLBufferPips; entries blocked until valid.", m_symbol);
+      m_taken_setups.Clear();
+      m_htf_lb_count = 0;
+      ArrayResize(m_htf_lbs, 0);
+
+      datetime sessionStart = GetSessionStartTime();
+      ResetAndSync(sessionStart);
+     }
+
+   bool EnsureHistoryStart()
+     {
+      if(m_historyStart>0) return true;
+      if(!CMarcoHistoryContext::ResolveStart(m_symbol,GetSessionStartTime(),m_historyStart)) return false;
+      PrintFormat("[HISTORY WARMUP] %s %s: context from %s; midnight preserves ZigZag and market structure.",
+                  m_symbol,EnumToString(m_tradeTF),TimeToString(m_historyStart,TIME_DATE|TIME_SECONDS));
+      return true;
+     }
+
+   void              ResetAndSync(datetime startTime)
+     {
+      m_historyStart=0;
+      CleanupEngines();
+      ArrayResize(m_pivotConfirmations, 0);
+      ResetM1EntryEngine();
+      m1LBContext = new CMarcoM1LBContext();
+      m1LBContext.Init(m_trackSweepsAnywhere, m_trackPostIndCHoCH, m_minTouches, m_proxPips,
+                       m_strictOrigin, m_mergeClustered, m_clusterTol, m_expandBounds,
+                       m_chkDS, m_chkOB, m_chkSP, m_chkFZ, m_chkBB, SymbolInfoDouble(m_symbol,SYMBOL_POINT),
+                       m_applyEntryPolicyToPreventionExits);
+
+      Settings* sHtf = new Settings(m_zzDev, m_zzDepth, clrNONE, true, false, false, false, m_priceDiff);
+      sHtf.draw = false;
+      zzHtf = newInstance(sHtf);
+      zzHtf.zoneStartTime = GetSessionStartTime();
+      msHtf = new CMarketStructure();
+      msHtf.Init(false, false, m_tradeTF);
+      dsHtf = new CDemandSupplyLogic();
+      spHtf = new CSwingPOILogic();
+      obHtf = new COrderBlockLogic();
+      fzHtf = new CFlipZoneLogic();
+      bbHtf = new CBreakerBlockLogic();
+      indHtf = new CInducementLogic();
+      indHtf.Init(m_minTouches, m_proxPips, m_chkDS, m_chkOB, m_chkSP, m_chkFZ, m_chkBB, m_strictOrigin, m_mergeClustered, m_clusterTol, m_expandBounds);
+      lbLogicHtf = new CLiquidityBlockLogic();
+      lbLogicHtf.Init(m_trackSweepsAnywhere, m_trackPostIndCHoCH, SymbolInfoDouble(m_symbol,SYMBOL_POINT));
+
+      Settings* sLtf = new Settings(m_zzDev, m_zzDepth, clrNONE, true, false, false, false, m_priceDiff);
+      sLtf.draw = false;
+      zzLtf = newInstance(sLtf);
+      zzLtf.zoneStartTime = GetSessionStartTime();
+      msLtf = new CMarketStructure();
+      msLtf.Init(false, false, m_tpTF);
+      dsLtf = new CDemandSupplyLogic();
+      spLtf = new CSwingPOILogic();
+      obLtf = new COrderBlockLogic();
+      fzLtf = new CFlipZoneLogic();
+      bbLtf = new CBreakerBlockLogic();
+      indLtf = new CInducementLogic();
+      indLtf.Init(m_minTouches, m_proxPips, m_chkDS, m_chkOB, m_chkSP, m_chkFZ, m_chkBB, m_strictOrigin, m_mergeClustered, m_clusterTol, m_expandBounds);
+      lbLogicLtf = new CLiquidityBlockLogic();
+      lbLogicLtf.Init(m_trackSweepsAnywhere, m_trackPostIndCHoCH, SymbolInfoDouble(m_symbol,SYMBOL_POINT));
+
+      m_htf_lb_count   = 0;
+      m_htf_bars_count = 0;
+      m_ltf_bars_count = 0;
+      m_last_htf_bar   = 0;
+      m_last_ltf_bar   = 0;
+      ArrayResize(m_htf_lbs, 0);
+
+      if(!EnsureHistoryStart())
+        {
+         PrintFormat("[HISTORY WARMUP] %s %s: waiting for previous-day history; entries blocked.",m_symbol,EnumToString(m_tradeTF));
+         return;
+        }
+      SyncTimeframe(m_tradeTF, m_historyStart, TimeCurrent(), zzHtf, msHtf, dsHtf, spHtf, obHtf, fzHtf, bbHtf, indHtf, lbLogicHtf, true);
+      SyncTimeframe(m_tpTF,    m_historyStart, TimeCurrent(), zzLtf, msLtf, dsLtf, spLtf, obLtf, fzLtf, bbLtf, indLtf, lbLogicLtf, false);
+      UpdateM1EntryEngine();
+     }
+
+   void              SyncTimeframe(ENUM_TIMEFRAMES tf, datetime startT, datetime endT,
+                                   ZigZag* zz, CMarketStructure* ms, CDemandSupplyLogic* ds,
+                                   CSwingPOILogic* sp, COrderBlockLogic* ob, CFlipZoneLogic* fz,
+                                   CBreakerBlockLogic* bb, CInducementLogic* ind, CLiquidityBlockLogic* lbLgc,
+                                   bool isHTF)
+     {
+      datetime currentBar = iTime(m_symbol, tf, 0);
+      if(currentBar <= 0)
+         return;
+      if(endT >= currentBar)
+         endT = currentBar - 1;
+      if(endT < startT)
+         return;
+      MqlRates closedRates[];
+      int rates_total = CopyRates(m_symbol, tf, startT, endT, closedRates);
+      if(rates_total <= 0 || !CMarcoHistoryContext::HasPriorContext(closedRates[0].time,GetSessionStartTime()))
+         return;
+
+      double pipSize = GetPipSize(m_symbol);
+      if(pipSize <= 0.0) return;
+
+      if(isHTF)
+        {
+         m_htf_bars_count = rates_total;
+         ArrayResize(m_htf_time, rates_total);
+         ArrayResize(m_htf_open, rates_total);
+         ArrayResize(m_htf_high, rates_total);
+         ArrayResize(m_htf_low, rates_total);
+         ArrayResize(m_htf_close, rates_total);
+         ArrayResize(m_htf_vol, rates_total);
+         for(int r = 0; r < rates_total; r++)
+           {
+            m_htf_time[r] = closedRates[r].time;
+            m_htf_open[r] = closedRates[r].open;
+            m_htf_high[r] = closedRates[r].high;
+            m_htf_low[r] = closedRates[r].low;
+            m_htf_close[r] = closedRates[r].close;
+            m_htf_vol[r] = closedRates[r].tick_volume;
+           }
+
+         for(int i = 0; i < m_htf_bars_count; i++)
+           {
+            zz.update(m_htf_high[i], m_htf_low[i], m_htf_time[i], m_htf_vol[i], i, true, false);
+            CapturePivotConfirmations(zz, m_htf_time[i] + PeriodSeconds(tf));
+            ms.Update(i, m_htf_time, m_htf_high, m_htf_low, m_htf_close, zz);
+            ds.DetectPOIs(i, m_htf_time, m_htf_high, m_htf_low, zz);
+            ds.UpdateMitigation(m_htf_close[i]);
+            sp.DetectPOIs(i, m_htf_time, m_htf_high, m_htf_low, zz);
+            sp.UpdateMitigation(m_htf_close[i]);
+            ob.DetectPOIs(i, m_htf_time, m_htf_high, m_htf_low, zz);
+            ob.UpdateMitigation(m_htf_close[i]);
+            fz.DetectFlipZones(i, m_htf_time, m_htf_high, m_htf_low, m_htf_close, zz, ms, ds);
+            fz.UpdateMitigation(m_htf_close[i]);
+            bb.DetectBreakers(zz, ds, sp, ob, fz);
+            bb.UpdateMitigation(m_htf_high[i], m_htf_low[i], m_htf_time[i]);
+            ind.Process(i, m_htf_time, m_htf_open, m_htf_high, m_htf_low, m_htf_close, zz, ms, ds, sp, ob, fz, bb, pipSize);
+
+            if(lbLgc != NULL)
+              {
+               lbLgc.Process(i, m_htf_time, m_htf_high, m_htf_low, ms, sp, ind, zz);
+               int cur_count  = lbLgc.m_liquidity_blocks.Total();
+
+               if(cur_count > 0)
+                 {
+                  for(int b = 0; b < cur_count; b++)
+                    {
+                     CLiquidityBlock* src = (CLiquidityBlock*)lbLgc.m_liquidity_blocks.At(b);
+                     if(src == NULL || CheckPointer(src) != POINTER_DYNAMIC || FindCachedLB(src.id) >= 0)
+                        continue;
+
+                     int sz = ArraySize(m_htf_lbs);
+                     ArrayResize(m_htf_lbs, sz + 1);
+                     m_htf_lbs[sz].id                   = src.id;
+                     m_htf_lbs[sz].isBullish            = src.isBullish;
+                     m_htf_lbs[sz].triggerType          = src.triggerType;
+                     m_htf_lbs[sz].zoneHigh             = src.zoneHigh;
+                     m_htf_lbs[sz].zoneLow              = src.zoneLow;
+                     m_htf_lbs[sz].createdTime          = src.createdTime;
+                     m_htf_lbs[sz].confirmedTime        = m_htf_time[i];
+                     m_htf_lbs[sz].entryTriggerTime     = 0;
+                     m_htf_lbs[sz].sourceActive         = true;
+                     m_htf_lbs[sz].firstTouchTime       = 0;
+                     m_htf_lbs[sz].m1TouchTime = 0;
+                     ZeroMemory(m_htf_lbs[sz].pivotEntry);
+                     ZeroMemory(m_htf_lbs[sz].pivotWatch);
+                     CMarcoIndEntryFilter::Reset(m_htf_lbs[sz].indWait);
+                     m_htf_lbs[sz].rejectionTouchTime = 0;
+                     m_htf_lbs[sz].rejectionHTFTouchTime = 0;
+                     m_htf_lbs[sz].m1PivotTime = 0;
+                     m_htf_lbs[sz].m1PivotPrice = 0.0;
+                     m_htf_lbs[sz].m1ConfirmTime = 0;
+                     m_htf_lbs[sz].sweepLineTime        = src.sweepLineTime;
+                     m_htf_lbs[sz].inducementOriginTime = src.inducementOriginTime;
+
+                     double buffer = m_slBufferPips * pipSize;
+                     bool isMit = false;
+                     datetime mitTime = 0;
+
+                     for(int j = i; j < m_htf_bars_count; j++)
+                       {
+                        if(src.isBullish)
+                          {
+                           if(m_htf_low[j] < src.zoneLow - buffer)
+                             {
+                              isMit = true;
+                              mitTime = m_htf_time[j];
+                              break;
+                             }
+                          }
+                        else
+                          {
+                           if(m_htf_high[j] > src.zoneHigh + buffer)
+                             {
+                              isMit = true;
+                              mitTime = m_htf_time[j];
+                              break;
+                             }
+                          }
+                       }
+
+                     datetime fpTime = 0, fpConfTime = 0;
+                     double fpPrice = 0.0;
+                     int pivotTouches = CountTouchingPivots(src.isBullish, src.zoneHigh, src.zoneLow, buffer,
+                                                            m_htf_time[i], endT, zz, fpTime, fpPrice, fpConfTime);
+                     if(m_entryTF == ENTRY_TF_M1)
+                        pivotTouches = 0;
+
+                     if(!m_riskyMode)
+                       {
+                        if(isMit || pivotTouches > 0)
+                          {
+                           m_htf_lbs[sz].touchCount     = MathMax(1, pivotTouches);
+                           m_htf_lbs[sz].isMitigated    = true;
+                           m_htf_lbs[sz].mitigationTime = mitTime > 0 ? mitTime : fpTime;
+                          }
+                        else
+                          {
+                           m_htf_lbs[sz].touchCount     = 0;
+                           m_htf_lbs[sz].isMitigated    = false;
+                           m_htf_lbs[sz].mitigationTime = 0;
+                          }
+                       }
+                     else
+                       {
+                        m_htf_lbs[sz].touchCount     = pivotTouches;
+                        m_htf_lbs[sz].isMitigated    = isMit;
+                        m_htf_lbs[sz].mitigationTime = mitTime;
+                       }
+
+                     m_htf_lbs[sz].nomenclature   = src.GetNomenclature(ms.tf_str());
+                     m_htf_lb_count++;
+                    }
+                 }
+
+               // Reconstruct the same entry arm time during bootstrap. The
+               // optional guardrail policy uses this same chronological latch.
+               for(int cached = 0; cached < ArraySize(m_htf_lbs); cached++)
+                 {
+                  if(m_htf_lbs[cached].entryTriggerTime > 0 || !m_htf_lbs[cached].sourceActive)
+                     continue;
+                  for(int b = 0; b < lbLgc.m_liquidity_blocks.Total(); b++)
+                    {
+                     CLiquidityBlock* src = (CLiquidityBlock*)lbLgc.m_liquidity_blocks.At(b);
+                     if(src == NULL || CheckPointer(src) != POINTER_DYNAMIC || src.id != m_htf_lbs[cached].id)
+                        continue;
+                     m_htf_lbs[cached].triggerType = src.triggerType;
+                     m_htf_lbs[cached].sweepLineTime = src.sweepLineTime;
+                     break;
+                    }
+                  datetime structureTime = lbLgc.EntryTriggerStructureTime(
+                                              m_htf_lbs[cached].isBullish,m_htf_lbs[cached].triggerType,
+                                              m_htf_lbs[cached].sweepLineTime,ind,ms,m_htf_time[i]);
+                  if(structureTime > 0)
+                     m_htf_lbs[cached].entryTriggerTime = m_htf_time[i];
+                 }
+
+               for(int cached = 0; cached < ArraySize(m_htf_lbs); cached++)
+                 {
+                  bool foundSource = false;
+                  for(int b = 0; b < lbLgc.m_liquidity_blocks.Total(); b++)
+                    {
+                     CLiquidityBlock* src = (CLiquidityBlock*)lbLgc.m_liquidity_blocks.At(b);
+                     if(src == NULL || CheckPointer(src) != POINTER_DYNAMIC || src.id != m_htf_lbs[cached].id)
+                        continue;
+
+                     foundSource = true;
+                     m_htf_lbs[cached].triggerType          = src.triggerType;
+                     m_htf_lbs[cached].zoneHigh             = src.zoneHigh;
+                     m_htf_lbs[cached].zoneLow              = src.zoneLow;
+                     m_htf_lbs[cached].sweepLineTime        = src.sweepLineTime;
+                     m_htf_lbs[cached].inducementOriginTime = src.inducementOriginTime;
+                     m_htf_lbs[cached].nomenclature         = src.GetNomenclature(ms.tf_str());
+                     break;
+                    }
+                  if(!foundSource && m_htf_lbs[cached].sourceActive)
+                    {
+                     m_htf_lbs[cached].sourceActive = false;
+                     CTradeRejection::Retire(m_htf_lbs[cached].touchCount, m_htf_lbs[cached].isMitigated,
+                                             m_htf_lbs[cached].mitigationTime, m_htf_time[i] + PeriodSeconds(tf));
+                     m_htf_lbs[cached].m1TouchTime = 0;
+                     ZeroMemory(m_htf_lbs[cached].pivotEntry);
+                     ZeroMemory(m_htf_lbs[cached].pivotWatch);
+                     CMarcoIndEntryFilter::Reset(m_htf_lbs[cached].indWait);
+                     m_htf_lbs[cached].m1PivotTime = 0;
+                     m_htf_lbs[cached].m1PivotPrice = 0.0;
+                     m_htf_lbs[cached].m1ConfirmTime = 0;
+                     PrintFormat("[LB REMOVED] %s %s LB=%s at=%s; pending entry cancelled.",
+                                 m_symbol, EnumToString(m_tradeTF), m_htf_lbs[cached].id,
+                                 TimeToString(m_htf_time[i] + PeriodSeconds(tf), TIME_DATE|TIME_SECONDS));
+                    }
+                 }
+               CaptureSetupIndContext(ind,ms,m_htf_time[i]+PeriodSeconds(tf),m_htf_low[i],m_htf_high[i]);
+               CaptureRejectionContext(ms, lbLgc, ind, m_htf_time[i] + PeriodSeconds(tf), m_htfRejection);
+               AuditChochTouches(m_htf_time[i], m_htf_low[i], m_htf_high[i], m_htf_time[i] + PeriodSeconds(tf), zz, tf, m_htfRejection);
+              }
+           }
+         m_last_htf_bar = m_htf_time[m_htf_bars_count - 1];
+        }
+      else
+        {
+         m_ltf_bars_count = rates_total;
+         ArrayResize(m_ltf_time, rates_total);
+         ArrayResize(m_ltf_open, rates_total);
+         ArrayResize(m_ltf_high, rates_total);
+         ArrayResize(m_ltf_low, rates_total);
+         ArrayResize(m_ltf_close, rates_total);
+         ArrayResize(m_ltf_vol, rates_total);
+         for(int r = 0; r < rates_total; r++)
+           {
+            m_ltf_time[r] = closedRates[r].time;
+            m_ltf_open[r] = closedRates[r].open;
+            m_ltf_high[r] = closedRates[r].high;
+            m_ltf_low[r] = closedRates[r].low;
+            m_ltf_close[r] = closedRates[r].close;
+            m_ltf_vol[r] = closedRates[r].tick_volume;
+           }
+
+         for(int i = 0; i < m_ltf_bars_count; i++)
+           {
+            zz.update(m_ltf_high[i], m_ltf_low[i], m_ltf_time[i], m_ltf_vol[i], i, true, false);
+            ms.Update(i, m_ltf_time, m_ltf_high, m_ltf_low, m_ltf_close, zz);
+            ds.DetectPOIs(i, m_ltf_time, m_ltf_high, m_ltf_low, zz);
+            ds.UpdateMitigation(m_ltf_close[i]);
+            sp.DetectPOIs(i, m_ltf_time, m_ltf_high, m_ltf_low, zz);
+            sp.UpdateMitigation(m_ltf_close[i]);
+            ob.DetectPOIs(i, m_ltf_time, m_ltf_high, m_ltf_low, zz);
+            ob.UpdateMitigation(m_ltf_close[i]);
+            fz.DetectFlipZones(i, m_ltf_time, m_ltf_high, m_ltf_low, m_ltf_close, zz, ms, ds);
+            fz.UpdateMitigation(m_ltf_close[i]);
+            bb.DetectBreakers(zz, ds, sp, ob, fz);
+            bb.UpdateMitigation(m_ltf_high[i], m_ltf_low[i], m_ltf_time[i]);
+            ind.Process(i, m_ltf_time, m_ltf_open, m_ltf_high, m_ltf_low, m_ltf_close, zz, ms, ds, sp, ob, fz, bb, pipSize);
+            if(lbLgc != NULL)
+               lbLgc.Process(i, m_ltf_time, m_ltf_high, m_ltf_low, ms, sp, ind, zz);
+           }
+         m_last_ltf_bar = m_ltf_time[m_ltf_bars_count - 1];
+        }
+     }
+
+   void              UpdateM1EntryEngine()
+     {
+      if(!EnsureHistoryStart()) return;
+      if(zzEntry == NULL)
+         return;
+      datetime currentBar = iTime(m_symbol, PERIOD_M1, 0);
+      datetime from = m_last_entry_bar > 0 ? m_last_entry_bar + 1 : m_historyStart;
+      if(currentBar <= 0 || from >= currentBar ||
+         (m_last_entry_bar > 0 && m_last_entry_bar + PeriodSeconds(PERIOD_M1) >= currentBar))
+         return;
+      MqlRates closedRates[];
+      int count = CopyRates(m_symbol, PERIOD_M1, from, currentBar - 1, closedRates);
+      if(m_last_entry_bar==0 && count>0 && !CMarcoHistoryContext::HasPriorContext(closedRates[0].time,GetSessionStartTime())) return;
+      for(int r = 0; r < count; r++)
+         FeedM1EntryBar(closedRates[r].time, closedRates[r].open, closedRates[r].high, closedRates[r].low, closedRates[r].close, closedRates[r].tick_volume);
+     }
+
+   void              UpdateLiveEngines()
+     {
+      if(!EnsureHistoryStart()) return;
+      double pipSize = GetPipSize(m_symbol);
+      if(pipSize <= 0.0) return;
+
+      datetime htfCurrent = iTime(m_symbol, m_tradeTF, 0);
+      datetime htfFrom = (m_last_htf_bar > 0) ? m_last_htf_bar + 1 : m_historyStart;
+      if(htfCurrent > htfFrom && (m_entryTF != ENTRY_TF_M1 || m_last_htf_bar == 0 ||
+                                  m_last_htf_bar + PeriodSeconds(m_tradeTF) < htfCurrent))
+        {
+         MqlRates htfRates[];
+         int copied = CopyRates(m_symbol, m_tradeTF, htfFrom, htfCurrent - 1, htfRates);
+         if(m_last_htf_bar==0 && copied>0 && !CMarcoHistoryContext::HasPriorContext(htfRates[0].time,GetSessionStartTime())) return;
+         for(int r = 0; r < copied; r++)
+           {
+            int new_i = m_htf_bars_count;
+            m_htf_bars_count++;
+            ArrayResize(m_htf_time, m_htf_bars_count);
+            ArrayResize(m_htf_open, m_htf_bars_count);
+            ArrayResize(m_htf_high, m_htf_bars_count);
+            ArrayResize(m_htf_low, m_htf_bars_count);
+            ArrayResize(m_htf_close, m_htf_bars_count);
+            ArrayResize(m_htf_vol, m_htf_bars_count);
+
+            m_htf_time[new_i]  = htfRates[r].time;
+            m_htf_open[new_i]  = htfRates[r].open;
+            m_htf_high[new_i]  = htfRates[r].high;
+            m_htf_low[new_i]   = htfRates[r].low;
+            m_htf_close[new_i] = htfRates[r].close;
+            m_htf_vol[new_i]   = htfRates[r].tick_volume;
+
+            zzHtf.update(m_htf_high[new_i], m_htf_low[new_i], m_htf_time[new_i], m_htf_vol[new_i], new_i, true, false);
+            CapturePivotConfirmations(zzHtf, m_htf_time[new_i] + PeriodSeconds(m_tradeTF));
+
+            msHtf.Update(new_i, m_htf_time, m_htf_high, m_htf_low, m_htf_close, zzHtf);
+            dsHtf.DetectPOIs(new_i, m_htf_time, m_htf_high, m_htf_low, zzHtf);
+            dsHtf.UpdateMitigation(m_htf_close[new_i]);
+            spHtf.DetectPOIs(new_i, m_htf_time, m_htf_high, m_htf_low, zzHtf);
+            spHtf.UpdateMitigation(m_htf_close[new_i]);
+            obHtf.DetectPOIs(new_i, m_htf_time, m_htf_high, m_htf_low, zzHtf);
+            obHtf.UpdateMitigation(m_htf_close[new_i]);
+            fzHtf.DetectFlipZones(new_i, m_htf_time, m_htf_high, m_htf_low, m_htf_close, zzHtf, msHtf, dsHtf);
+            fzHtf.UpdateMitigation(m_htf_close[new_i]);
+            bbHtf.DetectBreakers(zzHtf, dsHtf, spHtf, obHtf, fzHtf);
+            bbHtf.UpdateMitigation(m_htf_high[new_i], m_htf_low[new_i], m_htf_time[new_i]);
+            indHtf.Process(new_i, m_htf_time, m_htf_open, m_htf_high, m_htf_low, m_htf_close, zzHtf, msHtf, dsHtf, spHtf, obHtf, fzHtf, bbHtf, pipSize);
+
+            lbLogicHtf.Process(new_i, m_htf_time, m_htf_high, m_htf_low, msHtf, spHtf, indHtf, zzHtf);
+            int curCount  = lbLogicHtf.m_liquidity_blocks.Total();
+
+            if(curCount > 0)
+              {
+               for(int b = 0; b < curCount; b++)
+                 {
+                  CLiquidityBlock* src = (CLiquidityBlock*)lbLogicHtf.m_liquidity_blocks.At(b);
+                  if(src == NULL || CheckPointer(src) != POINTER_DYNAMIC || FindCachedLB(src.id) >= 0)
+                     continue;
+
+                  int sz = ArraySize(m_htf_lbs);
+                  ArrayResize(m_htf_lbs, sz + 1);
+                  m_htf_lbs[sz].id                   = src.id;
+                  m_htf_lbs[sz].isBullish            = src.isBullish;
+                  m_htf_lbs[sz].triggerType          = src.triggerType;
+                  m_htf_lbs[sz].zoneHigh             = src.zoneHigh;
+                  m_htf_lbs[sz].zoneLow              = src.zoneLow;
+                  m_htf_lbs[sz].createdTime          = src.createdTime;
+                  m_htf_lbs[sz].confirmedTime        = m_htf_time[new_i];
+                  m_htf_lbs[sz].entryTriggerTime     = 0;
+                  m_htf_lbs[sz].sourceActive         = true;
+                  m_htf_lbs[sz].firstTouchTime       = 0;
+                  m_htf_lbs[sz].m1TouchTime = 0;
+                  ZeroMemory(m_htf_lbs[sz].pivotEntry);
+                  ZeroMemory(m_htf_lbs[sz].pivotWatch);
+                  CMarcoIndEntryFilter::Reset(m_htf_lbs[sz].indWait);
+                  m_htf_lbs[sz].rejectionTouchTime = 0;
+                  m_htf_lbs[sz].rejectionHTFTouchTime = 0;
+                  m_htf_lbs[sz].m1PivotTime = 0;
+                  m_htf_lbs[sz].m1PivotPrice = 0.0;
+                  m_htf_lbs[sz].m1ConfirmTime = 0;
+                  m_htf_lbs[sz].sweepLineTime        = src.sweepLineTime;
+                  m_htf_lbs[sz].inducementOriginTime = src.inducementOriginTime;
+                  m_htf_lbs[sz].touchCount           = 0;
+                  m_htf_lbs[sz].isMitigated          = false;
+                  m_htf_lbs[sz].mitigationTime       = 0;
+                  m_htf_lbs[sz].nomenclature         = src.GetNomenclature(msHtf.tf_str());
+                  m_htf_lb_count++;
+                 }
+              }
+
+            // Entry setup always waits for this arm. Guardrails either use raw
+            // LBs immediately or wait for the same arm, according to the input.
+            for(int cached = 0; cached < ArraySize(m_htf_lbs); cached++)
+              {
+               if(m_htf_lbs[cached].entryTriggerTime > 0 || !m_htf_lbs[cached].sourceActive)
+                  continue;
+               // Registration can merge an existing IND LB with a new BSL/SSL
+               // trigger during this same bar. Read the authoritative trigger
+               // before applying its entry policy.
+               for(int b = 0; b < lbLogicHtf.m_liquidity_blocks.Total(); b++)
+                 {
+                  CLiquidityBlock* src = (CLiquidityBlock*)lbLogicHtf.m_liquidity_blocks.At(b);
+                  if(src == NULL || CheckPointer(src) != POINTER_DYNAMIC || src.id != m_htf_lbs[cached].id)
+                     continue;
+                  m_htf_lbs[cached].triggerType = src.triggerType;
+                  m_htf_lbs[cached].sweepLineTime = src.sweepLineTime;
+                  break;
+                 }
+               datetime structureTime = lbLogicHtf.EntryTriggerStructureTime(
+                                           m_htf_lbs[cached].isBullish,m_htf_lbs[cached].triggerType,
+                                           m_htf_lbs[cached].sweepLineTime,indHtf,msHtf,m_htf_time[new_i]);
+               if(structureTime <= 0)
+                  continue;
+               m_htf_lbs[cached].entryTriggerTime = m_htf_time[new_i];
+               PrintFormat("[ENTRY LB ARMED] %s %s LB=%s side=%s trigger=%s entry_structure=%s available=%s",
+                           m_symbol,EnumToString(m_tradeTF),m_htf_lbs[cached].id,
+                           m_htf_lbs[cached].isBullish ? "BL" : "BR",
+                           EnumToString(m_htf_lbs[cached].triggerType),
+                           TimeToString(structureTime,TIME_DATE|TIME_MINUTES),
+                           TimeToString(m_htf_time[new_i]+PeriodSeconds(m_tradeTF),TIME_DATE|TIME_MINUTES));
+              }
+
+            for(int cached = 0; cached < ArraySize(m_htf_lbs); cached++)
+              {
+               bool foundSource = false;
+               for(int b = 0; b < lbLogicHtf.m_liquidity_blocks.Total(); b++)
+                 {
+                  CLiquidityBlock* src = (CLiquidityBlock*)lbLogicHtf.m_liquidity_blocks.At(b);
+                  if(src == NULL || CheckPointer(src) != POINTER_DYNAMIC || src.id != m_htf_lbs[cached].id)
+                     continue;
+
+                  foundSource = true;
+                  m_htf_lbs[cached].triggerType          = src.triggerType;
+                  m_htf_lbs[cached].zoneHigh             = src.zoneHigh;
+                  m_htf_lbs[cached].zoneLow              = src.zoneLow;
+                  m_htf_lbs[cached].sweepLineTime        = src.sweepLineTime;
+                  m_htf_lbs[cached].inducementOriginTime = src.inducementOriginTime;
+                  m_htf_lbs[cached].nomenclature         = src.GetNomenclature(msHtf.tf_str());
+                  break;
+                 }
+               if(!foundSource && m_htf_lbs[cached].sourceActive)
+                 {
+                  m_htf_lbs[cached].sourceActive = false;
+                  CTradeRejection::Retire(m_htf_lbs[cached].touchCount, m_htf_lbs[cached].isMitigated,
+                                          m_htf_lbs[cached].mitigationTime, m_htf_time[new_i] + PeriodSeconds(m_tradeTF));
+                  m_htf_lbs[cached].m1TouchTime = 0;
+                  ZeroMemory(m_htf_lbs[cached].pivotEntry);
+                  ZeroMemory(m_htf_lbs[cached].pivotWatch);
+                  CMarcoIndEntryFilter::Reset(m_htf_lbs[cached].indWait);
+                  m_htf_lbs[cached].m1PivotTime = 0;
+                  m_htf_lbs[cached].m1PivotPrice = 0.0;
+                  m_htf_lbs[cached].m1ConfirmTime = 0;
+                  PrintFormat("[LB REMOVED] %s %s LB=%s at=%s; pending entry cancelled.",
+                              m_symbol, EnumToString(m_tradeTF), m_htf_lbs[cached].id,
+                              TimeToString(m_htf_time[new_i] + PeriodSeconds(m_tradeTF), TIME_DATE|TIME_SECONDS));
+                 }
+              }
+            CaptureSetupIndContext(indHtf,msHtf,m_htf_time[new_i]+PeriodSeconds(m_tradeTF),m_htf_low[new_i],m_htf_high[new_i]);
+            CaptureRejectionContext(msHtf, lbLogicHtf, indHtf, m_htf_time[new_i] + PeriodSeconds(m_tradeTF), m_htfRejection);
+            AuditChochTouches(m_htf_time[new_i], m_htf_low[new_i], m_htf_high[new_i], m_htf_time[new_i] + PeriodSeconds(m_tradeTF), zzHtf, m_tradeTF, m_htfRejection);
+            m_last_htf_bar = htfRates[r].time;
+           }
+        }
+
+      datetime ltfCurrent = iTime(m_symbol, m_tpTF, 0);
+      datetime ltfFrom = (m_last_ltf_bar > 0) ? m_last_ltf_bar + 1 : m_historyStart;
+      if(ltfCurrent > ltfFrom && (m_entryTF != ENTRY_TF_M1 || m_last_ltf_bar == 0 ||
+                                  m_last_ltf_bar + PeriodSeconds(m_tpTF) < ltfCurrent))
+        {
+         MqlRates ltfRates[];
+         int copied = CopyRates(m_symbol, m_tpTF, ltfFrom, ltfCurrent - 1, ltfRates);
+         if(m_last_ltf_bar==0 && copied>0 && !CMarcoHistoryContext::HasPriorContext(ltfRates[0].time,GetSessionStartTime())) return;
+         for(int r = 0; r < copied; r++)
+           {
+            int new_ltf_i = m_ltf_bars_count;
+            m_ltf_bars_count++;
+            ArrayResize(m_ltf_time, m_ltf_bars_count);
+            ArrayResize(m_ltf_open, m_ltf_bars_count);
+            ArrayResize(m_ltf_high, m_ltf_bars_count);
+            ArrayResize(m_ltf_low, m_ltf_bars_count);
+            ArrayResize(m_ltf_close, m_ltf_bars_count);
+            ArrayResize(m_ltf_vol, m_ltf_bars_count);
+
+            m_ltf_time[new_ltf_i]  = ltfRates[r].time;
+            m_ltf_open[new_ltf_i]  = ltfRates[r].open;
+            m_ltf_high[new_ltf_i]  = ltfRates[r].high;
+            m_ltf_low[new_ltf_i]   = ltfRates[r].low;
+            m_ltf_close[new_ltf_i] = ltfRates[r].close;
+            m_ltf_vol[new_ltf_i]   = ltfRates[r].tick_volume;
+
+            zzLtf.update(m_ltf_high[new_ltf_i], m_ltf_low[new_ltf_i], m_ltf_time[new_ltf_i], m_ltf_vol[new_ltf_i], new_ltf_i, true, false);
+
+            msLtf.Update(new_ltf_i, m_ltf_time, m_ltf_high, m_ltf_low, m_ltf_close, zzLtf);
+            dsLtf.DetectPOIs(new_ltf_i, m_ltf_time, m_ltf_high, m_ltf_low, zzLtf);
+            dsLtf.UpdateMitigation(m_ltf_close[new_ltf_i]);
+            spLtf.DetectPOIs(new_ltf_i, m_ltf_time, m_ltf_high, m_ltf_low, zzLtf);
+            spLtf.UpdateMitigation(m_ltf_close[new_ltf_i]);
+            obLtf.DetectPOIs(new_ltf_i, m_ltf_time, m_ltf_high, m_ltf_low, zzLtf);
+            obLtf.UpdateMitigation(m_ltf_close[new_ltf_i]);
+            fzLtf.DetectFlipZones(new_ltf_i, m_ltf_time, m_ltf_high, m_ltf_low, m_ltf_close, zzLtf, msLtf, dsLtf);
+            fzLtf.UpdateMitigation(m_ltf_close[new_ltf_i]);
+            bbLtf.DetectBreakers(zzLtf, dsLtf, spLtf, obLtf, fzLtf);
+            bbLtf.UpdateMitigation(m_ltf_high[new_ltf_i], m_ltf_low[new_ltf_i], m_ltf_time[new_ltf_i]);
+            indLtf.Process(new_ltf_i, m_ltf_time, m_ltf_open, m_ltf_high, m_ltf_low, m_ltf_close, zzLtf, msLtf, dsLtf, spLtf, obLtf, fzLtf, bbLtf, pipSize);
+            lbLogicLtf.Process(new_ltf_i, m_ltf_time, m_ltf_high, m_ltf_low, msLtf, spLtf, indLtf, zzLtf);
+
+            m_last_ltf_bar = ltfRates[r].time;
+           }
+        }
+     }
+
+   //+------------------------------------------------------------------+
+   //| Active 1-Pip Vicinity & Opposite Candle Exit Engine              |
+   //+------------------------------------------------------------------+
+   void              CheckTPVicinityRejection(CTrade &trade, CWhatsAppAgent &wa, bool sendWaAlert)
+     {
+      if(!m_enableVicinityExit)
+         return;
+
+      CPositionInfo pos;
+      int total = PositionsTotal();
+      if(total == 0)
+         return;
+
+      double pipSize = GetPipSize(m_symbol);
+      if(pipSize <= 0.0) return;
+      double vicinityDistance = m_tpVicinityPips * pipSize;
+      double bid = SymbolInfoDouble(m_symbol, SYMBOL_BID);
+      double ask = SymbolInfoDouble(m_symbol, SYMBOL_ASK);
+
+      for(int i = total - 1; i >= 0; i--)
+        {
+         if(!pos.SelectByIndex(i))
+            continue;
+
+         if(pos.Symbol() != m_symbol || pos.Magic() != m_magic)
+            continue;
+
+         if(FileIsExist(CMarcoLiveStagedTP::Path(m_magic,(ulong)PositionGetInteger(POSITION_IDENTIFIER)))) continue;
+         ulong  ticket  = pos.Ticket();
+         double posTP   = pos.TakeProfit();
+         double posOpen = pos.PriceOpen();
+
+         if(posTP <= 0.0)
+            continue;
+
+         ENUM_POSITION_TYPE pType = pos.PositionType();
+         string gvKey = "MIE_Vic_" + IntegerToString(ticket);
+
+         // 1. Arm Vicinity State when within X pips of TP
+         bool isCurrentlyInVicinity = false;
+         if(pType == POSITION_TYPE_BUY)
+           {
+            if(bid >= (posTP - vicinityDistance))
+               isCurrentlyInVicinity = true;
+           }
+         else if(pType == POSITION_TYPE_SELL)
+           {
+            if(ask <= (posTP + vicinityDistance))
+               isCurrentlyInVicinity = true;
+           }
+
+         if(isCurrentlyInVicinity && !GlobalVariableCheck(gvKey))
+           {
+            GlobalVariableSet(gvKey, (double)TimeCurrent());
+            PrintFormat("🎯 [TP VICINITY ARMED] %s Position #%I64u reached within %.1f pip of TP (TP: %.5f). Monitoring %s closed candle rejection...",
+                        m_symbol, ticket, m_tpVicinityPips, posTP, EnumToString(m_tpVicinityTF));
+           }
+
+         // 2. Check for Rejection on Candle Close
+         if(GlobalVariableCheck(gvKey))
+           {
+            datetime barTime = iTime(m_symbol, m_tpVicinityTF, 1);
+            if(barTime == 0)
+               continue;
+
+            string gvBarKey = "MIE_VicBar_" + IntegerToString(ticket);
+            datetime lastBarChecked = (datetime)GlobalVariableGet(gvBarKey);
+
+            if(barTime != lastBarChecked)
+              {
+               GlobalVariableSet(gvBarKey, (double)barTime);
+
+               double open1  = iOpen(m_symbol, m_tpVicinityTF, 1);
+               double close1 = iClose(m_symbol, m_tpVicinityTF, 1);
+
+               bool rejectionTriggered = false;
+
+               // BUY Position: Bearish candle rejection (Close < Open)
+               if(pType == POSITION_TYPE_BUY && close1 < open1)
+                  rejectionTriggered = true;
+
+               // SELL Position: Bullish candle rejection (Close > Open)
+               if(pType == POSITION_TYPE_SELL && close1 > open1)
+                  rejectionTriggered = true;
+
+               if(rejectionTriggered)
+                 {
+                  PrintFormat("⚡ [TP VICINITY REJECTION] %s Position #%I64u formed opposite candle on %s after reaching 1-pip TP zone! Closing at market.",
+                              m_symbol, ticket, EnumToString(m_tpVicinityTF));
+
+                  trade.SetAsyncMode(false);
+                  if(trade.PositionClose(ticket))
+                    {
+                     GlobalVariableDel(gvKey);
+                     GlobalVariableDel(gvBarKey);
+
+                     double realizedPnl = pos.Profit() + pos.Swap() + pos.Commission();
+
+                     if(sendWaAlert)
+                       {
+                        string msg = GetWAHeader() + StringFormat(
+                           "🎯 *TP VICINITY EXIT (REJECTION)*\n"
+                           "━━━━━━━━━━━━━━━━━━━━━━\n"
+                           "📌 *Symbol:* %s\n"
+                           "🎫 *Ticket:* #%I64u\n"
+                           "🕯️ *Trigger:* Opposite %s Candle Rejection\n"
+                           "💵 *Exit Price:* %.5f (Near TP: %.5f)\n"
+                           "💰 *Realized P/L:* %s$%.2f",
+                           m_symbol, ticket, EnumToString(m_tpVicinityTF),
+                           (pType == POSITION_TYPE_BUY ? bid : ask), posTP,
+                           (realizedPnl >= 0 ? "+" : "-"), MathAbs(realizedPnl));
+                        wa.SendMessage(msg);
+                       }
+                    }
+                 }
+              }
+           }
+        }
+     }
+
+   void              ProcessLive(CTrade &trade, CWhatsAppAgent &wa, bool sendWaAlert, bool clusterStateReady)
+     {
+      if(GetPipSize(m_symbol) <= 0.0) return;
+      UpdateLiveEngines();
+      UpdateM1EntryEngine();
+      bool entryAllowed = clusterStateReady && CTradeRejection::ExecutionAllowed(TerminalInfoInteger(TERMINAL_TRADE_ALLOWED), MQLInfoInteger(MQL_TRADE_ALLOWED),
+                          AccountInfoInteger(ACCOUNT_TRADE_ALLOWED), AccountInfoInteger(ACCOUNT_TRADE_EXPERT),
+                          TimeCurrent(), m_nextEntryAttempt) &&
+                          m_historyStart>0 && m_last_htf_bar>0 && m_last_ltf_bar>0 &&
+                          m_last_entry_bar > 0 && m_last_entry_bar >= iTime(m_symbol, PERIOD_M1, 1);
+      if(AccountInfoInteger(ACCOUNT_MARGIN_MODE)!=ACCOUNT_MARGIN_MODE_RETAIL_HEDGING && PositionSelect(m_symbol))
+         entryAllowed=false; // Netting: never merge this plan with an existing symbol position.
+      // Rejection tracking continues while execution is temporarily blocked.
+
+
+      // =================================================================
+      // SYMBOL-LEVEL CONCURRENCY & 50% TP PROGRESS GUARD
+      // =================================================================
+      CPositionInfo livePos;
+      for(int p = PositionsTotal() - 1; p >= 0; p--)
+        {
+         if(livePos.SelectByIndex(p))
+           {
+            if(livePos.Symbol() == m_symbol && livePos.Magic() == m_magic)
+              {
+               if(!m_allowOverlappingTrades)
+                  entryAllowed = false;
+
+               double posOpen = livePos.PriceOpen();
+               double posTP   = livePos.TakeProfit();
+               SMarcoLiveTPState activePlan;
+               if(CMarcoLiveStagedTP::Load(m_magic,(ulong)PositionGetInteger(POSITION_IDENTIFIER),activePlan))
+                  posTP=activePlan.plan.price[CMarcoStagedTP::Primary(activePlan.plan)];
+               double posCur  = livePos.PriceCurrent();
+
+               if(livePos.PositionType() == POSITION_TYPE_BUY)
+                 {
+                  double tpDist = posTP - posOpen;
+                  if(tpDist <= 0.0)
+                     entryAllowed = false;
+
+                  double coveredDist = posCur - posOpen;
+                  if(CTradeRejection::Overlap(m_allowOverlappingTrades, tpDist, coveredDist))
+                     entryAllowed = false;
+                 }
+               else
+                  if(livePos.PositionType() == POSITION_TYPE_SELL)
+                    {
+                     double tpDist = posOpen - posTP;
+                     if(tpDist <= 0.0)
+                        entryAllowed = false;
+
+                     double coveredDist = posOpen - posCur;
+                     if(CTradeRejection::Overlap(m_allowOverlappingTrades, tpDist, coveredDist))
+                        entryAllowed = false;
+                    }
+              }
+           }
+        }
+
+      // Rejection tracking continues while execution is temporarily blocked.
+
+      double ask = SymbolInfoDouble(m_symbol, SYMBOL_ASK);
+      double bid = SymbolInfoDouble(m_symbol, SYMBOL_BID);
+      MqlTick scanTick = {};
+      if(m_entryTF == ENTRY_TF_M1)
+        {
+         if(!SymbolInfoTick(m_symbol, scanTick) || scanTick.bid <= 0.0 || scanTick.ask <= 0.0)
+            return;
+         bid = scanTick.bid;
+         ask = scanTick.ask;
+        }
+      if(m_entryTF != ENTRY_TF_M1 && !entryAllowed)
+        {
+         // Apply the new permanent guard without changing legacy retry/expiry behavior.
+         AuditChochTouches(TimeCurrent(), bid, bid, TimeCurrent(), zzHtf, m_tradeTF, m_htfRejection);
+         if(m1LBContext != NULL)
+            AuditChochTouches(TimeCurrent(), bid, bid, TimeCurrent(), zzEntry, PERIOD_M1, m1LBContext.rejectionHistory);
+         return;
+        }
+      int digits = (int)SymbolInfoInteger(m_symbol, SYMBOL_DIGITS);
+      double pipSize = GetPipSize(m_symbol);
+      if(pipSize <= 0.0) return;
+      double point = SymbolInfoDouble(m_symbol, SYMBOL_POINT);
+      long stopsLevel = SymbolInfoInteger(m_symbol, SYMBOL_TRADE_STOPS_LEVEL);
+      double minStopDist = stopsLevel * point;
+
+      datetime sessionStart = GetSessionStartTime(); // Sharp 00:00:00 of current day
+      datetime sessionEnd   = sessionStart + 86399;   // 23:59:59 of current day
+
+      for(int k = 0; k < m_htf_lb_count; k++)
+        {
+         if(m_htf_lbs[k].entryTriggerTime <= 0)
+            continue;
+         if(CTradeRejection::Used(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated))
+            continue;
+
+         // Strict 00:00:00 Daily Structural Creation Enforcement
+         if(m_htf_lbs[k].triggerType == LB_TRIGGER_BL_BSL || m_htf_lbs[k].triggerType == LB_TRIGGER_BR_SSL ||
+            m_htf_lbs[k].triggerType == LB_TRIGGER_BL_IND_BSL || m_htf_lbs[k].triggerType == LB_TRIGGER_BR_IND_SSL)
+           {
+            if(CTradeRejection::OutsideSession(m_htf_lbs[k].sweepLineTime, m_htf_lbs[k].createdTime, m_htf_lbs[k].confirmedTime, sessionStart))
+               continue;
+           }
+
+         if(m_htf_lbs[k].triggerType == LB_TRIGGER_BL_IND || m_htf_lbs[k].triggerType == LB_TRIGGER_BR_IND)
+           {
+            if(CTradeRejection::OutsideSession(m_htf_lbs[k].inducementOriginTime, m_htf_lbs[k].createdTime, m_htf_lbs[k].confirmedTime, sessionStart))
+               continue;
+           }
+
+         datetime eligibleTime = m_htf_lbs[k].entryTriggerTime + PeriodSeconds(m_tradeTF);
+         if(CTradeRejection::Unconfirmed(m_htf_lbs[k].entryTriggerTime, PeriodSeconds(m_tradeTF), TimeCurrent()))
+            continue;
+
+         double buffer = m_slBufferPips * pipSize;
+         bool isBull   = m_htf_lbs[k].isBullish;
+         double zHigh  = m_htf_lbs[k].zoneHigh;
+         double zLow   = m_htf_lbs[k].zoneLow;
+
+         int preConfTouches = 0;
+         bool preConfMitigated = false;
+
+         for(int j = 0; j < m_htf_bars_count; j++)
+           {
+            if(m_htf_time[j] <= m_htf_lbs[k].createdTime)
+               continue;
+            if(m_htf_time[j] > m_htf_lbs[k].entryTriggerTime)
+               break;
+
+            if(isBull)
+              {
+               if(m_htf_low[j] <= zHigh)
+                  preConfTouches++;
+               if(m_htf_low[j] < (zLow - buffer))
+                  preConfMitigated = true;
+              }
+            else
+              {
+               if(m_htf_high[j] >= zLow)
+                  preConfTouches++;
+               if(m_htf_high[j] > (zHigh + buffer))
+                  preConfMitigated = true;
+              }
+           }
+
+         datetime dummyFpTime = 0, dummyConfTime = 0;
+         double dummyFpPrice = 0.0;
+         int preConfPivots = CountTouchingPivots(isBull, zHigh, zLow, buffer,
+                                                 m_htf_lbs[k].createdTime, m_htf_lbs[k].entryTriggerTime,
+                                                 zzHtf, dummyFpTime, dummyFpPrice, dummyConfTime);
+
+         if(!m_riskyMode)
+           {
+            if(CTradeRejection::PreConfirmation(false, preConfTouches, preConfPivots, preConfMitigated))
+              {
+               m_htf_lbs[k].touchCount     = MathMax(1, preConfTouches);
+               m_htf_lbs[k].isMitigated    = true;
+               m_htf_lbs[k].mitigationTime = m_htf_lbs[k].entryTriggerTime;
+               continue;
+              }
+           }
+         else
+           {
+            if(CTradeRejection::PreConfirmation(true, 0, 0, preConfMitigated))
+              {
+               m_htf_lbs[k].isMitigated    = true;
+               m_htf_lbs[k].mitigationTime = m_htf_lbs[k].entryTriggerTime;
+               continue;
+              }
+           }
+
+         string setupNomenclature = m_htf_lbs[k].nomenclature;
+         string setupKey = m_symbol + "_" + setupNomenclature + "_" + TimeToString(m_htf_lbs[k].createdTime);
+         if(HasTakenSetup(setupKey))
+            continue;
+
+         if(isBull)
+           {
+            if(CTradeRejection::BoundaryBroken(true, bid, ask, zLow, zHigh, buffer))
+              {
+               m_htf_lbs[k].isMitigated = true;
+               continue;
+              }
+           }
+         else
+           {
+            if(CTradeRejection::BoundaryBroken(false, bid, ask, zLow, zHigh, buffer))
+              {
+               m_htf_lbs[k].isMitigated = true;
+               continue;
+              }
+           }
+
+            if(CMarcoPivotEntry::Enabled())
+              {
+               if(ObservePivotEntryRange(k,TimeCurrent(),bid,bid)) continue;
+               datetime latestPivot=0,latestConfirmed=0; double latestPrice=0;
+               ZigZag* currentZZ=m_entryTF==ENTRY_TF_M1 ? zzEntry : zzHtf;
+               if(m_entryTF!=ENTRY_TF_M1 || m_htf_lbs[k].m1TouchTime>0)
+                  GetLatestEntryPivot(k,TimeCurrent(),currentZZ,m_entryTF==ENTRY_TF_M1,latestPivot,latestPrice,latestConfirmed);
+              }
+         if(CheckIndWaitBoundary(k,TimeCurrent(),bid,ask)) continue;
+
+         ObserveRejectionTouch(k, TimeCurrent(), bid, bid, TimeCurrent(), m_tradeTF);
+         ObserveRejectionTouch(k, TimeCurrent(), bid, bid, TimeCurrent(), PERIOD_M1);
+         if(CheckChochRejection(k, TimeCurrent(), zzHtf, m_tradeTF, m_htfRejection) ||
+            (m1LBContext != NULL && CheckChochRejection(k, TimeCurrent(), zzEntry, PERIOD_M1, m1LBContext.rejectionHistory))) continue;
+         double firstPivotPrice = 0.0;
+         datetime firstPivotTime = 0;
+         datetime firstPivotConfirmTime = 0;
+         int pivotTouches = 0;
+         ZigZag* entryZigZag = zzHtf;
+         if(m_entryTF == ENTRY_TF_M1)
+           {
+            // Bid defines chart pivots in both directions; executable entry remains Ask/ Bid.
+            ArmM1Entry(k, scanTick.time, bid, bid);
+            if(!GetM1EntryPivot(k, TimeCurrent(), firstPivotTime, firstPivotPrice, firstPivotConfirmTime))
+               continue;
+            if(!CMarcoPivotEntry::Prepare(m_htf_lbs[k].pivotEntry,m_symbol,PERIOD_M1,isBull,
+                                         firstPivotTime,firstPivotConfirmTime,TimeCurrent())) continue;
+            if(!CMarcoPivotEntry::Enabled() && !CTradeRejection::M1Expired(m_last_entry_bar,firstPivotConfirmTime) &&
+               SkipIndEntryPrice(k,TimeCurrent(),isBull ? ask : bid)) continue;
+            if(!CMarcoPivotEntry::Waiting(m_htf_lbs[k].pivotEntry) &&
+                  CTradeRejection::M1Expired(m_last_entry_bar, firstPivotConfirmTime))
+              {
+               PrintFormat("[M1 ENTRY EXPIRED] %s %s LB=%s first_pivot=%s confirmed=%s; missed entry window, later pivots cannot re-arm this setup.",
+                           m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,
+                           TimeToString(firstPivotTime,TIME_DATE|TIME_SECONDS),TimeToString(firstPivotConfirmTime,TIME_DATE|TIME_SECONDS));
+               CTradeRejection::Consume(m_htf_lbs[k].touchCount, 1);
+               continue;
+              }
+            pivotTouches = 1;
+            entryZigZag = zzEntry;
+           }
+         else
+           {
+            if(CMarcoPivotEntry::Enabled())
+              {
+               if(!GetLatestEntryPivot(k,TimeCurrent(),zzHtf,false,firstPivotTime,firstPivotPrice,firstPivotConfirmTime)) continue;
+               pivotTouches=1;
+              }
+            else if(CMarcoIndEntryFilter::Enabled() && m_htf_lbs[k].indWait.waiting)
+              {
+               if(!GetSetupIndWaitPivot(k,TimeCurrent(),zzHtf,firstPivotTime,firstPivotPrice,firstPivotConfirmTime)) continue;
+               pivotTouches=1;
+              }
+            else
+               pivotTouches = CountTouchingPivots(isBull, zHigh, zLow, buffer,
+                                                   m_htf_lbs[k].entryTriggerTime, TimeCurrent(),
+                                                   zzHtf, firstPivotTime, firstPivotPrice, firstPivotConfirmTime);
+
+            if(CTradeRejection::MultiplePivots(pivotTouches))
+              {
+               CTradeRejection::Consume(m_htf_lbs[k].touchCount, pivotTouches);
+               continue;
+              }
+
+            if(m_requireZZConfirmation || CMarcoPivotEntry::Enabled() || (CMarcoIndEntryFilter::Enabled() && m_htf_lbs[k].indWait.waiting))
+              {
+               if(CTradeRejection::NeedsPivot(pivotTouches))
+                  continue;
+
+               if(TimeCurrent() < firstPivotConfirmTime)
+                  continue;
+
+               if(!CMarcoPivotEntry::Prepare(m_htf_lbs[k].pivotEntry,m_symbol,m_tradeTF,isBull,
+                                           firstPivotTime,firstPivotConfirmTime,TimeCurrent())) continue;
+
+               if(!CMarcoPivotEntry::Waiting(m_htf_lbs[k].pivotEntry) &&
+                  CTradeRejection::Expired(TimeCurrent(), firstPivotConfirmTime, PeriodSeconds(m_tradeTF)))
+                 {
+                  CTradeRejection::Consume(m_htf_lbs[k].touchCount, 1);
+                  continue;
+                 }
+              }
+            else
+              {
+               bool priceInZone = CTradeRejection::DirectEntry(isBull, bid, ask, zLow, zHigh, buffer);
+               if(!priceInZone)
+                  continue;
+              }
+
+           }
+
+         if(!CMarcoPivotEntry::Quote(m_htf_lbs[k].pivotEntry,isBull,bid)) continue;
+
+         if(m_entryTF!=ENTRY_TF_M1 &&
+            (SkipIndPivot(k,firstPivotTime,firstPivotPrice,firstPivotConfirmTime) ||
+             !IndEntryReady(k,firstPivotTime,firstPivotPrice,firstPivotConfirmTime,TimeCurrent()) ||
+             SkipIndEntryPrice(k,TimeCurrent(),isBull ? ask : bid,firstPivotTime,firstPivotConfirmTime))) continue;
+
+         if(HasOppositePosition(isBull)) continue;
+         if(!entryAllowed)
+            continue;
+         // Opposing Leg Filter (Anti-Bait Trap Guard)
+         if(IsLegComingFromOppositeLB(isBull, firstPivotTime, entryZigZag, buffer, TimeCurrent()))
+           {
+            PrintFormat("🛑 [%s] %s Trade BLOCKED: Touching pivot follows a ZigZag leg coming straight from an opposing %s zone! Skipping.",
+                        m_symbol, setupNomenclature, isBull ? "BR-LB" : "BL-LB");
+            CTradeRejection::Consume(m_htf_lbs[k].touchCount, MathMax(1, pivotTouches));
+            continue;
+           }
+
+         MqlTick entryTick = {};
+         if(!SymbolInfoTick(m_symbol, entryTick) || entryTick.ask <= 0.0 || entryTick.bid <= 0.0)
+            continue;
+         if(m_entryTF == ENTRY_TF_M1 && entryTick.time < firstPivotConfirmTime)
+            continue;
+         ask = entryTick.ask;
+         bid = entryTick.bid;
+         if(CMarcoPivotEntry::Enabled())
+           {
+            MqlRates forming[];
+            if(CopyRates(m_symbol,PERIOD_M1,0,1,forming)!=1) continue;
+            // A candle may have closed while the scan was running. Let the next
+            // engine update capture its pivot replacement before sending an order.
+            if(forming[0].time>m_last_entry_bar+PeriodSeconds(PERIOD_M1)) continue;
+            if(ObservePivotEntryRange(k,forming[0].time,forming[0].low,forming[0].high) ||
+               ObservePivotEntryRange(k,entryTick.time,bid,bid) ||
+               m_htf_lbs[k].pivotWatch.invalid) continue;
+           }
+         if(!CMarcoPivotEntry::Quote(m_htf_lbs[k].pivotEntry,isBull,bid)) continue;
+         double entryPx = isBull ? ask : bid;
+         // The executable quote is refreshed after overlap checks; apply the same veto again.
+         if(CheckIndWaitBoundary(k,entryTick.time,bid,ask) ||
+            SkipIndEntryPrice(k,entryTick.time,entryPx,firstPivotTime,firstPivotConfirmTime)) continue;
+         double slPx    = 0.0;
+
+         // Dynamic SL Placement, aligned outward to the broker's price grid.
+         double slReference = (m_slLocation == SL_LOCATION_CONFIRM_PIVOT && firstPivotPrice > 0.0) ?
+                              firstPivotPrice : (isBull ? zLow : zHigh);
+         if(!CMarcoSymbolUnits::BufferedStop(m_symbol, slReference, m_slBufferPips, isBull, slPx)) continue;
+         if(CTradeRejection::InvalidSL(isBull, entryPx, slPx))
+            continue;
+         double riskDist = MathAbs(entryPx - slPx);
+         if(CTradeRejection::StopTooClose(riskDist, minStopDist))
+            continue;
+
+         SMarcoTPPlan plan;
+         double lbTP=FindOpposingLB_TP(isBull,entryPx,sessionStart,sessionEnd);
+         double indTP=FindOpposingIND_TP(isBull,entryPx,sessionStart,sessionEnd);
+         double tpSpread=m_adjustTPForSpread ? MathMax(0.0,ask-bid) : 0.0;
+         double tickSize=SymbolInfoDouble(m_symbol,SYMBOL_TRADE_TICK_SIZE);
+         if(!CMarcoStagedTP::Build(plan,isBull,entryPx,slPx,lbTP,indTP,m_fallbackRR,(int)m_tpPriority1,tpSpread,tickSize,digits)) continue;
+         int primary=CMarcoStagedTP::Primary(plan);
+         int tpPriority=(int)m_tpPriority1+1;
+         double rrRatio=MathAbs(plan.price[primary]-entryPx)/riskDist;
+         if(CTradeRejection::LowRR(m_blockLessRR,plan.kind[primary]<2,rrRatio,m_fallbackRR))
+           { CTradeRejection::Consume(m_htf_lbs[k].touchCount,1); continue; }
+         double tpPx=CMarcoStagedTP::Farthest(plan);
+         double lots = 0.0;
+         MqlTradeResult entryResult = {};
+         datetime entryAttemptTime = TimeCurrent();
+         m_nextEntryAttempt = entryAttemptTime + 5;
+         // Reserve durably BEFORE submission, under an exclusive account/symbol/day lock.
+         // This also blocks duplicate entries from another chart while the broker responds.
+         CMarcoLiveLBClusters clusterState;
+         if(!clusterState.Open(m_symbol,entryAttemptTime)) continue;
+         ObserveEntryClusters(clusterState.book,entryAttemptTime,lbLogicHtf,0);
+         clusterState.book.RetireCompleted();
+         ObserveEntryClusters(clusterState.book,entryAttemptTime,lbLogicHtf,1);
+         string clusterSource=""; datetime clusterUsed=0;
+         if(clusterState.book.Blocked(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,entryAttemptTime,clusterSource,clusterUsed))
+           {
+            PrintFormat("[LB CLUSTER BLOCK] %s %s LB=%s: overlapping %s traded at %s; all cluster LBs must mitigate or a new broker day must start.",
+                        m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,clusterSource,TimeToString(clusterUsed,TIME_DATE|TIME_SECONDS));
+            continue;
+           }
+         if(!clusterState.book.Consume(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,entryAttemptTime) || !clusterState.Save()) continue;
+         bool entrySent=SendCheckedEntry(trade,isBull,entryPx,slPx,tpPx,setupKey,lots,entryResult);
+         if(!entrySent && !CTradeRejection::ConsumeOrderResult(entryResult.retcode))
+           {
+            clusterState.book.ReleaseReservation(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,entryAttemptTime);
+            if(!clusterState.Save()) Print("[LB CLUSTER STATE ERROR] Rejected entry reservation could not be released; cluster remains blocked.");
+           }
+         clusterState.Close();
+         if(!entrySent)
+           {
+            if(!CMarcoBrokerExecution::Record(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,isBull,entryAttemptTime,entryResult.retcode,lots))
+               PrintFormat("[BROKER RECORD ERROR] %s: could not save rejection for historical replay.",m_symbol);
+            // Accepted or ambiguous requests must not be resubmitted as duplicate entries.
+            if(CTradeRejection::ConsumeOrderResult(entryResult.retcode) || CMarcoBrokerExecution::Supported(entryResult.retcode))
+              {
+               m_taken_setups.Add(setupKey);
+               CTradeRejection::Consume(m_htf_lbs[k].touchCount, 1);
+               if(EntryVolumeRejected(entryResult.retcode))
+                  PrintFormat("[ENTRY VOLUME BLOCK] %s LB=%s code=%u: broker rejected volume; setup skipped instead of retrying the same rejected order.",
+                              m_symbol,m_htf_lbs[k].id,entryResult.retcode);
+              }
+            return;
+           }
+         entryPx = entryResult.price;
+         lots = entryResult.volume;
+         riskDist = MathAbs(entryPx - slPx);
+         CMarcoStagedTP::RebaseFill(plan,entryPx,m_fallbackRR,tpSpread,tickSize,digits);
+         tpPx=CMarcoStagedTP::Farthest(plan);
+         double riskCash=0.0;
+         if(OrderCalcProfit(isBull ? ORDER_TYPE_BUY : ORDER_TYPE_SELL,m_symbol,lots,entryPx,slPx,riskCash)) riskCash=MathAbs(riskCash);
+
+
+         if(isBull)
+           {
+            if(entryResult.deal > 0)
+              {
+               m_taken_setups.Add(setupKey);
+               CTradeRejection::Consume(m_htf_lbs[k].touchCount, 1);
+               ulong ticket = entryResult.order;
+               RegisterTrade(ticket, 1, setupNomenclature, entryPx, slPx, tpPx, lots, riskCash, plan);
+               ManageStagedTP(trade);
+               if(sendWaAlert)
+                 {
+                  string msg = GetWAHeader() + StringFormat(
+                                  "🟢 *BUY EXECUTED* | %s\n"
+                                  "📌 *Setup:* %s\n"
+                                  "💵 *Entry:* %.5f\n"
+                                  "🛡️ *SL:* %.5f\n"
+                                  "🎯 *TP (Priority #%d):* %.5f (%.2fR)\n"
+                                  "📦 *Lots:* %.2f",
+                                  m_symbol, setupNomenclature, entryPx, slPx, tpPriority, tpPx, rrRatio, lots);
+                  wa.SendMessage(msg);
+                 }
+               return;
+              }
+           }
+         else
+           {
+            if(entryResult.deal > 0)
+              {
+               m_taken_setups.Add(setupKey);
+               CTradeRejection::Consume(m_htf_lbs[k].touchCount, 1);
+               ulong ticket = entryResult.order;
+               RegisterTrade(ticket, -1, setupNomenclature, entryPx, slPx, tpPx, lots, riskCash, plan);
+               ManageStagedTP(trade);
+               if(sendWaAlert)
+                 {
+                  string msg = GetWAHeader() + StringFormat(
+                                  "🔴 *SELL EXECUTED* | %s\n"
+                                  "📌 *Setup:* %s\n"
+                                  "💵 *Entry:* %.5f\n"
+                                  "🛡️ *SL:* %.5f\n"
+                                  "🎯 *TP (Priority #%d):* %.5f (%.2fR)\n"
+                                  "📦 *Lots:* %.2f",
+                                  m_symbol, setupNomenclature, entryPx, slPx, tpPriority, tpPx, rrRatio, lots);
+                  wa.SendMessage(msg);
+                 }
+               return;
+              }
+           }
+        }
+     }
+  };
+
+//+------------------------------------------------------------------+
+//| Master Multi-Symbol Live Auto-Trading Engine with Persistent CSV |
+//+------------------------------------------------------------------+
+class CMarcoLiveAutoEngine
+  {
+private:
+   CMarcoLiveAutoInstance* m_instances[];
+   int                     m_total_instances;
+   CTrade                  m_trade;
+   CWhatsAppAgent          m_wa;
+   CPositionInfo           m_pos;
+
+   int                     m_scanSpeed;
+   ENUM_MARCO_ENTRY_TF      m_entryTF;
+   int                     m_current_scan_idx;
+   bool                    m_sendWa;
+   string                  m_startTime;
+   string                  m_endTime;
+   bool                    m_blockManual;
+   ulong                   m_magic;
+   bool                    m_riskyMode;
+   bool                    m_requireZZConfirmation;
+   bool                    m_useFallbackTP;
+   double                  m_fallbackRR;
+   bool                    m_blockLessRR;
+   ENUM_TP_PRIORITY        m_tpPriority1;
+   bool                    m_allowOverlappingTrades;
+   ENUM_SL_LOCATION        m_slLocation;
+   string                  m_priceDiff;
+
+   bool                    m_adjustTPForSpread;
+   bool                    m_enableVicinityExit;
+   double                  m_tpVicinityPips;
+   ENUM_TIMEFRAMES         m_tpVicinityTF;
+
+   datetime                m_current_day_start;
+   bool                    m_daily_report_sent;
+   double                  m_report_starting_balance;
+   CBacktestReportManager  m_report_manager;
+
+   string            GetDailyJournalPath(datetime dayStart)
+     {
+      MqlDateTime dt;
+      TimeToStruct(dayStart, dt);
+      return StringFormat("marcotrades\\LiveEA\\%04d-%02d-%02d.csv", dt.year, dt.mon, dt.day);
+     }
+
+public:
+                     CMarcoLiveAutoEngine()
+     {
+      m_total_instances         = 0;
+      m_current_scan_idx        = 0;
+      m_daily_report_sent       = false;
+      m_current_day_start       = 0;
+      m_report_starting_balance = 0.0;
+      m_riskyMode               = false;
+      m_requireZZConfirmation   = true;
+      m_useFallbackTP           = true;
+      m_fallbackRR              = 1.0;
+      m_blockLessRR             = false;
+      m_tpPriority1             = TP_PRIORITY_IND;
+      m_allowOverlappingTrades  = false;
+      m_slLocation             = SL_LOCATION_LB_BOUNDARIES;
+      m_priceDiff               = "Absolute";
+
+      m_adjustTPForSpread       = true;
+      m_enableVicinityExit      = true;
+      m_tpVicinityPips          = 1.0;
+      m_tpVicinityTF            = PERIOD_M1;
+     }
+
+                    ~CMarcoLiveAutoEngine() { Deinit(); }
+
+   void              Deinit()
+     {
+      for(int i = 0; i < m_total_instances; i++)
+        {
+         if(CheckPointer(m_instances[i]) == POINTER_DYNAMIC)
+            delete m_instances[i];
+        }
+      ArrayResize(m_instances, 0);
+      m_total_instances = 0;
+     }
+
+   void              SaveDailyJournal(datetime dayStart)
+     {
+      FolderCreate("marcotrades");
+      FolderCreate("marcotrades\\LiveEA");
+
+      string filePath = GetDailyJournalPath(dayStart);
+      int fh = FileOpen(filePath, FILE_WRITE | FILE_TXT | FILE_ANSI);
+      if(fh == INVALID_HANDLE)
+        {
+         PrintFormat("❌ Failed to open daily journal for writing: %s (Error: %d)", filePath, GetLastError());
+         return;
+        }
+
+      FileWriteString(fh, StringFormat("#START_BALANCE,%.2f\r\n", m_report_starting_balance));
+      FileWriteString(fh, "Ticket,PositionId,Symbol,Timeframe,SetupType,Direction,OpenTime,OpenPrice,SL,TP,Lots,RiskAmount,IsOpen,CloseTime,ClosePrice,RealizedProfit\r\n");
+
+      for(int i = 0; i < m_total_instances; i++)
+        {
+         CMarcoLiveAutoInstance* inst = m_instances[i];
+         for(int t = 0; t < ArraySize(inst.m_trades); t++)
+           {
+            SLiveAutoTrade tr = inst.m_trades[t];
+            if(tr.openTime < dayStart)
+               continue;
+
+            string line = StringFormat("%I64u,%I64u,%s,%s,%s,%d,%I64d,%.5f,%.5f,%.5f,%.2f,%.2f,%d,%I64d,%.5f,%.2f\r\n",
+                                       tr.ticket,
+                                       tr.positionId,
+                                       tr.symbol,
+                                       EnumToString(tr.tf),
+                                       tr.setupType,
+                                       tr.direction,
+                                       (long)tr.openTime,
+                                       tr.openPrice,
+                                       tr.slPrice,
+                                       tr.tpPrice,
+                                       tr.lots,
+                                       tr.riskAmount,
+                                       tr.isOpen ? 1 : 0,
+                                       (long)tr.closeTime,
+                                       tr.closePrice,
+                                       tr.realizedProfit);
+            FileWriteString(fh, line);
+           }
+        }
+
+      FileClose(fh);
+     }
+
+   void              LoadDailyJournal(datetime dayStart, bool preserveOpen = false)
+     {
+      FolderCreate("marcotrades");
+      FolderCreate("marcotrades\\LiveEA");
+
+      string filePath = GetDailyJournalPath(dayStart);
+
+      for(int i = 0; i < m_total_instances; i++)
+        {
+         int keep=0;
+         if(preserveOpen)
+           {
+            for(int t=0;t<ArraySize(m_instances[i].m_trades);t++)
+              {
+               if(!m_instances[i].m_trades[t].isOpen) continue;
+               m_instances[i].RefreshTradeHistory(t);
+               if(!m_instances[i].m_trades[t].isOpen) continue;
+               if(keep!=t) m_instances[i].m_trades[keep]=m_instances[i].m_trades[t];
+               keep++;
+              }
+           }
+         ArrayResize(m_instances[i].m_trades, keep);
+         m_instances[i].m_taken_setups.Clear();
+        }
+
+      if(!FileIsExist(filePath))
+        {
+         double closedProfitToday = 0.0;
+         HistorySelect(dayStart, TimeCurrent());
+         int totalDeals = HistoryDealsTotal();
+         for(int d = 0; d < totalDeals; d++)
+           {
+            ulong d_ticket = HistoryDealGetTicket(d);
+            if(d_ticket > 0)
+              {
+               long d_entry = HistoryDealGetInteger(d_ticket, DEAL_ENTRY);
+               if(d_entry == DEAL_ENTRY_OUT || d_entry == DEAL_ENTRY_INOUT)
+                 {
+                  long magic = HistoryDealGetInteger(d_ticket, DEAL_MAGIC);
+                  if(magic == m_magic)
+                    {
+                     closedProfitToday += HistoryDealGetDouble(d_ticket, DEAL_PROFIT) +
+                                          HistoryDealGetDouble(d_ticket, DEAL_SWAP) +
+                                          HistoryDealGetDouble(d_ticket, DEAL_COMMISSION);
+                    }
+                 }
+              }
+           }
+
+         m_report_starting_balance = AccountInfoDouble(ACCOUNT_BALANCE) - closedProfitToday;
+         PrintFormat("📝 Fresh daily journal initiated for %s | 00:00 Starting Balance: $%.2f",
+                     TimeToString(dayStart, TIME_DATE), m_report_starting_balance);
+
+         SaveDailyJournal(dayStart);
+         return;
+        }
+
+      int fh = FileOpen(filePath, FILE_READ | FILE_TXT | FILE_ANSI);
+      if(fh == INVALID_HANDLE)
+        {
+         PrintFormat("❌ Failed to open daily journal for reading: %s (Error: %d)", filePath, GetLastError());
+         return;
+        }
+
+      int loadedCount = 0;
+      while(!FileIsEnding(fh))
+        {
+         string line = FileReadString(fh);
+         StringTrimLeft(line);
+         StringTrimRight(line);
+         if(line == "" || StringLen(line) < 5)
+            continue;
+
+         if(StringFind(line, "#START_BALANCE") == 0)
+           {
+            string bParts[];
+            StringSplit(line, ',', bParts);
+            if(ArraySize(bParts) >= 2)
+               m_report_starting_balance = StringToDouble(bParts[1]);
+            continue;
+           }
+
+         if(StringFind(line, "Ticket") == 0)
+            continue;
+
+         string parts[];
+         int cnt = StringSplit(line, ',', parts);
+         if(cnt >= 16)
+           {
+            SLiveAutoTrade tr; ZeroMemory(tr);
+            tr.ticket         = (ulong)StringToInteger(parts[0]);
+            tr.positionId     = (ulong)StringToInteger(parts[1]);
+            tr.symbol         = parts[2];
+            tr.tf             = StringToEnumTF(parts[3]);
+            tr.setupType      = parts[4];
+            tr.direction      = (int)StringToInteger(parts[5]);
+            tr.openTime       = (datetime)StringToInteger(parts[6]);
+            tr.openPrice      = StringToDouble(parts[7]);
+            tr.slPrice        = StringToDouble(parts[8]);
+            tr.tpPrice        = StringToDouble(parts[9]);
+            tr.lots           = StringToDouble(parts[10]);
+            tr.riskAmount     = StringToDouble(parts[11]);
+            tr.isOpen         = (StringToInteger(parts[12]) != 0);
+            tr.closeTime      = (datetime)StringToInteger(parts[13]);
+            tr.closePrice     = StringToDouble(parts[14]);
+            tr.realizedProfit = StringToDouble(parts[15]);
+            tr.hasEnteredVicinity = false;
+            tr.lastVicinityCheckedBar = 0;
+
+            for(int i = 0; i < m_total_instances; i++)
+              {
+               if(m_instances[i].m_symbol == tr.symbol && m_instances[i].m_tradeTF == tr.tf)
+                 {
+                  bool alreadyTracked=false;
+                  for(int t=0;t<ArraySize(m_instances[i].m_trades);t++)
+                    {
+                     if(m_instances[i].m_trades[t].positionId==tr.positionId)
+                       { alreadyTracked=true; break; }
+                    }
+                  if(alreadyTracked) break;
+                  int sz = ArraySize(m_instances[i].m_trades);
+                  ArrayResize(m_instances[i].m_trades, sz + 1);
+                  m_instances[i].m_trades[sz] = tr;
+                  m_instances[i].RefreshTradeHistory(sz);
+
+                  string setupKey = tr.symbol + "_" + tr.setupType + "_" + TimeToString(tr.openTime);
+                  m_instances[i].m_taken_setups.Add(setupKey);
+                  loadedCount++;
+                  break;
+                 }
+              }
+           }
+        }
+
+      FileClose(fh);
+
+      PrintFormat("📂 Loaded %d trade(s) from daily journal [%s] | Preserved 00:00 Starting Balance: $%.2f",
+                  loadedCount, filePath, m_report_starting_balance);
+
+      SaveDailyJournal(dayStart);
+     }
+
+   void              Init(string &symbols[], ENUM_TIMEFRAMES &tfs[], ENUM_TIMEFRAMES tpTF,
+                          int scanSpeed, bool sendWa, string startTime, string endTime,
+                          double riskPct, double slPips, int zzDep, double zzDev, ulong magic,
+                          bool blockManual, bool trkSwp, bool trkPost, int minTch, double prox,
+                          bool strctOrg, bool mrgCls, double clsTol, bool expBnd,
+                          bool cDS, bool cOB, bool cSP, bool cFZ, bool cBB, bool riskyMode = false, bool requireZZConf = true,
+                          bool useFallbackTP = true, double fallbackRR = 1.0, string priceDiff = "Absolute",
+                          bool blockLessRR = false, ENUM_TP_PRIORITY tpPriority1 = TP_PRIORITY_IND,
+                          bool allowOverlapping = false, ENUM_SL_LOCATION slLocation = SL_LOCATION_LB_BOUNDARIES,
+                          bool adjustTPForSpread = true, bool enableVicinityExit = true,
+                          double tpVicinityPips = 1.0, ENUM_TIMEFRAMES tpVicinityTF = PERIOD_M1,
+                          ENUM_MARCO_ENTRY_TF entryTF = ENTRY_TF_LB,
+                          bool applyEntryPolicyToPreventionExits = false)
+     {
+      Deinit();
+
+      m_scanSpeed              = scanSpeed;
+      m_entryTF                = entryTF;
+      m_sendWa                 = sendWa;
+      m_startTime              = startTime;
+      m_endTime                = endTime;
+      m_blockManual            = blockManual;
+      m_magic                  = magic;
+      m_riskyMode              = riskyMode;
+      m_requireZZConfirmation  = requireZZConf;
+      m_useFallbackTP          = useFallbackTP;
+      m_fallbackRR             = fallbackRR;
+      m_blockLessRR            = blockLessRR;
+      m_tpPriority1            = tpPriority1;
+      m_allowOverlappingTrades = allowOverlapping;
+      m_slLocation             = slLocation;
+      m_priceDiff              = priceDiff;
+
+      m_adjustTPForSpread      = adjustTPForSpread;
+      m_enableVicinityExit     = enableVicinityExit;
+      m_tpVicinityPips         = tpVicinityPips;
+      m_tpVicinityTF           = tpVicinityTF;
+
+      m_trade.SetExpertMagicNumber(m_magic);
+      m_trade.SetMarginMode();
+      m_trade.SetTypeFillingBySymbol(_Symbol);
+
+      if(m_sendWa)
+         m_wa.Init();
+
+      int sCount = ArraySize(symbols);
+      int tCount = ArraySize(tfs);
+      m_total_instances = sCount * tCount;
+      ArrayResize(m_instances, m_total_instances);
+
+      int counter = 0;
+      for(int s = 0; s < sCount; s++)
+        {
+         SymbolSelect(symbols[s], true);
+         for(int t = 0; t < tCount; t++)
+           {
+            m_instances[counter] = new CMarcoLiveAutoInstance();
+            m_instances[counter].Init(symbols[s], tfs[t], tpTF, riskPct, slPips, zzDep, zzDev, magic,
+                                      m_startTime, m_endTime,
+                                      trkSwp, trkPost, minTch, prox, strctOrg, mrgCls, clsTol, expBnd,
+                                      cDS, cOB, cSP, cFZ, cBB, riskyMode, requireZZConf,
+                                      useFallbackTP, fallbackRR, m_priceDiff, m_blockLessRR, m_tpPriority1,
+                                      m_allowOverlappingTrades, m_slLocation,
+                                      m_adjustTPForSpread, m_enableVicinityExit, m_tpVicinityPips, m_tpVicinityTF, entryTF,
+                                      applyEntryPolicyToPreventionExits);
+            counter++;
+           }
+        }
+
+      datetime now = TimeCurrent();
+      m_current_day_start = now - (now % 86400);
+
+      LoadDailyJournal(m_current_day_start);
+
+      string p1Str = "IND";
+      if(m_tpPriority1 == TP_PRIORITY_LB)
+         p1Str = "LB";
+      else
+         if(m_tpPriority1 == TP_PRIORITY_FALLBACK)
+            p1Str = "Fallback";
+
+      string slStr = (m_slLocation == SL_LOCATION_CONFIRM_PIVOT) ? "Confirmation Pivot" : "LB Boundaries";
+
+      Print(StringFormat("🚀 Marcotrades LIVE Auto-Trader initialized with %d instances | Window: %s - %s | TP #1: %s | SL: %s | Spread TP: %s | Vicinity: %s (%.1f pips on %s)",
+                  m_total_instances, m_startTime, m_endTime, p1Str, slStr,
+                  m_adjustTPForSpread ? "ENABLED" : "DISABLED",
+                  m_enableVicinityExit ? "ENABLED" : "DISABLED",
+                  m_tpVicinityPips, EnumToString(m_tpVicinityTF)));
+     }
+
+   datetime          GetDailyReportTime(datetime dayStart)
+     {
+      int h = (int)StringToInteger(StringSubstr(m_endTime, 0, 2));
+      int m = (int)StringToInteger(StringSubstr(m_endTime, 3, 2));
+      return dayStart + h * 3600 + m * 60 + 59;
+     }
+
+   void              GenerateDailyReport(datetime dayStart, datetime reportTime)
+     {
+      SaveDailyJournal(dayStart);
+
+      m_report_manager.Reset(m_report_starting_balance);
+
+      for(int i = 0; i < m_total_instances; i++)
+        {
+         CMarcoLiveAutoInstance* inst = m_instances[i];
+         int trades = 0;
+         int wins = 0;
+         int losses = 0;
+         int openTrades = 0;
+         double contracts = 0.0;
+         double rewards = 0.0;
+         double netProfit = 0.0;
+         string setups = "";
+         string timeslots = "";
+
+         for(int t = 0; t < ArraySize(inst.m_trades); t++)
+           {
+            SLiveAutoTrade trade = inst.m_trades[t];
+            if(trade.openTime < dayStart || trade.openTime > reportTime)
+               continue;
+
+            trades++;
+            bool openAtCutoff = trade.isOpen || trade.closeTime == 0 || trade.closeTime > reportTime;
+            netProfit += trade.realizedProfit; // Include realized partial exits on positions still open.
+            SMarcoLiveTPState state;
+            bool staged=CMarcoLiveStagedTP::Load(m_magic,trade.positionId,state);
+            if(staged && state.riskCash>0) rewards+=trade.realizedProfit/state.riskCash;
+            if(openAtCutoff)
+              {
+               openTrades++;
+               if(staged) contracts+=trade.lots*(1.0-state.plan.remaining);
+              }
+            else
+              {
+               contracts += trade.lots;
+               if(!staged || state.riskCash<=0)
+                 {
+                  double riskDist=MathAbs(trade.openPrice-trade.slPrice);
+                  rewards+=trade.realizedProfit>=0 ? (riskDist>0 ? MathAbs(trade.closePrice-trade.openPrice)/riskDist : 0) : -1.0;
+                 }
+               if(trade.realizedProfit>1e-8) wins++;
+               else if(trade.realizedProfit < -1e-8) losses++;
+              }
+
+            if(setups != "")
+               setups += "<br style=\"mso-data-placement:same-cell;\" />";
+            setups += trade.setupType;
+
+            if(timeslots != "")
+               timeslots += "<br style=\"mso-data-placement:same-cell;\" />";
+            string openText = TimeToString(trade.openTime, TIME_DATE | TIME_MINUTES);
+            if(openAtCutoff)
+               timeslots += "<span style=\"background-color:#FFF59D; color:#7A5A00; font-weight:bold;\">" + openText + "</span>";
+            else
+               timeslots += openText + " &rarr; " + TimeToString(trade.closeTime, TIME_DATE | TIME_MINUTES);
+           }
+
+         if(setups == "")
+            setups = "-";
+         if(timeslots == "")
+            timeslots = "-";
+
+         double winRate = (trades > 0) ? ((double)wins / trades) * 100.0 : 0.0;
+         m_report_manager.AddScenarioResult(inst.m_symbol, inst.m_tradeTF, trades, wins, losses, openTrades, winRate,
+                                            contracts, rewards, setups, timeslots,
+                                            m_report_starting_balance + netProfit, netProfit);
+        }
+
+      string savedFileName = "";
+      string waCaption = "";
+      if(m_report_manager.GenerateAndSave("marcotrades", "Marcotrades_Live_Auto", dayStart, reportTime,
+                                          savedFileName, waCaption, "Marcotrades SMC Live Auto Daily Report") && m_sendWa)
+         m_wa.SendMessageWithFile(savedFileName, waCaption, "document", "application/vnd.ms-excel");
+     }
+
+   bool PrepareSymbolClusters(string symbol)
+     {
+      datetime now=TimeCurrent(),day=CMarcoLBEntryClusters::Day(now);
+      bool changed=false;
+      // Update every setup TF for this symbol before any of them can enter.
+      for(int i=0;i<m_total_instances;i++)
+        {
+         CMarcoLiveAutoInstance* inst=m_instances[i];
+         if(inst.m_symbol!=symbol) continue;
+         inst.UpdateLiveEngines();
+         inst.UpdateM1EntryEngine();
+         if(inst.m_last_htf_bar<=0 || inst.m_last_entry_bar<=0) return false;
+         if(inst.m_clusterSyncedBar!=inst.m_last_htf_bar || inst.m_clusterSyncedDay!=day) changed=true;
+        }
+      if(!changed) return true;
+      CMarcoLiveLBClusters state;
+      if(!state.Open(symbol,now)) return false;
+      for(int pass=0;pass<2;pass++)
+        {
+         if(pass==1) state.book.RetireCompleted();
+         for(int i=0;i<m_total_instances;i++)
+           {
+            CMarcoLiveAutoInstance* inst=m_instances[i];
+            if(inst.m_symbol==symbol) inst.ObserveEntryClusters(state.book,now,inst.lbLogicHtf,pass);
+           }
+        }
+      if(!state.Save()) return false;
+      for(int i=0;i<m_total_instances;i++)
+         if(m_instances[i].m_symbol==symbol)
+           {
+            m_instances[i].m_clusterSyncedBar=m_instances[i].m_last_htf_bar;
+            m_instances[i].m_clusterSyncedDay=day;
+           }
+      return true;
+     }
+
+   void              OnTick()
+     {
+      if(m_blockManual)
+        {
+         for(int p = PositionsTotal() - 1; p >= 0; p--)
+           {
+            if(m_pos.SelectByIndex(p))
+              {
+               if(m_pos.Magic() != m_magic)
+                 {
+                  ulong ticket = m_pos.Ticket();
+                  m_trade.PositionClose(ticket);
+                  PrintFormat("🚨 Manual Trade #%d on %s killed: Only EA trades allowed!", ticket, m_pos.Symbol());
+                 }
+              }
+           }
+        }
+
+      int processed = 0;
+      bool tpChanged=false;
+      for(int n=0;n<m_total_instances;n++)
+         if(m_instances[n].ManageStagedTP(m_trade)) tpChanged=true;
+      if(tpChanged) SaveDailyJournal(m_current_day_start);
+      string preparedSymbols[]; bool preparedOK[];
+      int scanCount = m_entryTF == ENTRY_TF_M1 ? m_total_instances : m_scanSpeed;
+      while(processed < scanCount && m_total_instances > 0)
+        {
+         if(m_current_scan_idx >= m_total_instances)
+            m_current_scan_idx = 0;
+
+         int beforeTrades = ArraySize(m_instances[m_current_scan_idx].m_trades);
+
+         string symbol=m_instances[m_current_scan_idx].m_symbol;
+         int prepared=-1;
+         for(int p=0;p<ArraySize(preparedSymbols);p++) if(preparedSymbols[p]==symbol) { prepared=p; break; }
+         if(prepared<0)
+           {
+            prepared=ArraySize(preparedSymbols); ArrayResize(preparedSymbols,prepared+1); ArrayResize(preparedOK,prepared+1);
+            preparedSymbols[prepared]=symbol; preparedOK[prepared]=PrepareSymbolClusters(symbol);
+           }
+         // 1. Process Live Scan & Signal Execution
+         m_instances[m_current_scan_idx].ProcessLive(m_trade, m_wa, m_sendWa,preparedOK[prepared]);
+
+         // 2. Active 1-Pip Vicinity Rejection Exit Evaluation
+         m_instances[m_current_scan_idx].CheckTPVicinityRejection(m_trade, m_wa, m_sendWa);
+
+         int afterTrades = ArraySize(m_instances[m_current_scan_idx].m_trades);
+
+         if(afterTrades > beforeTrades)
+            SaveDailyJournal(m_current_day_start);
+
+         m_current_scan_idx++;
+         processed++;
+        }
+     }
+
+   void              CheckDailyRollover()
+     {
+      datetime now = TimeCurrent();
+      datetime dayStart = now - (now % 86400);
+
+      datetime reportTime = GetDailyReportTime(m_current_day_start);
+      if(!m_daily_report_sent && now >= reportTime)
+        {
+         GenerateDailyReport(m_current_day_start, reportTime);
+         m_daily_report_sent = true;
+
+         Print("[DAY CARRY] Daily report complete. ZigZag swings and market structure remain active for the next day on every symbol/timeframe.");
+        }
+
+      if(dayStart > m_current_day_start)
+        {
+         Print("[DAY CARRY] New day: continuing the existing M1, setup-TF and TP-TF engines; no structure or swing reset.");
+         m_current_day_start = dayStart;
+         m_daily_report_sent = false;
+         LoadDailyJournal(m_current_day_start,true);
+        }
+     }
+
+   void              OnTradeTransaction(const MqlTradeTransaction &trans, const MqlTradeRequest &request, const MqlTradeResult &result)
+     {
+      if(trans.type == TRADE_TRANSACTION_DEAL_ADD)
+        {
+         ulong deal = trans.deal;
+         if(HistoryDealSelect(deal))
+           {
+            long entry = HistoryDealGetInteger(deal, DEAL_ENTRY);
+            if(entry == DEAL_ENTRY_OUT || entry == DEAL_ENTRY_OUT_BY || entry == DEAL_ENTRY_INOUT)
+              {
+               double profit = HistoryDealGetDouble(deal, DEAL_PROFIT) +
+                               HistoryDealGetDouble(deal, DEAL_SWAP) +
+                               HistoryDealGetDouble(deal, DEAL_COMMISSION);
+               string sym = HistoryDealGetString(deal, DEAL_SYMBOL);
+               ulong positionId = (ulong)HistoryDealGetInteger(deal, DEAL_POSITION_ID);
+               datetime closeTime = (datetime)HistoryDealGetInteger(deal, DEAL_TIME);
+               double closePrice = HistoryDealGetDouble(deal, DEAL_PRICE);
+
+               for(int i = 0; i < m_total_instances; i++)
+                  if(m_instances[i].m_symbol == sym)
+                     m_instances[i].RecordClosedTrade(positionId, closeTime, closePrice, profit);
+
+               SaveDailyJournal(m_current_day_start);
+
+               if(m_sendWa)
+                 {
+                  string outcomeStr = (profit >= 0) ? "🟢 *EXIT DEAL PROFIT*" : "🔴 *EXIT DEAL LOSS*";
+                  string msg = GetWAHeader() + StringFormat(
+                                  "%s | %s\n"
+                                  "Ticket: #%I64u\n"
+                                  "P/L: %s$%.2f",
+                                  outcomeStr, sym, positionId, (profit >= 0 ? "+" : "-"), MathAbs(profit));
+                  m_wa.SendMessage(msg);
+                 }
+              }
+           }
+        }
+     }
+  };
+
+#endif
+//+------------------------------------------------------------------+
+
+// END FILE: Include\Custom\Marcotrades\marco_live_auto.mqh

@@ -1,0 +1,92 @@
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:241:19: error: flexible array member 'CTradeRejectionHistory::eventHeads' not at end of 'class CTradeRejectionHistory'
+    int eventHeads[], eventPrevious[];
+                   ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp: In member function 'void CTradeRejectionHistory::Reset()':
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:272:57: error: no matching function for call to 'ArrayResize(int [], int)'
+       ArrayResize(eventKeys,0); ArrayResize(eventHeads,0); ArrayResize(eventPrevious,0);
+                                                         ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note: candidate: template<class T> void ArrayResize(std::vector<T>&, int)
+ template<class T> void ArrayResize(std::vector<T>& v,int n){v.resize(n);}
+                        ^~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note:   template argument deduction/substitution failed:
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:272:57: note:   mismatched types 'std::vector<T>' and 'int []'
+       ArrayResize(eventKeys,0); ArrayResize(eventHeads,0); ArrayResize(eventPrevious,0);
+                                                         ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:272:87: error: no matching function for call to 'ArrayResize(int [], int)'
+       ArrayResize(eventKeys,0); ArrayResize(eventHeads,0); ArrayResize(eventPrevious,0);
+                                                                                       ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note: candidate: template<class T> void ArrayResize(std::vector<T>&, int)
+ template<class T> void ArrayResize(std::vector<T>& v,int n){v.resize(n);}
+                        ^~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note:   template argument deduction/substitution failed:
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:272:87: note:   mismatched types 'std::vector<T>' and 'int []'
+       ArrayResize(eventKeys,0); ArrayResize(eventHeads,0); ArrayResize(eventPrevious,0);
+                                                                                       ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:273:55: error: no matching function for call to 'ArrayResize(int [], int)'
+       ArrayResize(zoneKeys,0); ArrayResize(zoneHeads,0); ArrayResize(zonePrevious,0);
+                                                       ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note: candidate: template<class T> void ArrayResize(std::vector<T>&, int)
+ template<class T> void ArrayResize(std::vector<T>& v,int n){v.resize(n);}
+                        ^~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note:   template argument deduction/substitution failed:
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:273:55: note:   mismatched types 'std::vector<T>' and 'int []'
+       ArrayResize(zoneKeys,0); ArrayResize(zoneHeads,0); ArrayResize(zonePrevious,0);
+                                                       ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:273:84: error: no matching function for call to 'ArrayResize(int [], int)'
+       ArrayResize(zoneKeys,0); ArrayResize(zoneHeads,0); ArrayResize(zonePrevious,0);
+                                                                                    ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note: candidate: template<class T> void ArrayResize(std::vector<T>&, int)
+ template<class T> void ArrayResize(std::vector<T>& v,int n){v.resize(n);}
+                        ^~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note:   template argument deduction/substitution failed:
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:273:84: note:   mismatched types 'std::vector<T>' and 'int []'
+       ArrayResize(zoneKeys,0); ArrayResize(zoneHeads,0); ArrayResize(zonePrevious,0);
+                                                                                    ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp: In member function 'void CTradeRejectionHistory::Observe(string, datetime, datetime, datetime, double, double)':
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:292:72: error: no matching function for call to 'ArrayResize(int [], int)'
+          ArrayResize(eventKeys,count+1); ArrayResize(eventHeads,count+1);
+                                                                        ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note: candidate: template<class T> void ArrayResize(std::vector<T>&, int)
+ template<class T> void ArrayResize(std::vector<T>& v,int n){v.resize(n);}
+                        ^~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note:   template argument deduction/substitution failed:
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:292:72: note:   mismatched types 'std::vector<T>' and 'int []'
+          ArrayResize(eventKeys,count+1); ArrayResize(eventHeads,count+1);
+                                                                        ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:297:36: error: no matching function for call to 'ArrayResize(int [], int)'
+       ArrayResize(eventPrevious,n+1); eventPrevious[n]=previous;
+                                    ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note: candidate: template<class T> void ArrayResize(std::vector<T>&, int)
+ template<class T> void ArrayResize(std::vector<T>& v,int n){v.resize(n);}
+                        ^~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note:   template argument deduction/substitution failed:
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:297:36: note:   mismatched types 'std::vector<T>' and 'int []'
+       ArrayResize(eventPrevious,n+1); eventPrevious[n]=previous;
+                                    ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp: In member function 'void CTradeRejectionHistory::Zone(string, bool, double, double, datetime, datetime, datetime, datetime, bool)':
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:345:70: error: no matching function for call to 'ArrayResize(int [], int)'
+          ArrayResize(zoneKeys,count+1); ArrayResize(zoneHeads,count+1);
+                                                                      ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note: candidate: template<class T> void ArrayResize(std::vector<T>&, int)
+ template<class T> void ArrayResize(std::vector<T>& v,int n){v.resize(n);}
+                        ^~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note:   template argument deduction/substitution failed:
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:345:70: note:   mismatched types 'std::vector<T>' and 'int []'
+          ArrayResize(zoneKeys,count+1); ArrayResize(zoneHeads,count+1);
+                                                                      ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:350:35: error: no matching function for call to 'ArrayResize(int [], int)'
+       ArrayResize(zonePrevious,n+1); zonePrevious[n]=previous; zoneHeads[slot]=n;
+                                   ^
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note: candidate: template<class T> void ArrayResize(std::vector<T>&, int)
+ template<class T> void ArrayResize(std::vector<T>& v,int n){v.resize(n);}
+                        ^~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:109:24: note:   template argument deduction/substitution failed:
+C:\Users\Super\AppData\Local\Temp\marco_structure_tests__vu8nylb\test.cpp:350:35: note:   mismatched types 'std::vector<T>' and 'int []'
+       ArrayResize(zonePrevious,n+1); zonePrevious[n]=previous; zoneHeads[slot]=n;
+                                   ^
+Traceback (most recent call last):
+  File "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\run_structure_exit_tests.py", line 94, in <module>
+    subprocess.run([shutil.which('g++') or r'C:\MinGW\bin\g++.exe', '-std=c++17', '-O2',
+  File "C:\Users\Super\anaconda3\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['C:\\MinGW\\bin\\g++.EXE', '-std=c++17', '-O2', 'C:\\Users\\Super\\AppData\\Local\\Temp\\marco_structure_tests__vu8nylb\\test.cpp', '-o', 'C:\\Users\\Super\\AppData\\Local\\Temp\\marco_structure_tests__vu8nylb\\test.exe']' returned non-zero exit status 1.

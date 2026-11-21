@@ -1,0 +1,32 @@
+--- Include/Custom/Marcotrades/trade_rejection.mqh
+
++++ Include/Custom/Marcotrades/trade_rejection.mqh
+
+@@ -169,6 +169,26 @@
+
+       return found;
+      }
+    int ZoneCount() { return ArraySize(zones); }
++   // Qualification for a fresh IND LB in a rejection-only cluster. The causal
++   // event and its immediate successor must both belong to the new origin's
++   // direction. Availability is preserved; future structures cannot qualify it.
++   datetime FreshClusterQualification(bool bull,datetime origin,datetime cause,datetime now)
++     {
++      if(origin<=0 || cause<origin) return 0;
++      int direction=bull ? 1 : -1;
++      SRejectionEvent first,next; bool haveFirst=false,haveNext=false;
++      for(int i=0;i<ArraySize(events);i++)
++        {
++         SRejectionEvent event;
++         if(!EventAt(i,now,event)) continue;
++         if(event.time==cause) { first=event; haveFirst=true; }
++         if(event.time<=cause || StructureDirection(event.name)==0) continue;
++         if(!haveNext || event.time<next.time) { next=event; haveNext=true; }
++        }
++      if(!haveFirst || !haveNext || StructureDirection(first.name)!=direction ||
++         StructureDirection(next.name)!=direction) return 0;
++      return MathMax(first.available,next.available);
++     }
+    bool ZoneAt(int index, SRejectionLB &zone)
+      {
+       if(index<0 || index>=ArraySize(zones)) return false;

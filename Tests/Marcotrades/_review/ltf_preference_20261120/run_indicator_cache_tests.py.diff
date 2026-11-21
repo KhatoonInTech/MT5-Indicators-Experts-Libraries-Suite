@@ -1,0 +1,24 @@
+--- before/Tests\Marcotrades\run_indicator_cache_tests.py
+
++++ Tests\Marcotrades\run_indicator_cache_tests.py
+
+@@ -50,6 +50,7 @@
+
+ class CMarcoRiskCapital{public:static bool Configure(int mode){return mode>=0&&mode<=3;}};
+ class CMarcoIndEntryFilter{public:static void Configure(int){}};
+ class CMarcoPivotEntry{public:static void Configure(int){}};
++class CMarcoLBTFPreference{public:static void Configure(bool){}};
+ class CMarcoSymbolUnits{public:static bool Configure(string value){return value!="invalid";}};
+ class CMarcoBrokerExecution{public:
+  static bool Configure(bool,string){return true;}
+@@ -177,6 +178,9 @@
+
+  int originalCapital=InpRiskCapital;InpRiskCapital=(originalCapital+1)%4;check(SimulationCacheKey()!=goodKey);InpRiskCapital=originalCapital;
+  int originalIndMode=InpM1IndEntryFilter;InpM1IndEntryFilter=0;check(SimulationCacheKey()!=goodKey);InpM1IndEntryFilter=originalIndMode;
+  int originalTiming=InpEntryTiming;InpEntryTiming=1-originalTiming;check(SimulationCacheKey()!=goodKey);InpEntryTiming=originalTiming;
++ bool originalPreference=InpPreferLowerTFLB;InpPreferLowerTFLB=!originalPreference;check(SimulationCacheKey()!=goodKey);
++ OnDeinit(REASON_PARAMETERS);check(OnInit()==INIT_SUCCEEDED);check(!g_finished);check(g_trades.empty());
++ OnDeinit(REASON_PARAMETERS);InpPreferLowerTFLB=originalPreference;check(OnInit()==INIT_SUCCEEDED);check(g_finished);
+  InpPipSizeOverrides="US500=1";check(SimulationCacheKey()!=goodKey);InpPipSizeOverrides="";
+  InpPipSizeOverrides="invalid";check(OnInit()==INIT_PARAMETERS_INCORRECT);InpPipSizeOverrides="";
+  // Explicit removal clears the active cache and allows a fresh run on reattachment.

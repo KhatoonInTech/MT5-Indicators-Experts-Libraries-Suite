@@ -1,0 +1,23 @@
+[
+  {
+    "program": "marco_live_auto_ea",
+    "result": "Result: 0 errors, 0 warnings, 14244 ms elapsed, cpu='X64 Regular'",
+    "warnings_unchanged": true,
+    "binary": "Experts\\Custom EAs\\Marcotrades\\marco_live_auto_ea.ex5",
+    "sha256": "56deee9a2f0054fc3288954e2eb74a794c2caa8c0b9ef87f7ed0295dd979504e"
+  },
+  {
+    "program": "marco_backtest_ea",
+    "result": "Result: 0 errors, 12 warnings, 12002 ms elapsed, cpu='X64 Regular'",
+    "warnings_unchanged": true,
+    "binary": "Experts\\Custom EAs\\Backtesting\\marco_backtest_ea.ex5",
+    "sha256": "4f884787d6d1a6f483ecd7fc48a9594186cefce2b6c7160177ba5ff579b75733"
+  },
+  {
+    "program": "marco_backtest_trades",
+    "result": "Result: 0 errors, 12 warnings, 16518 ms elapsed, cpu='X64 Regular'",
+    "warnings_unchanged": true,
+    "binary": "Indicators\\Custom\\Marcotrades\\marco_backtest_trades.ex5",
+    "sha256": "d308070c5df89b234ba401c3e6f710bcb83b393a19b563527bfa311f4a14497c"
+  }
+]

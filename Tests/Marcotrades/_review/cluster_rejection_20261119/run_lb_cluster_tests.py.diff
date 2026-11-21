@@ -1,0 +1,124 @@
+--- Tests/Marcotrades/run_lb_cluster_tests.py
+
++++ Tests/Marcotrades/run_lb_cluster_tests.py
+
+@@ -87,6 +87,39 @@
+
+ void observe(CMarcoLBEntryClusters &b,int tf,string id,double lo,double hi,datetime at=100,bool mitigated=false,int side=-1){b.Observe("S",tf,id,side,lo,hi,at,mitigated);}
+ void pump(std::vector<CMarcoBacktestInstance*> v,int budget=1000){SMarcoSimulationConfig c{};int attempts=0;while(!CMarcoSimulationBatch::Pump(v,0,v.size(),c,budget))CHECK(++attempts<100);}
+ int main(){
++ // Rejection-only clusters: fresh IND pair is eligible, older members stay blocked.
++ for(int side:{-1,1})for(int tf:{1,2,3,4,10,16385}){
++  CMarcoLBEntryClusters r;
++  r.Observe("S",3,"old",side,100,110,100,false,50);
++  r.Observe("S",tf,"old-neighbour",side,108,120,100,false,60);
++  r.RejectOpposing("S",3,"old",110);
++  CHECK(blocked(r,3,"old",110));CHECK(blocked(r,tf,"old-neighbour",110));
++  r.Observe("S",tf,"late-old-qualification",side,102,108,180,false,70,180);
++  CHECK(blocked(r,tf,"late-old-qualification",180));
++  r.Observe("S",tf,"new-IND",side,102,108,160,false,150);
++  CHECK(blocked(r,tf,"new-IND",160));
++  r.Observe("S",tf,"new-IND",side,102,108,179,false,150,180);
++  CHECK(blocked(r,tf,"new-IND",179)); // Future second confirmation is unavailable.
++  r.Observe("S",tf,"new-IND",side,102,108,180,false,150,180);
++  CHECK(!blocked(r,tf,"new-IND",180));
++  r.Observe("S",tf,"new-sweep",side,105,115,180,false,150);
++  CHECK(blocked(r,tf,"new-sweep",180));
++  CHECK(blocked(r,3,"old",180));CHECK(blocked(r,tf,"old-neighbour",180));
++  CHECK(r.Consume("S",tf,"new-IND",181));
++  r.ReleaseReservation("S",tf,"new-IND",181); // Definitive broker rejection is not a trade.
++  CHECK(!blocked(r,tf,"new-IND",182));CHECK(blocked(r,3,"old",182));
++  CHECK(r.Consume("S",tf,"new-IND",183));
++  r.Observe("S",tf,"even-newer",side,102,108,240,false,200,240);
++  CHECK(blocked(r,tf,"even-newer",240)); // One actual trade blocks every overlapping LB.
++  // Explicit 09:00 trade -> 10:00 rejection -> 11:00 new qualified LB: BLOCK.
++  CMarcoLBEntryClusters used;
++  used.Observe("S",3,"traded",side,100,110,100,false,50);
++  CHECK(used.Consume("S",3,"traded",100));
++  used.Observe("S",tf,"rejected",side,108,120,105,false,60);
++  used.RejectOpposing("S",tf,"rejected",110);
++  used.Observe("S",tf,"new-IND",side,102,108,180,false,150,180);
++  CHECK(blocked(used,tf,"new-IND",180));CHECK(!used.Consume("S",tf,"new-IND",180));
++ }
+  for(int side:{-1,1})for(int tf:{2,3,4,10,16385}){
+   CMarcoLBEntryClusters b;observe(b,4,"IND",100,110,100,false,side);CHECK(b.Consume("S",4,"IND",100));
+   for(auto range:std::vector<std::pair<double,double>>{{100,110},{102,108},{99,111},{105,120},{110,120},{90,100}}){
+@@ -122,6 +155,22 @@
+
+  auto good=files[state];files[state].pop_back();CHECK(!a.Open("S",106));files[state]=good;
+  files[state][0]^=1;CHECK(!a.Open("S",106));files[state]=good;
+  CHECK(a.Open("S",106));failMove=true;CHECK(!a.Save());failMove=false;a.Close();CHECK(c.Open("S",106));c.Close();
++ // Persist rejection barriers and qualifications without confusing either with fills.
++ files.clear();CHECK(a.Open("S",180));
++ a.book.Observe("S",3,"old",-1,100,110,100,false,50);a.book.RejectOpposing("S",3,"old",110);
++ a.book.Observe("S",1,"fresh",-1,102,108,180,false,150,180);CHECK(a.Save());a.Close();
++ CHECK(c.Open("S",181));CHECK(blocked(c.book,3,"old",181));CHECK(!blocked(c.book,1,"fresh",181));
++ CHECK(c.book.Consume("S",1,"fresh",182));CHECK(c.Save());c.Close();
++ CHECK(a.Open("S",183));CHECK(blocked(a.book,1,"fresh",183));a.Close();
++ // Load the prior v2 journal: preserve its trade usage when upgrading to v3.
++ string legacyPath;for(auto &f:files)if(f.first.size()>4&&f.first.substr(f.first.size()-4)==".bin")legacyPath=f.first;
++ auto bytes=files[legacyPath];auto i32=[&](size_t pos){int32_t v;std::memcpy(&v,bytes.data()+pos,4);return v;};
++ size_t pos=8+2*i32(4);int count=i32(pos);pos+=4;std::vector<unsigned char> legacy(bytes.begin(),bytes.begin()+pos);
++ for(int n=0;n<count;n++){size_t start=pos;for(int text=0;text<2;text++)pos+=4+2*i32(pos);pos+=70;
++  legacy.insert(legacy.end(),bytes.begin()+start,bytes.begin()+pos-16);}
++ legacy.insert(legacy.end(),bytes.begin()+pos,bytes.end());int32_t v2=0x4C424332;std::memcpy(legacy.data(),&v2,4);files[legacyPath]=legacy;
++ CHECK(a.Open("S",184));CHECK(blocked(a.book,1,"fresh",184));CHECK(a.book.nodes[0].opposingRejectedAt==0);
++ CHECK(a.Save());a.Close();CHECK(c.Open("S",185));CHECK(blocked(c.book,3,"old",185));c.Close();
+  // Scheduler gives the earliest trade priority even if its timeframe appears last.
+  for(int budget:{1,3,1000}){
+   CMarcoBacktestInstance::s_clusters.Clear();
+@@ -149,22 +198,35 @@
+
+ assert live.index('clusterState.book.Consume(') < live.index('bool entrySent=SendCheckedEntry(')
+ assert '!CTradeRejection::ConsumeOrderResult(entryResult.retcode)' in live
+ assert 'ReleaseReservation(' in live
++for text in (back,live):
++ for method_name in ('CheckChochRejection','BlockM1OpposingLeg'):
++  start=re.search(r'^\s*bool\s+'+method_name+r'\(',text,re.M).start()
++  body=text.index('{',start);end=body+1;depth=1
++  while depth:
++   depth+=(text[end]=='{')-(text[end]=='}');end+=1
++  assert 'opposingRejectedAt=now;' in text[start:end]
++ boundary=text[text.index('DiscardPivotEntry(k,sampleTime,"SETUP_LB_MITIGATED");'):]
++ assert 'opposingRejectedAt' not in boundary[:boundary.index('return true;')]
+ observer=back[back.index('   void ObserveEntryClusters('):back.index('   void RegisterPreparedClusters(')]
+ observer=adapt(observer).replace('m_sim.','m_sim->').replace('logic.','logic->').replace('lb.','lb->')
+ observer_mocks=r'''
+-struct CLiquidityBlock{string id;bool isMitigated=false,isBullish=false;double zoneLow=100,zoneHigh=110;datetime createdTime=100;};
++enum {LB_TRIGGER_BL_IND=1,LB_TRIGGER_BR_IND=2,LB_TRIGGER_BR_SSL=3};
++struct CLiquidityBlock{string id;bool isMitigated=false,isBullish=false;double zoneLow=100,zoneHigh=110;datetime createdTime=100,causalChochTime=0;int triggerType=LB_TRIGGER_BR_IND;};
+ struct Blocks{std::vector<CLiquidityBlock*> values;int Total(){return values.size();}CLiquidityBlock* At(int i){return values[i];}};
+ struct CLiquidityBlockLogic{Blocks m_liquidity_blocks;};
+-struct CachedLB{string id;datetime createdTime=100,entryTriggerTime=101;bool isMitigated=true;};
++struct CachedLB{string id;datetime createdTime=100,entryTriggerTime=101,opposingRejectedAt=0;bool isMitigated=true;};
++struct QualificationHistory{datetime answer=0;datetime FreshClusterQualification(bool,datetime,datetime,datetime){return answer;}};
+ struct ObserverState{std::vector<datetime> htf_time;std::vector<double> htf_high,htf_low;int nextHtf=0;};
+ int PeriodSeconds(int tf){return tf*60;}
+ class CTradeRejection{public:static bool BoundaryBroken(bool b,double l,double h,double zl,double zh,double buffer){return b?l<zl-buffer:h>zh+buffer;}};
+ class ProductionObserver{public:
+  CMarcoLBEntryClusters &s_clusters;string m_symbol="S";int m_tradeTF=4,m_htf_lb_count=1;
+  std::vector<CachedLB> m_htf_lbs;ObserverState state;ObserverState *m_sim=&state;
++ QualificationHistory m_htfRawExit;
+  ProductionObserver(CMarcoLBEntryClusters &b):s_clusters(b){m_htf_lbs={{"A"}};}
+ '''+observer+'};\n'
+ observer_cases=r'''
++bool blocked(CMarcoLBEntryClusters &b,int tf,string id,datetime t);
+ void checkProductionObservation(){
+  CMarcoLBEntryClusters b;ProductionObserver p(b);CLiquidityBlock raw;raw.id="A";
+  CLiquidityBlockLogic logic;logic.m_liquidity_blocks.values={&raw};
+@@ -180,6 +242,14 @@
+
+  // With a valid source, its authoritative mitigation flag releases the member.
+  b.Clear();logic.m_liquidity_blocks.values={&raw};p.ObserveEntryClusters(400,&logic,1);raw.isMitigated=true;
+  p.ObserveEntryClusters(401,&logic,0);b.RetireCompleted();CHECK(!b.Eligible("S",4,"A",401));
++ // Production observation forwards rejection reasons and qualifies IND types only.
++ b.Clear();raw.isMitigated=false;p.m_htf_lbs[0].opposingRejectedAt=200;
++ p.ObserveEntryClusters(400,&logic,1);CHECK(blocked(b,4,"A",400));
++ raw.id="B";raw.createdTime=250;p.m_htf_lbs[0].id="B";p.m_htf_lbs[0].createdTime=250;
++ p.m_htf_lbs[0].opposingRejectedAt=0;p.m_htfRawExit.answer=350;
++ raw.triggerType=LB_TRIGGER_BR_SSL;p.ObserveEntryClusters(400,&logic,1);CHECK(blocked(b,4,"B",400));
++ raw.triggerType=LB_TRIGGER_BR_IND;p.ObserveEntryClusters(400,&logic,1);CHECK(!blocked(b,4,"B",400));
++ CHECK(blocked(b,4,"A",400));
+ }
+ '''
+ cases=cases.replace('int main(){','int main(){\n checkProductionObservation();')

@@ -1,0 +1,523 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  us/call  us/call  name    
+ 20.00      0.02     0.02     1741    11.49    17.23  CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*)
+ 20.00      0.04     0.02      361    55.40    55.40  CInducementLogic::UpdateTouches(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, double)
+ 20.00      0.06     0.02                             __tcf_0
+ 10.00      0.07     0.01    25772     0.39     0.39  CInducementLogic::RegisterZone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, int, ZigZag*, double)
+ 10.00      0.08     0.01     1741     5.74    45.95  CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double)
+ 10.00      0.09     0.01     1741     5.74     5.74  CMarcoRawExitHistory::Capture(CMarketStructure*, CLiquidityBlockLogic*, long long, CTradeRejectionHistory&)
+ 10.00      0.10     0.01      327    30.58    30.58  CMarketStructure::GetBearishChochTarget(ZigZag*, long long, double, double&, long long&)
+  0.00      0.10     0.00  1414542     0.00     0.00  __gcc_deregister_frame
+  0.00      0.10     0.00    29253     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned int, char const*, char*), unsigned int, char const*, ...)
+  0.00      0.10     0.00    12187     0.00     0.00  std::vector<double, std::allocator<double> >::_M_default_append(unsigned int)
+  0.00      0.10     0.00     2023     0.00     0.00  chart_point::~chart_point()
+  0.00      0.10     0.00     1743     0.00     0.00  std::vector<long long, std::allocator<long long> >::_M_default_append(unsigned int)
+  0.00      0.10     0.00     1741     0.00     0.00  CFlipZoneLogic::DetectFlipZones(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, CMarketStructure*, CDemandSupplyLogic*)
+  0.00      0.10     0.00     1741     0.00     0.00  CBreakerBlockLogic::DetectBreakers(ZigZag*, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*)
+  0.00      0.10     0.00     1741     0.00     0.00  ZigZag::update(double, double, long long, long, int, bool, bool)
+  0.00      0.10     0.00     1741     0.00     0.00  std::vector<long, std::allocator<long> >::_M_default_append(unsigned int)
+  0.00      0.10     0.00      826     0.00     0.00  std::vector<double, std::allocator<double> >::push_back(double const&)
+  0.00      0.10     0.00      729     0.00     0.00  ZigZag::updatePivot(Pivot*, chart_point*, double)
+  0.00      0.10     0.00      622     0.00     0.00  Pivot::~Pivot()
+  0.00      0.10     0.00      622     0.00     0.00  ZigZag::newPivot(chart_point*, chart_point*, double, bool, bool)
+  0.00      0.10     0.00      558     0.00     0.00  std::vector<long, std::allocator<long> >::push_back(long const&)
+  0.00      0.10     0.00      399     0.00     0.00  std::vector<int, std::allocator<int> >::push_back(int const&)
+  0.00      0.10     0.00      361     0.00    27.70  CInducementLogic::HarvestZones(int, std::vector<long long, std::allocator<long long> > const&, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*, CBreakerBlockLogic*, CMarketStructure*, ZigZag*, double)
+  0.00      0.10     0.00      361     0.00     0.00  CLiquidityBlockLogic::ProcessSweptAnywhere(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, ZigZag*, CInducementLogic*)
+  0.00      0.10     0.00      361     0.00     0.00  CLiquidityBlockLogic::ProcessPostInducementCHoCH(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, CInducementLogic*)
+  0.00      0.10     0.00      218     0.00     0.00  std::vector<SRejectionEvent, std::allocator<SRejectionEvent> >::_M_default_append(unsigned int)
+  0.00      0.10     0.00      199     0.00     0.00  void std::vector<long, std::allocator<long> >::_M_emplace_back_aux<long const&>(long const&)
+  0.00      0.10     0.00      148     0.00     0.00  CTradeRejectionHistory::Zone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, long long, long long, long long, bool)
+  0.00      0.10     0.00      138     0.00     0.00  void std::vector<double, std::allocator<double> >::_M_emplace_back_aux<double const&>(double const&)
+  0.00      0.10     0.00       97     0.00     0.00  CMarketStructure::ProcessRenamingRules()
+  0.00      0.10     0.00       74     0.00     0.00  void std::vector<int, std::allocator<int> >::_M_emplace_back_aux<int const&>(int const&)
+  0.00      0.10     0.00       65     0.00     0.00  CInducementZone::~CInducementZone()
+  0.00      0.10     0.00       60     0.00     0.00  CMarketStructure::GetPullbackPivots(ZigZag*, long long, long long, double&, long long&, double&, long long&)
+  0.00      0.10     0.00       34     0.00     0.00  CInducementLogic::StructureDirection(CMarketStructure*, long long, bool)
+  0.00      0.10     0.00       22     0.00     0.00  void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_emplace_back_aux<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  0.00      0.10     0.00       21     0.00     0.00  void std::vector<CObject*, std::allocator<CObject*> >::_M_emplace_back_aux<CObject* const&>(CObject* const&)
+  0.00      0.10     0.00       20     0.00     0.00  TimeToString[abi:cxx11](long long, int)
+  0.00      0.10     0.00       20     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&)
+  0.00      0.10     0.00       16     0.00     0.00  CLiquidityBlockLogic::RegisterLiquidityBlock(bool, ENUM_LB_TRIGGER, double, double, long long, int, long long, CInducementLogic*, long long, long long)
+  0.00      0.10     0.00       13     0.00     0.00  CMarketStructure::UpdateHistoricalEventName(long long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >)
+  0.00      0.10     0.00        9     0.00     0.00  CMarketStructure::tf_str[abi:cxx11](int)
+  0.00      0.10     0.00        6     0.00     0.00  CLiquidityBlockLogic::ResolveSwingPOIBounds(long long, bool, CSwingPOILogic*, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, int, double&, double&)
+  0.00      0.10     0.00        6     0.00     0.00  std::vector<SInducementMitigationTracker, std::allocator<SInducementMitigationTracker> >::_M_default_append(unsigned int)
+  0.00      0.10     0.00        4     0.00     0.00  MArray<long>::Delete(int)
+  0.00      0.10     0.00        4     0.00     0.00  std::vector<SRejectionLB, std::allocator<SRejectionLB> >::_M_default_append(unsigned int)
+  0.00      0.10     0.00        3     0.00     0.00  std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, char const*)
+  0.00      0.10     0.00        2     0.00     0.00  CLiquidityBlock::~CLiquidityBlock()
+  0.00      0.10     0.00        2     0.00     0.00  CLiquidityBlockLogic::EntryTriggerStructureTime(bool, ENUM_LB_TRIGGER, long long, CInducementLogic*, CMarketStructure*, long long)
+  0.00      0.10     0.00        2     0.00     0.00  std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_default_append(unsigned int)
+  0.00      0.10     0.00        1     0.00     0.00  newInstance(Settings*)
+  0.00      0.10     0.00        1     0.00     0.00  PineArrayLong::~PineArrayLong()
+  0.00      0.10     0.00        1     0.00     0.00  CMarcoM1LBContext::CMarcoM1LBContext()
+  0.00      0.10     0.00        1     0.00     0.00  CMarcoM1LBContext::~CMarcoM1LBContext()
+  0.00      0.10     0.00        1     0.00     0.00  ZigZag::~ZigZag()
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2017 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 10.00% of 0.10 seconds
+
+index % time    self  children    called     name
+                0.01    0.07    1741/1741        _fu3___ZTVNSt7__cxx1115basic_stringbufIcSt11char_traitsIcESaIcEEE [2]
+[1]     80.0    0.01    0.07    1741         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+                0.02    0.01    1741/1741        CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*) [3]
+                0.02    0.00     361/361         CInducementLogic::UpdateTouches(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, double) [4]
+                0.01    0.00    1741/1741        CMarcoRawExitHistory::Capture(CMarketStructure*, CLiquidityBlockLogic*, long long, CTradeRejectionHistory&) [7]
+                0.00    0.01     361/361         CInducementLogic::HarvestZones(int, std::vector<long long, std::allocator<long long> > const&, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*, CBreakerBlockLogic*, CMarketStructure*, ZigZag*, double) [8]
+                0.00    0.00   11070/1414542     __gcc_deregister_frame [11]
+                0.00    0.00    6964/12187       std::vector<double, std::allocator<double> >::_M_default_append(unsigned int) [13]
+                0.00    0.00    1743/1743        std::vector<long long, std::allocator<long long> >::_M_default_append(unsigned int) [15]
+                0.00    0.00    1741/1741        CFlipZoneLogic::DetectFlipZones(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, CMarketStructure*, CDemandSupplyLogic*) [16]
+                0.00    0.00    1741/1741        CBreakerBlockLogic::DetectBreakers(ZigZag*, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*) [17]
+                0.00    0.00     798/826         std::vector<double, std::allocator<double> >::push_back(double const&) [20]
+                0.00    0.00     403/558         std::vector<long, std::allocator<long> >::push_back(long const&) [24]
+                0.00    0.00     399/399         std::vector<int, std::allocator<int> >::push_back(int const&) [25]
+                0.00    0.00     361/361         CLiquidityBlockLogic::ProcessSweptAnywhere(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, ZigZag*, CInducementLogic*) [26]
+                0.00    0.00     361/361         CLiquidityBlockLogic::ProcessPostInducementCHoCH(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, CInducementLogic*) [27]
+                0.00    0.00     148/148         CTradeRejectionHistory::Zone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, long long, long long, long long, bool) [30]
+                0.00    0.00     109/218         std::vector<SRejectionEvent, std::allocator<SRejectionEvent> >::_M_default_append(unsigned int) [28]
+                0.00    0.00      96/138         void std::vector<double, std::allocator<double> >::_M_emplace_back_aux<double const&>(double const&) [31]
+                0.00    0.00      51/199         void std::vector<long, std::allocator<long> >::_M_emplace_back_aux<long const&>(long const&) [29]
+                0.00    0.00      48/74          void std::vector<int, std::allocator<int> >::_M_emplace_back_aux<int const&>(int const&) [33]
+                0.00    0.00      34/34          CInducementLogic::StructureDirection(CMarketStructure*, long long, bool) [36]
+                0.00    0.00      20/20          TimeToString[abi:cxx11](long long, int) [39]
+                0.00    0.00       9/9           CMarketStructure::tf_str[abi:cxx11](int) [43]
+                0.00    0.00       6/6           std::vector<SInducementMitigationTracker, std::allocator<SInducementMitigationTracker> >::_M_default_append(unsigned int) [45]
+                0.00    0.00       2/2           CLiquidityBlockLogic::EntryTriggerStructureTime(bool, ENUM_LB_TRIGGER, long long, CInducementLogic*, CMarketStructure*, long long) [50]
+                0.00    0.00       2/2           std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_default_append(unsigned int) [51]
+                0.00    0.00       1/29253       std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned int, char const*, char*), unsigned int, char const*, ...) [12]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]     80.0    0.00    0.08                 _fu3___ZTVNSt7__cxx1115basic_stringbufIcSt11char_traitsIcESaIcEEE [2]
+                0.01    0.07    1741/1741        CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+                0.00    0.00    1741/1414542     __gcc_deregister_frame [11]
+                0.00    0.00    1741/1741        ZigZag::update(double, double, long long, long, int, bool, bool) [18]
+-----------------------------------------------
+                0.02    0.01    1741/1741        CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[3]     30.0    0.02    0.01    1741         CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*) [3]
+                0.01    0.00     327/327         CMarketStructure::GetBearishChochTarget(ZigZag*, long long, double, double&, long long&) [9]
+                0.00    0.00     283/1414542     __gcc_deregister_frame [11]
+                0.00    0.00      97/97          CMarketStructure::ProcessRenamingRules() [32]
+                0.00    0.00      97/558         std::vector<long, std::allocator<long> >::push_back(long const&) [24]
+                0.00    0.00      60/60          CMarketStructure::GetPullbackPivots(ZigZag*, long long, long long, double&, long long&, double&, long long&) [35]
+                0.00    0.00      30/199         void std::vector<long, std::allocator<long> >::_M_emplace_back_aux<long const&>(long const&) [29]
+                0.00    0.00      16/138         void std::vector<double, std::allocator<double> >::_M_emplace_back_aux<double const&>(double const&) [31]
+                0.00    0.00       8/22          void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_emplace_back_aux<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [37]
+-----------------------------------------------
+                0.02    0.00     361/361         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[4]     20.0    0.02    0.00     361         CInducementLogic::UpdateTouches(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, double) [4]
+                0.00    0.00      55/199         void std::vector<long, std::allocator<long> >::_M_emplace_back_aux<long const&>(long const&) [29]
+-----------------------------------------------
+                                                 <spontaneous>
+[5]     20.0    0.02    0.00                 __tcf_0 [5]
+                0.00    0.00      27/1414542     __gcc_deregister_frame [11]
+-----------------------------------------------
+                0.01    0.00   25772/25772       CInducementLogic::HarvestZones(int, std::vector<long long, std::allocator<long long> > const&, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*, CBreakerBlockLogic*, CMarketStructure*, ZigZag*, double) [8]
+[6]     10.0    0.01    0.00   25772         CInducementLogic::RegisterZone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, int, ZigZag*, double) [6]
+                0.00    0.00 1312244/1414542     __gcc_deregister_frame [11]
+                0.00    0.00   25772/29253       std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned int, char const*, char*), unsigned int, char const*, ...) [12]
+                0.00    0.00       9/22          void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_emplace_back_aux<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [37]
+                0.00    0.00       8/21          void std::vector<CObject*, std::allocator<CObject*> >::_M_emplace_back_aux<CObject* const&>(CObject* const&) [38]
+-----------------------------------------------
+                0.01    0.00    1741/1741        CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[7]     10.0    0.01    0.00    1741         CMarcoRawExitHistory::Capture(CMarketStructure*, CLiquidityBlockLogic*, long long, CTradeRejectionHistory&) [7]
+                0.00    0.00    5334/1414542     __gcc_deregister_frame [11]
+                0.00    0.00     109/218         std::vector<SRejectionEvent, std::allocator<SRejectionEvent> >::_M_default_append(unsigned int) [28]
+                0.00    0.00       2/4           std::vector<SRejectionLB, std::allocator<SRejectionLB> >::_M_default_append(unsigned int) [47]
+-----------------------------------------------
+                0.00    0.01     361/361         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[8]     10.0    0.00    0.01     361         CInducementLogic::HarvestZones(int, std::vector<long long, std::allocator<long long> > const&, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*, CBreakerBlockLogic*, CMarketStructure*, ZigZag*, double) [8]
+                0.01    0.00   25772/25772       CInducementLogic::RegisterZone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, int, ZigZag*, double) [6]
+                0.00    0.00   25772/1414542     __gcc_deregister_frame [11]
+-----------------------------------------------
+                0.01    0.00     327/327         CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*) [3]
+[9]     10.0    0.01    0.00     327         CMarketStructure::GetBearishChochTarget(ZigZag*, long long, double, double&, long long&) [9]
+-----------------------------------------------
+                0.00    0.00       1/1414542     main [291]
+                0.00    0.00       4/1414542     CLiquidityBlock::~CLiquidityBlock() [49]
+                0.00    0.00      12/1414542     CLiquidityBlockLogic::EntryTriggerStructureTime(bool, ENUM_LB_TRIGGER, long long, CInducementLogic*, CMarketStructure*, long long) [50]
+                0.00    0.00      13/1414542     CMarketStructure::UpdateHistoricalEventName(long long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [42]
+                0.00    0.00      18/1414542     CLiquidityBlockLogic::RegisterLiquidityBlock(bool, ENUM_LB_TRIGGER, double, double, long long, int, long long, CInducementLogic*, long long, long long) [41]
+                0.00    0.00      20/1414542     TimeToString[abi:cxx11](long long, int) [39]
+                0.00    0.00      22/1414542     void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_emplace_back_aux<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [37]
+                0.00    0.00      27/1414542     __tcf_0 [5]
+                0.00    0.00      28/1414542     CFlipZoneLogic::DetectFlipZones(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, CMarketStructure*, CDemandSupplyLogic*) [16]
+                0.00    0.00     209/1414542     CInducementLogic::StructureDirection(CMarketStructure*, long long, bool) [36]
+                0.00    0.00     283/1414542     CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*) [3]
+                0.00    0.00     311/1414542     CMarketStructure::ProcessRenamingRules() [32]
+                0.00    0.00     496/1414542     CLiquidityBlockLogic::ProcessPostInducementCHoCH(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, CInducementLogic*) [27]
+                0.00    0.00    1741/1414542     _fu3___ZTVNSt7__cxx1115basic_stringbufIcSt11char_traitsIcESaIcEEE [2]
+                0.00    0.00    2488/1414542     ZigZag::newPivot(chart_point*, chart_point*, double, bool, bool) [23]
+                0.00    0.00    5334/1414542     CMarcoRawExitHistory::Capture(CMarketStructure*, CLiquidityBlockLogic*, long long, CTradeRejectionHistory&) [7]
+                0.00    0.00   11070/1414542     CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+                0.00    0.00   25196/1414542     CLiquidityBlockLogic::ProcessSweptAnywhere(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, ZigZag*, CInducementLogic*) [26]
+                0.00    0.00   25772/1414542     CInducementLogic::HarvestZones(int, std::vector<long long, std::allocator<long long> > const&, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*, CBreakerBlockLogic*, CMarketStructure*, ZigZag*, double) [8]
+                0.00    0.00   29253/1414542     std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned int, char const*, char*), unsigned int, char const*, ...) [12]
+                0.00    0.00 1312244/1414542     CInducementLogic::RegisterZone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, int, ZigZag*, double) [6]
+[11]     0.0    0.00    0.00 1414542         __gcc_deregister_frame [11]
+-----------------------------------------------
+                0.00    0.00       1/29253       CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+                0.00    0.00       5/29253       CLiquidityBlockLogic::RegisterLiquidityBlock(bool, ENUM_LB_TRIGGER, double, double, long long, int, long long, CInducementLogic*, long long, long long) [41]
+                0.00    0.00       9/29253       CMarketStructure::tf_str[abi:cxx11](int) [43]
+                0.00    0.00      13/29253       CMarketStructure::ProcessRenamingRules() [32]
+                0.00    0.00    3453/29253       CLiquidityBlockLogic::ProcessSweptAnywhere(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, ZigZag*, CInducementLogic*) [26]
+                0.00    0.00   25772/29253       CInducementLogic::RegisterZone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, int, ZigZag*, double) [6]
+[12]     0.0    0.00    0.00   29253         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned int, char const*, char*), unsigned int, char const*, ...) [12]
+                0.00    0.00   29253/1414542     __gcc_deregister_frame [11]
+-----------------------------------------------
+                0.00    0.00    5223/12187       ZigZag::update(double, double, long long, long, int, bool, bool) [18]
+                0.00    0.00    6964/12187       CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[13]     0.0    0.00    0.00   12187         std::vector<double, std::allocator<double> >::_M_default_append(unsigned int) [13]
+-----------------------------------------------
+                0.00    0.00      50/2023        ZigZag::update(double, double, long long, long, int, bool, bool) [18]
+                0.00    0.00     729/2023        ZigZag::updatePivot(Pivot*, chart_point*, double) [21]
+                0.00    0.00    1244/2023        Pivot::~Pivot() [22]
+[14]     0.0    0.00    0.00    2023         chart_point::~chart_point() [14]
+-----------------------------------------------
+                0.00    0.00    1743/1743        CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[15]     0.0    0.00    0.00    1743         std::vector<long long, std::allocator<long long> >::_M_default_append(unsigned int) [15]
+-----------------------------------------------
+                0.00    0.00    1741/1741        CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[16]     0.0    0.00    0.00    1741         CFlipZoneLogic::DetectFlipZones(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, CMarketStructure*, CDemandSupplyLogic*) [16]
+                0.00    0.00      28/1414542     __gcc_deregister_frame [11]
+                0.00    0.00      28/826         std::vector<double, std::allocator<double> >::push_back(double const&) [20]
+                0.00    0.00      14/558         std::vector<long, std::allocator<long> >::push_back(long const&) [24]
+                0.00    0.00      10/138         void std::vector<double, std::allocator<double> >::_M_emplace_back_aux<double const&>(double const&) [31]
+                0.00    0.00      10/74          void std::vector<int, std::allocator<int> >::_M_emplace_back_aux<int const&>(int const&) [33]
+                0.00    0.00       5/199         void std::vector<long, std::allocator<long> >::_M_emplace_back_aux<long const&>(long const&) [29]
+-----------------------------------------------
+                0.00    0.00    1741/1741        CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[17]     0.0    0.00    0.00    1741         CBreakerBlockLogic::DetectBreakers(ZigZag*, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*) [17]
+                0.00    0.00      30/199         void std::vector<long, std::allocator<long> >::_M_emplace_back_aux<long const&>(long const&) [29]
+                0.00    0.00      16/138         void std::vector<double, std::allocator<double> >::_M_emplace_back_aux<double const&>(double const&) [31]
+                0.00    0.00      16/74          void std::vector<int, std::allocator<int> >::_M_emplace_back_aux<int const&>(int const&) [33]
+-----------------------------------------------
+                0.00    0.00    1741/1741        _fu3___ZTVNSt7__cxx1115basic_stringbufIcSt11char_traitsIcESaIcEEE [2]
+[18]     0.0    0.00    0.00    1741         ZigZag::update(double, double, long long, long, int, bool, bool) [18]
+                0.00    0.00    5223/12187       std::vector<double, std::allocator<double> >::_M_default_append(unsigned int) [13]
+                0.00    0.00    1741/1741        std::vector<long, std::allocator<long> >::_M_default_append(unsigned int) [19]
+                0.00    0.00     622/622         ZigZag::newPivot(chart_point*, chart_point*, double, bool, bool) [23]
+                0.00    0.00     107/729         ZigZag::updatePivot(Pivot*, chart_point*, double) [21]
+                0.00    0.00      50/2023        chart_point::~chart_point() [14]
+                0.00    0.00      11/21          void std::vector<CObject*, std::allocator<CObject*> >::_M_emplace_back_aux<CObject* const&>(CObject* const&) [38]
+-----------------------------------------------
+                0.00    0.00    1741/1741        ZigZag::update(double, double, long long, long, int, bool, bool) [18]
+[19]     0.0    0.00    0.00    1741         std::vector<long, std::allocator<long> >::_M_default_append(unsigned int) [19]
+-----------------------------------------------
+                0.00    0.00      28/826         CFlipZoneLogic::DetectFlipZones(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, CMarketStructure*, CDemandSupplyLogic*) [16]
+                0.00    0.00     798/826         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[20]     0.0    0.00    0.00     826         std::vector<double, std::allocator<double> >::push_back(double const&) [20]
+-----------------------------------------------
+                0.00    0.00     107/729         ZigZag::update(double, double, long long, long, int, bool, bool) [18]
+                0.00    0.00     622/729         ZigZag::newPivot(chart_point*, chart_point*, double, bool, bool) [23]
+[21]     0.0    0.00    0.00     729         ZigZag::updatePivot(Pivot*, chart_point*, double) [21]
+                0.00    0.00     729/2023        chart_point::~chart_point() [14]
+-----------------------------------------------
+                0.00    0.00     622/622         ZigZag::~ZigZag() [56]
+[22]     0.0    0.00    0.00     622         Pivot::~Pivot() [22]
+                0.00    0.00    1244/2023        chart_point::~chart_point() [14]
+-----------------------------------------------
+                0.00    0.00     622/622         ZigZag::update(double, double, long long, long, int, bool, bool) [18]
+[23]     0.0    0.00    0.00     622         ZigZag::newPivot(chart_point*, chart_point*, double, bool, bool) [23]
+                0.00    0.00    2488/1414542     __gcc_deregister_frame [11]
+                0.00    0.00     622/729         ZigZag::updatePivot(Pivot*, chart_point*, double) [21]
+-----------------------------------------------
+                0.00    0.00      14/558         CFlipZoneLogic::DetectFlipZones(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, CMarketStructure*, CDemandSupplyLogic*) [16]
+                0.00    0.00      44/558         CMarketStructure::ProcessRenamingRules() [32]
+                0.00    0.00      97/558         CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*) [3]
+                0.00    0.00     403/558         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[24]     0.0    0.00    0.00     558         std::vector<long, std::allocator<long> >::push_back(long const&) [24]
+-----------------------------------------------
+                0.00    0.00     399/399         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[25]     0.0    0.00    0.00     399         std::vector<int, std::allocator<int> >::push_back(int const&) [25]
+-----------------------------------------------
+                0.00    0.00     361/361         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[26]     0.0    0.00    0.00     361         CLiquidityBlockLogic::ProcessSweptAnywhere(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, ZigZag*, CInducementLogic*) [26]
+                0.00    0.00   25196/1414542     __gcc_deregister_frame [11]
+                0.00    0.00    3453/29253       std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned int, char const*, char*), unsigned int, char const*, ...) [12]
+                0.00    0.00      10/16          CLiquidityBlockLogic::RegisterLiquidityBlock(bool, ENUM_LB_TRIGGER, double, double, long long, int, long long, CInducementLogic*, long long, long long) [41]
+                0.00    0.00       5/22          void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_emplace_back_aux<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [37]
+-----------------------------------------------
+                0.00    0.00     361/361         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[27]     0.0    0.00    0.00     361         CLiquidityBlockLogic::ProcessPostInducementCHoCH(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, CInducementLogic*) [27]
+                0.00    0.00     496/1414542     __gcc_deregister_frame [11]
+                0.00    0.00       6/6           CLiquidityBlockLogic::ResolveSwingPOIBounds(long long, bool, CSwingPOILogic*, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, int, double&, double&) [44]
+                0.00    0.00       6/16          CLiquidityBlockLogic::RegisterLiquidityBlock(bool, ENUM_LB_TRIGGER, double, double, long long, int, long long, CInducementLogic*, long long, long long) [41]
+-----------------------------------------------
+                0.00    0.00     109/218         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+                0.00    0.00     109/218         CMarcoRawExitHistory::Capture(CMarketStructure*, CLiquidityBlockLogic*, long long, CTradeRejectionHistory&) [7]
+[28]     0.0    0.00    0.00     218         std::vector<SRejectionEvent, std::allocator<SRejectionEvent> >::_M_default_append(unsigned int) [28]
+-----------------------------------------------
+                0.00    0.00       5/199         CFlipZoneLogic::DetectFlipZones(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, CMarketStructure*, CDemandSupplyLogic*) [16]
+                0.00    0.00      28/199         CMarketStructure::ProcessRenamingRules() [32]
+                0.00    0.00      30/199         CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*) [3]
+                0.00    0.00      30/199         CBreakerBlockLogic::DetectBreakers(ZigZag*, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*) [17]
+                0.00    0.00      51/199         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+                0.00    0.00      55/199         CInducementLogic::UpdateTouches(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, double) [4]
+[29]     0.0    0.00    0.00     199         void std::vector<long, std::allocator<long> >::_M_emplace_back_aux<long const&>(long const&) [29]
+-----------------------------------------------
+                0.00    0.00     148/148         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[30]     0.0    0.00    0.00     148         CTradeRejectionHistory::Zone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, long long, long long, long long, bool) [30]
+                0.00    0.00       2/4           std::vector<SRejectionLB, std::allocator<SRejectionLB> >::_M_default_append(unsigned int) [47]
+-----------------------------------------------
+                0.00    0.00      10/138         CFlipZoneLogic::DetectFlipZones(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, CMarketStructure*, CDemandSupplyLogic*) [16]
+                0.00    0.00      16/138         CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*) [3]
+                0.00    0.00      16/138         CBreakerBlockLogic::DetectBreakers(ZigZag*, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*) [17]
+                0.00    0.00      96/138         CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[31]     0.0    0.00    0.00     138         void std::vector<double, std::allocator<double> >::_M_emplace_back_aux<double const&>(double const&) [31]
+-----------------------------------------------
+                0.00    0.00      97/97          CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*) [3]
+[32]     0.0    0.00    0.00      97         CMarketStructure::ProcessRenamingRules() [32]
+                0.00    0.00     311/1414542     __gcc_deregister_frame [11]
+                0.00    0.00      44/558         std::vector<long, std::allocator<long> >::push_back(long const&) [24]
+                0.00    0.00      28/199         void std::vector<long, std::allocator<long> >::_M_emplace_back_aux<long const&>(long const&) [29]
+                0.00    0.00      13/29253       std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned int, char const*, char*), unsigned int, char const*, ...) [12]
+                0.00    0.00      13/20          std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&) [40]
+                0.00    0.00      13/13          CMarketStructure::UpdateHistoricalEventName(long long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [42]
+                0.00    0.00       4/4           MArray<long>::Delete(int) [46]
+-----------------------------------------------
+                0.00    0.00      10/74          CFlipZoneLogic::DetectFlipZones(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, CMarketStructure*, CDemandSupplyLogic*) [16]
+                0.00    0.00      16/74          CBreakerBlockLogic::DetectBreakers(ZigZag*, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*) [17]
+                0.00    0.00      48/74          CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[33]     0.0    0.00    0.00      74         void std::vector<int, std::allocator<int> >::_M_emplace_back_aux<int const&>(int const&) [33]
+-----------------------------------------------
+                0.00    0.00      65/65          CMarcoM1LBContext::~CMarcoM1LBContext() [55]
+[34]     0.0    0.00    0.00      65         CInducementZone::~CInducementZone() [34]
+-----------------------------------------------
+                0.00    0.00      60/60          CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*) [3]
+[35]     0.0    0.00    0.00      60         CMarketStructure::GetPullbackPivots(ZigZag*, long long, long long, double&, long long&, double&, long long&) [35]
+-----------------------------------------------
+                0.00    0.00      34/34          CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[36]     0.0    0.00    0.00      34         CInducementLogic::StructureDirection(CMarketStructure*, long long, bool) [36]
+                0.00    0.00     209/1414542     __gcc_deregister_frame [11]
+-----------------------------------------------
+                0.00    0.00       5/22          CLiquidityBlockLogic::ProcessSweptAnywhere(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, ZigZag*, CInducementLogic*) [26]
+                0.00    0.00       8/22          CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*) [3]
+                0.00    0.00       9/22          CInducementLogic::RegisterZone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, int, ZigZag*, double) [6]
+[37]     0.0    0.00    0.00      22         void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_emplace_back_aux<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [37]
+                0.00    0.00      22/1414542     __gcc_deregister_frame [11]
+-----------------------------------------------
+                0.00    0.00       2/21          CLiquidityBlockLogic::RegisterLiquidityBlock(bool, ENUM_LB_TRIGGER, double, double, long long, int, long long, CInducementLogic*, long long, long long) [41]
+                0.00    0.00       8/21          CInducementLogic::RegisterZone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, int, ZigZag*, double) [6]
+                0.00    0.00      11/21          ZigZag::update(double, double, long long, long, int, bool, bool) [18]
+[38]     0.0    0.00    0.00      21         void std::vector<CObject*, std::allocator<CObject*> >::_M_emplace_back_aux<CObject* const&>(CObject* const&) [38]
+-----------------------------------------------
+                0.00    0.00      20/20          CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[39]     0.0    0.00    0.00      20         TimeToString[abi:cxx11](long long, int) [39]
+                0.00    0.00      20/1414542     __gcc_deregister_frame [11]
+-----------------------------------------------
+                0.00    0.00       7/20          CLiquidityBlockLogic::RegisterLiquidityBlock(bool, ENUM_LB_TRIGGER, double, double, long long, int, long long, CInducementLogic*, long long, long long) [41]
+                0.00    0.00      13/20          CMarketStructure::ProcessRenamingRules() [32]
+[40]     0.0    0.00    0.00      20         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&) [40]
+-----------------------------------------------
+                0.00    0.00       6/16          CLiquidityBlockLogic::ProcessPostInducementCHoCH(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, CInducementLogic*) [27]
+                0.00    0.00      10/16          CLiquidityBlockLogic::ProcessSweptAnywhere(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, ZigZag*, CInducementLogic*) [26]
+[41]     0.0    0.00    0.00      16         CLiquidityBlockLogic::RegisterLiquidityBlock(bool, ENUM_LB_TRIGGER, double, double, long long, int, long long, CInducementLogic*, long long, long long) [41]
+                0.00    0.00      18/1414542     __gcc_deregister_frame [11]
+                0.00    0.00       7/20          std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&) [40]
+                0.00    0.00       5/29253       std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned int, char const*, char*), unsigned int, char const*, ...) [12]
+                0.00    0.00       3/3           std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, char const*) [48]
+                0.00    0.00       2/21          void std::vector<CObject*, std::allocator<CObject*> >::_M_emplace_back_aux<CObject* const&>(CObject* const&) [38]
+-----------------------------------------------
+                0.00    0.00      13/13          CMarketStructure::ProcessRenamingRules() [32]
+[42]     0.0    0.00    0.00      13         CMarketStructure::UpdateHistoricalEventName(long long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [42]
+                0.00    0.00      13/1414542     __gcc_deregister_frame [11]
+-----------------------------------------------
+                0.00    0.00       9/9           CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[43]     0.0    0.00    0.00       9         CMarketStructure::tf_str[abi:cxx11](int) [43]
+                0.00    0.00       9/29253       std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned int, char const*, char*), unsigned int, char const*, ...) [12]
+-----------------------------------------------
+                0.00    0.00       6/6           CLiquidityBlockLogic::ProcessPostInducementCHoCH(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, CInducementLogic*) [27]
+[44]     0.0    0.00    0.00       6         CLiquidityBlockLogic::ResolveSwingPOIBounds(long long, bool, CSwingPOILogic*, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, int, double&, double&) [44]
+-----------------------------------------------
+                0.00    0.00       6/6           CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[45]     0.0    0.00    0.00       6         std::vector<SInducementMitigationTracker, std::allocator<SInducementMitigationTracker> >::_M_default_append(unsigned int) [45]
+-----------------------------------------------
+                0.00    0.00       4/4           CMarketStructure::ProcessRenamingRules() [32]
+[46]     0.0    0.00    0.00       4         MArray<long>::Delete(int) [46]
+-----------------------------------------------
+                0.00    0.00       2/4           CMarcoRawExitHistory::Capture(CMarketStructure*, CLiquidityBlockLogic*, long long, CTradeRejectionHistory&) [7]
+                0.00    0.00       2/4           CTradeRejectionHistory::Zone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, long long, long long, long long, bool) [30]
+[47]     0.0    0.00    0.00       4         std::vector<SRejectionLB, std::allocator<SRejectionLB> >::_M_default_append(unsigned int) [47]
+-----------------------------------------------
+                0.00    0.00       3/3           CLiquidityBlockLogic::RegisterLiquidityBlock(bool, ENUM_LB_TRIGGER, double, double, long long, int, long long, CInducementLogic*, long long, long long) [41]
+[48]     0.0    0.00    0.00       3         std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, char const*) [48]
+-----------------------------------------------
+                0.00    0.00       2/2           CMarcoM1LBContext::~CMarcoM1LBContext() [55]
+[49]     0.0    0.00    0.00       2         CLiquidityBlock::~CLiquidityBlock() [49]
+                0.00    0.00       4/1414542     __gcc_deregister_frame [11]
+-----------------------------------------------
+                0.00    0.00       2/2           CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[50]     0.0    0.00    0.00       2         CLiquidityBlockLogic::EntryTriggerStructureTime(bool, ENUM_LB_TRIGGER, long long, CInducementLogic*, CMarketStructure*, long long) [50]
+                0.00    0.00      12/1414542     __gcc_deregister_frame [11]
+-----------------------------------------------
+                0.00    0.00       2/2           CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [1]
+[51]     0.0    0.00    0.00       2         std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_default_append(unsigned int) [51]
+-----------------------------------------------
+                0.00    0.00       1/1           main [291]
+[52]     0.0    0.00    0.00       1         newInstance(Settings*) [52]
+-----------------------------------------------
+                0.00    0.00       1/1           ZigZag::~ZigZag() [56]
+[53]     0.0    0.00    0.00       1         PineArrayLong::~PineArrayLong() [53]
+-----------------------------------------------
+                0.00    0.00       1/1           main [291]
+[54]     0.0    0.00    0.00       1         CMarcoM1LBContext::CMarcoM1LBContext() [54]
+-----------------------------------------------
+                0.00    0.00       1/1           _fu36___ZSt4cout [261]
+[55]     0.0    0.00    0.00       1         CMarcoM1LBContext::~CMarcoM1LBContext() [55]
+                0.00    0.00      65/65          CInducementZone::~CInducementZone() [34]
+                0.00    0.00       2/2           CLiquidityBlock::~CLiquidityBlock() [49]
+-----------------------------------------------
+                0.00    0.00       1/1           _fu36___ZSt4cout [261]
+[56]     0.0    0.00    0.00       1         ZigZag::~ZigZag() [56]
+                0.00    0.00     622/622         Pivot::~Pivot() [22]
+                0.00    0.00       1/1           PineArrayLong::~PineArrayLong() [53]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2017 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [52] newInstance(Settings*) [54] CMarcoM1LBContext::CMarcoM1LBContext() [28] std::vector<SRejectionEvent, std::allocator<SRejectionEvent> >::_M_default_append(unsigned int)
+  [39] TimeToString[abi:cxx11](long long, int) [55] CMarcoM1LBContext::~CMarcoM1LBContext() [45] std::vector<SInducementMitigationTracker, std::allocator<SInducementMitigationTracker> >::_M_default_append(unsigned int)
+  [14] chart_point::~chart_point() [17] CBreakerBlockLogic::DetectBreakers(ZigZag*, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*) [51] std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_default_append(unsigned int)
+  [53] PineArrayLong::~PineArrayLong() [26] CLiquidityBlockLogic::ProcessSweptAnywhere(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, ZigZag*, CInducementLogic*) [37] void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_emplace_back_aux<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  [16] CFlipZoneLogic::DetectFlipZones(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, CMarketStructure*, CDemandSupplyLogic*) [44] CLiquidityBlockLogic::ResolveSwingPOIBounds(long long, bool, CSwingPOILogic*, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, int, double&, double&) [38] void std::vector<CObject*, std::allocator<CObject*> >::_M_emplace_back_aux<CObject* const&>(CObject* const&)
+  [34] CInducementZone::~CInducementZone() [41] CLiquidityBlockLogic::RegisterLiquidityBlock(bool, ENUM_LB_TRIGGER, double, double, long long, int, long long, CInducementLogic*, long long, long long) [13] std::vector<double, std::allocator<double> >::_M_default_append(unsigned int)
+  [49] CLiquidityBlock::~CLiquidityBlock() [50] CLiquidityBlockLogic::EntryTriggerStructureTime(bool, ENUM_LB_TRIGGER, long long, CInducementLogic*, CMarketStructure*, long long) [31] void std::vector<double, std::allocator<double> >::_M_emplace_back_aux<double const&>(double const&)
+   [8] CInducementLogic::HarvestZones(int, std::vector<long long, std::allocator<long long> > const&, CDemandSupplyLogic*, CSwingPOILogic*, COrderBlockLogic*, CFlipZoneLogic*, CBreakerBlockLogic*, CMarketStructure*, ZigZag*, double) [27] CLiquidityBlockLogic::ProcessPostInducementCHoCH(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, CMarketStructure*, CSwingPOILogic*, CInducementLogic*) [20] std::vector<double, std::allocator<double> >::push_back(double const&)
+   [6] CInducementLogic::RegisterZone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, int, ZigZag*, double) [7] CMarcoRawExitHistory::Capture(CMarketStructure*, CLiquidityBlockLogic*, long long, CTradeRejectionHistory&) [33] void std::vector<int, std::allocator<int> >::_M_emplace_back_aux<int const&>(int const&)
+   [4] CInducementLogic::UpdateTouches(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*, double) [30] CTradeRejectionHistory::Zone(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, bool, double, double, long long, long long, long long, long long, bool) [25] std::vector<int, std::allocator<int> >::push_back(int const&)
+  [36] CInducementLogic::StructureDirection(CMarketStructure*, long long, bool) [22] Pivot::~Pivot() [19] std::vector<long, std::allocator<long> >::_M_default_append(unsigned int)
+  [35] CMarketStructure::GetPullbackPivots(ZigZag*, long long, long long, double&, long long&, double&, long long&) [46] MArray<long>::Delete(int) [29] void std::vector<long, std::allocator<long> >::_M_emplace_back_aux<long const&>(long const&)
+  [32] CMarketStructure::ProcessRenamingRules() [21] ZigZag::updatePivot(Pivot*, chart_point*, double) [24] std::vector<long, std::allocator<long> >::push_back(long const&)
+   [9] CMarketStructure::GetBearishChochTarget(ZigZag*, long long, double, double&, long long&) [18] ZigZag::update(double, double, long long, long, int, bool, bool) [15] std::vector<long long, std::allocator<long long> >::_M_default_append(unsigned int)
+  [42] CMarketStructure::UpdateHistoricalEventName(long long, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) [23] ZigZag::newPivot(chart_point*, chart_point*, double, bool, bool) [48] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, char const*)
+   [3] CMarketStructure::Update(int, std::vector<long long, std::allocator<long long> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, std::vector<double, std::allocator<double> > const&, ZigZag*) [56] ZigZag::~ZigZag() [40] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > std::operator+<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&)
+  [43] CMarketStructure::tf_str[abi:cxx11](int) [12] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > __gnu_cxx::__to_xstring<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char>(int (*)(char*, unsigned int, char const*, char*), unsigned int, char const*, ...) [11] __gcc_deregister_frame
+   [1] CMarcoM1LBContext::Update(long long, double, double, double, double, ZigZag*, double) [47] std::vector<SRejectionLB, std::allocator<SRejectionLB> >::_M_default_append(unsigned int) [5] __tcf_0

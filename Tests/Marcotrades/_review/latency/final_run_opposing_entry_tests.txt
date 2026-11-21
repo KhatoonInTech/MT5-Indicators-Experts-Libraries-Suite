@@ -1,0 +1,2 @@
+PASS: 59 opposing-structure/qualified-leg checks, including recorded ETHUSDc decision
+PASS: restoring CHoCH-only entry filter fails regression

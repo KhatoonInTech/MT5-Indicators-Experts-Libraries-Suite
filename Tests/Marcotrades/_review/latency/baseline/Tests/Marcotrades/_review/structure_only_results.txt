@@ -1,0 +1,11 @@
+TF 1: same swings/structure; no warmup zones/drawings; new-day zones allowed
+TF 2: same swings/structure; no warmup zones/drawings; new-day zones allowed
+TF 3: same swings/structure; no warmup zones/drawings; new-day zones allowed
+TF 4: same swings/structure; no warmup zones/drawings; new-day zones allowed
+TF 5: same swings/structure; no warmup zones/drawings; new-day zones allowed
+TF 10: same swings/structure; no warmup zones/drawings; new-day zones allowed
+TF 12: same swings/structure; no warmup zones/drawings; new-day zones allowed
+TF 15: same swings/structure; no warmup zones/drawings; new-day zones allowed
+TF 30: same swings/structure; no warmup zones/drawings; new-day zones allowed
+TF 60: same swings/structure; no warmup zones/drawings; new-day zones allowed
+72368 structure-only warmup checks passed

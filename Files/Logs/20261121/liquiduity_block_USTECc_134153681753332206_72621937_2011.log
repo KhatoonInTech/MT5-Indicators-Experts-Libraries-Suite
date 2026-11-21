@@ -1,0 +1,6 @@
+2026.11.21 15:40:58 [USTECc,PERIOD_M2] [LIFECYCLE] Started liquiduity_block
+2026.11.21 15:40:58 [USTECc,PERIOD_M2] [PRE-INIT MESSAGES]
+
+2026.11.21 15:40:58 [USTECc,PERIOD_M2] [ZONE UNITS] USTECc pip=0.10000000 point=0.01000000 proximity=0.10000000 cluster=0.50000000
+2026.11.21 15:40:58 [USTECc,PERIOD_M2] [HISTORY WARMUP] USTECc PERIOD_M2: waiting for previous-day chart history for 2026.11.18 00:00. Load more chart bars if this persists.
+2026.11.21 15:40:58 [USTECc,PERIOD_M2] [HISTORY WARMUP] USTECc PERIOD_M2: context from 2026.11.17 00:00; anchor/window from 2026.11.18 00:00. Previous context supplies swings/structure only; zones and drawings start at the window.

@@ -1,0 +1,162 @@
+[
+  {
+    "Source": "Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 28638 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Marcotrades_marco_live_auto_ea.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5",
+    "Result": "Result: 0 errors, 12 warnings, 39850 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Backtesting_marco_backtest_ea.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/Marcotrades/marco_backtest_trades.mq5",
+    "Result": "Result: 0 errors, 12 warnings, 16958 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_Marcotrades_marco_backtest_trades.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/Marcotrades/liquiduity_block.mq5",
+    "Result": "Result: 0 errors, 25 warnings, 8836 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_Marcotrades_liquiduity_block.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Alerting System/LIQUIDITY_SWEPT.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 17867 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Alerting_System_LIQUIDITY_SWEPT.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Alerting System/OandaHeatmapEA.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 2362 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Alerting_System_OandaHeatmapEA.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Alerting System/SwingPOI_proximities.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 11059 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Alerting_System_SwingPOI_proximities.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Alerting System/Zone Mitigation.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 15539 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Alerting_System_Zone_Mitigation.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Alerting System/zone_touch.mq5",
+    "Result": "Result: 0 errors, 2 warnings, 16302 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Alerting_System_zone_touch.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Backtesting/backtest.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 9101 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Backtesting_backtest.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Backtesting/bestest.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 6872 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Backtesting_bestest.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Guardrails/Guardrails_Management.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 3117 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Guardrails_Guardrails_Management.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Guardrails/GUARDRAIS PROTECTION.mq5",
+    "Result": "Result: 0 errors, 1 warnings, 10942 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Guardrails_GUARDRAIS_PROTECTION.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Marcotrades/Guarded_Liquidity.mq5",
+    "Result": "Result: 0 errors, 1 warnings, 10459 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Marcotrades_Guarded_Liquidity.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Marcotrades/Marco_DaVinci_EA.mq5",
+    "Result": "Result: 0 errors, 1 warnings, 9318 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Marcotrades_Marco_DaVinci_EA.mq5.log"
+  },
+  {
+    "Source": "Experts/Custom EAs/Marcotrades/marco_live_ea.mq5",
+    "Result": "Result: 0 errors, 1 warnings, 7349 ms elapsed, cpu='X64 Regular'",
+    "Log": "Experts_Custom_EAs_Marcotrades_marco_live_ea.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/General/Anchored_VWAP.mq5",
+    "Result": "Result: 0 errors, 1 warnings, 1961 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_General_Anchored_VWAP.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/General/bar_replay.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 2377 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_General_bar_replay.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/General/session_detector.mq5",
+    "Result": "Result: 0 errors, 6 warnings, 2040 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_General_session_detector.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/HEATMAP/heatmap.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 2012 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_HEATMAP_heatmap.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/HEATMAP/Heatmap_Nuclear.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 2002 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_HEATMAP_Heatmap_Nuclear.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/HEATMAP/xauusd_heatmap_1.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 2216 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_HEATMAP_xauusd_heatmap_1.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/Marcotrades/Marco_Liquidity_Visualizer.mq5",
+    "Result": "Result: 0 errors, 1 warnings, 7153 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_Marcotrades_Marco_Liquidity_Visualizer.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/ZigZag/BreakerBlocks.mq5",
+    "Result": "Result: 0 errors, 14 warnings, 11198 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_ZigZag_BreakerBlocks.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/ZigZag/Demand_Supply.mq5",
+    "Result": "Result: 0 errors, 2 warnings, 15393 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_ZigZag_Demand_Supply.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/ZigZag/FlipZone.mq5",
+    "Result": "Result: 0 errors, 7 warnings, 10036 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_ZigZag_FlipZone.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/ZigZag/Full Market Structure.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 11590 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_ZigZag_Full_Market_Structure.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/ZigZag/liquidity.mq5",
+    "Result": "Result: 0 errors, 6 warnings, 3252 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_ZigZag_liquidity.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/ZigZag/Oderblock.mq5",
+    "Result": "Result: 0 errors, 2 warnings, 4675 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_ZigZag_Oderblock.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/ZigZag/SwingPOIs.mq5",
+    "Result": "Result: 0 errors, 2 warnings, 5588 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_ZigZag_SwingPOIs.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/ZigZag/Test_MarketStructure.mq5",
+    "Result": "Result: 0 errors, 1 warnings, 5703 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_ZigZag_Test_MarketStructure.mq5.log"
+  },
+  {
+    "Source": "Indicators/Custom/ZigZag/ZigZag.mq5",
+    "Result": "Result: 0 errors, 0 warnings, 2777 ms elapsed, cpu='X64 Regular'",
+    "Log": "Indicators_Custom_ZigZag_ZigZag.mq5.log"
+  }
+]

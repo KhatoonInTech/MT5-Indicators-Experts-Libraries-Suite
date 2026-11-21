@@ -1,0 +1,31 @@
+--- Tests/Marcotrades/run_opposing_entry_tests.py
+
++++ Tests/Marcotrades/run_opposing_entry_tests.py
+
+@@ -46,6 +46,25 @@
+
+ int main(){
+  for(bool buy:{false,true}){
+   CTradeRejectionHistory h;
++  // Fresh-cluster exception needs the new LB's causal event and adjacent successor.
++  string prefix=buy?"BL-":"BR-";
++  h.Observe(prefix+"CHoCH",200,260,150,100);
++  CHECK(h.FreshClusterQualification(buy,150,200,260)==0);
++  h.Observe(prefix+"BOS",300,360,250,100);
++  CHECK(h.FreshClusterQualification(buy,150,200,359)==0);
++  CHECK(h.FreshClusterQualification(buy,150,200,360)==360);
++  CHECK(h.FreshClusterQualification(buy,201,200,360)==0); // Old pair cannot qualify a new origin.
++  CHECK(h.FreshClusterQualification(buy,150,0,360)==0);
++  h.Observe(buy?"BR-BOS":"BL-BOS",280,340,250,100);
++  CHECK(h.FreshClusterQualification(buy,150,200,360)==0); // Intervening opposite event.
++  h.Reset();h.Observe(prefix+"CHoCH",200,260,150,100);h.Observe(prefix+"BOS",300,360,250,100);
++  h.Observe(buy?"SSL-Swept":"BSL-Swept",200,400,150,100);
++  CHECK(h.FreshClusterQualification(buy,150,200,399)==360);
++  CHECK(h.FreshClusterQualification(buy,150,200,400)==0); // Causal reclassification invalidates pair.
++  h.Reset();h.Observe(prefix+"CHoCH",200,260,150,100);h.Observe(prefix+"BOS",300,360,250,100);
++  h.Observe(buy?"SSL-Swept":"BSL-Swept",300,400,250,100);
++  CHECK(h.FreshClusterQualification(buy,150,200,400)==0);
++  h.Reset();
+   // A qualified LB linked to the latest BOS must veto either trade direction.
+   zone(h,buy);event(h,buy,"BOS",280,300);CHECK(block(h,buy));
+   CHECK(!block(h,buy,259)); // Qualification/event still unavailable.

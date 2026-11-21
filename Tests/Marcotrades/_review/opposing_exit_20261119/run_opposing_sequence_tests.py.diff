@@ -1,0 +1,85 @@
+--- Tests/Marcotrades/run_opposing_sequence_tests.py before
++++ Tests/Marcotrades/run_opposing_sequence_tests.py current
+@@ -20,7 +20,7 @@
+     parts.append(source)
+ parts.append(r'''
+ int checks=0;
+-void check(bool v){++checks;if(!v){std::cerr<<"Failed check "<<checks<<"\n";abort();}}
++void check(bool v){++checks;if(!v){std::cerr<<"Failed check "<<checks<<"\n";std::exit(1);}}
+ void eq(double a,double b){check(std::abs(a-b)<1e-8);}
+ SMarcoTPPlan plan(int d){SMarcoTPPlan p;check(CMarcoStagedTP::Build(p,d==1,100,100-d*10,100+d*20,100+d*30,1,2,0,.01,2));return p;}
+ void event(CTradeRejectionHistory &h,int d,int t,string name=""){
+@@ -52,10 +52,10 @@
+    eq(advance(h,p,100,270).action,0); // Same event cannot become second.
+    event(h,d,300,d==1?"BR-BOS":"BL-BOS");
+    a=advance(h,p,100+d*(secondProfit?3:-3),360);
+-   double share=secondProfit?(firstProfit?.25:0):1;
++   double share=firstProfit && secondProfit ? .25 : 1;
+    eq(a.share,share);eq(a.step,2);
+    if(share>0)fill(p,100+d*(secondProfit?3:-3),360);
+-   eq(p.remaining,secondProfit?(firstProfit?.5625:.5):0);
++   eq(p.remaining,firstProfit && secondProfit ? .5625 : 0);
+    event(h,d,400,d==1?"BR-BOS":"BL-BOS");eq(advance(h,p,100,460).action,0);
+   }
+   auto p=plan(d);CTradeRejectionHistory h;event(h,d,200); // Unlinked structure never starts.
+@@ -69,6 +69,46 @@
+   // A reclassification invalidating the first event cancels the second close.
+   h.Observe(d==1?"BSL-Swept":"SSL-Swept",200,360,150,105,105);
+   eq(advance(h,p,100,360).action,0);eq(p.sequence.step,2);
++  // An unbroken BOS continuation retains the original raw LB connection even
++  // when its own pivot is outside the LB. Test both entry and setup TF slots.
++  for(int tf:{1,2,3}){
++   CTradeRejectionHistory chain;source(chain,d);
++   event(chain,d,200);
++   chain.Observe(d==1?"BR-BOS":"BL-BOS",300,360,290,99,99);
++   chain.Observe(d==1?"BR-BOS":"BL-BOS",400,460,390,98,98);
++   SRejectionEvent tail;check(chain.Latest(460,tail));string id;
++   check(CMarcoOpposingSequence::Source(chain,tail,-d,tf,id));check(id=="raw-opposing");
++   // The first post-entry BOS outside the LB must still start the exit,
++   // followed by a full close at the next BOS after a losing first exit.
++   auto linkedPlan=plan(d);
++   auto linkedSignal=CMarcoOpposingSequence::Advance(chain,linkedPlan.sequence,tf==1?1:0,
++                     tf,d,100,100-d*2,270,360);
++   eq(linkedSignal.step,1);eq(linkedSignal.share,.5);
++   fill(linkedPlan,100-d*2,360);
++   linkedSignal=CMarcoOpposingSequence::Advance(chain,linkedPlan.sequence,tf==1?1:0,
++                     tf,d,100,100+d*2,270,460);
++   eq(linkedSignal.step,2);eq(linkedSignal.action,2);eq(linkedSignal.share,1);
++   fill(linkedPlan,100+d*2,460);eq(linkedPlan.remaining,0);
++   // An intervening reversal breaks the link; future revisions cannot break it early.
++   chain.Observe(d==1?"BL-BOS":"BR-BOS",300,470,290,99,99);
++   check(CMarcoOpposingSequence::Source(chain,tail,-d,tf,id));
++   chain.Observe(d==1?"BR-BOS":"BL-BOS",500,560,490,98,98);
++   check(chain.Latest(560,tail));check(!CMarcoOpposingSequence::Source(chain,tail,-d,tf,id));
++   // A vanished or mitigated LB cannot start a fresh post-entry exit sequence.
++   chain.Reset();source(chain,d);event(chain,d,200);
++   chain.BeginZones();chain.EndZones(350);
++   chain.Observe(d==1?"BR-BOS":"BL-BOS",400,460,390,98,98);
++   check(chain.Latest(460,tail));check(!CMarcoOpposingSequence::Source(chain,tail,-d,tf,id));
++   chain.Reset();source(chain,d);event(chain,d,200);
++   chain.BeginZones();chain.Zone("raw-opposing",d==-1,104,106,150,270,200,350);chain.EndZones(350);
++   chain.Observe(d==1?"BR-BOS":"BL-BOS",600,660,590,98,98);
++   check(chain.Latest(660,tail));check(!CMarcoOpposingSequence::Source(chain,tail,-d,tf,id));
++   // A later expansion must not invent a link to the older event's pivot.
++   chain.Reset();chain.Zone("expanded",d==-1,110,112,150,0,0,260);event(chain,d,200);
++   chain.BeginZones();chain.Zone("expanded",d==-1,104,112,150,0,0,350);chain.EndZones(350);
++   chain.Observe(d==1?"BR-BOS":"BL-BOS",400,460,390,98,98);
++   check(chain.Latest(460,tail));check(!CMarcoOpposingSequence::Source(chain,tail,-d,tf,id));
++  }
+   // Live close request, persistence, BE only on profitable partials, and no resend.
+   for(bool profit:{false,true}){
+    reset(d);p=plan(d);h.Reset();event(h,d,200);source(h,d);
+@@ -88,11 +128,11 @@
+    advance(h,st.plan,100+d*(secondProfit?3:-3),360);check(CMarcoLiveStagedTP::Save(magic,identifier,st));
+    bid=ask=100+d*(secondProfit?3:-3);clockNow+=60;
+    CMarcoLiveStagedTP::Manage(trade,magic,identifier,"TEST",false,1,1);
+-   eq(volume,secondProfit?(firstProfit?2.25:2):0);
++   eq(volume,firstProfit && secondProfit ? 2.25 : 0);
+    st=load();eq(st.plan.sequence.step,2);
+    if(firstProfit && secondProfit)eq(st.plan.sequence.closed[1],.1875);
+    if(!firstProfit && !secondProfit)eq(st.plan.sequence.closed[1],.5);
+-   if(!firstProfit && secondProfit){eq(st.plan.sequence.closed[1],0);eq(sends,1);eq(sl,100-d*10);}
++   if(!firstProfit && secondProfit){eq(st.plan.sequence.closed[1],.5);eq(sends,2);}
+   }
+   // A rejected request retries the same intended amount, not another 25%.
+   reset(d);p=plan(d);h.Reset();event(h,d,200);source(h,d);advance(h,p,100+d*2,260);save(p);

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\run_lb_cluster_tests.py", line 148, in <module>
+    assert 'PrepareSymbolClusters(symbol)' in live
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

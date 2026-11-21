@@ -3238,6 +3238,26 @@ public:
       return found;
      }
    int ZoneCount() { return ArraySize(zones); }
+   // Qualification for a fresh IND LB in a rejection-only cluster. The causal
+   // event and its immediate successor must both belong to the new origin's
+   // direction. Availability is preserved; future structures cannot qualify it.
+   datetime FreshClusterQualification(bool bull,datetime origin,datetime cause,datetime now)
+     {
+      if(origin<=0 || cause<origin) return 0;
+      int direction=bull ? 1 : -1;
+      SRejectionEvent first,next; bool haveFirst=false,haveNext=false;
+      for(int i=0;i<ArraySize(events);i++)
+        {
+         SRejectionEvent event;
+         if(!EventAt(i,now,event)) continue;
+         if(event.time==cause) { first=event; haveFirst=true; }
+         if(event.time<=cause || StructureDirection(event.name)==0) continue;
+         if(!haveNext || event.time<next.time) { next=event; haveNext=true; }
+        }
+      if(!haveFirst || !haveNext || StructureDirection(first.name)!=direction ||
+         StructureDirection(next.name)!=direction) return 0;
+      return MathMax(first.available,next.available);
+     }
    bool ZoneAt(int index, SRejectionLB &zone)
      {
       if(index<0 || index>=ArraySize(zones)) return false;
@@ -5285,7 +5305,8 @@ public:
      }
 
    // A stage closes a share of ORIGINAL volume, never a share of the remainder.
-   static double Exit(SMarcoTPPlan &plan, int stage, double fraction, double price, datetime time)
+   static double Exit(SMarcoTPPlan &plan, int stage, double fraction, double price, datetime time,
+                      bool normalTarget=true)
      {
       fraction = MathMin(fraction, plan.remaining);
       if(stage>=0) fraction=MathMin(fraction, plan.fraction[stage]-plan.closed[stage]);
@@ -5298,7 +5319,23 @@ public:
          plan.exitPrice[stage]=(plan.exitPrice[stage]*plan.closed[stage]+price*fraction)/(plan.closed[stage]+fraction);
          plan.closed[stage]+=fraction;
          plan.exitTime[stage]=time;
-         plan.breakeven=true;
+         // Only the normal, entry-time TP allocation is subject to this gate.
+         // Structure exits can redistribute fractions and LB extensions have
+         // their own stop rules; preserve their existing later-TP behaviour.
+         bool otherScenario=!normalTarget || plan.extensionCount>0 ||
+                            plan.structureClosed[0]>0 || plan.structureClosed[1]>0 ||
+                            plan.sequence.closed[0]>0 || plan.sequence.closed[1]>0;
+         // Until another scenario intervenes, fractions are the frozen entry
+         // allocations: 50/25/25 or 75/25. The exception is two fully closed
+         // quarter targets: together they protect the remaining half at BE.
+         // A touch or an incomplete broker execution does not complete a stage.
+         int completedQuarters=0;
+         for(int i=0;i<plan.count;i++)
+            if(MathAbs(plan.fraction[i]-0.25)<1e-9 &&
+               plan.closed[i]+1e-9>=plan.fraction[i]) completedQuarters++;
+         if(otherScenario || completedQuarters>=2 || (plan.fraction[stage]>=0.5 &&
+                              plan.closed[stage]+1e-9>=plan.fraction[stage]))
+            plan.breakeven=true;
         }
       return reward;
      }
@@ -5397,7 +5434,7 @@ public:
             if(plan.vicinityTime[i]>0 &&
                plan.closed[i]+1e-9<plan.fraction[i])
               {
-               Exit(plan,i,plan.fraction[i]-plan.closed[i],close,time);
+               Exit(plan,i,plan.fraction[i]-plan.closed[i],close,time,false);
                lastExit=close;
               }
      }
@@ -5545,12 +5582,57 @@ public:
       return false;
      }
 
+   // The first linked event may already be known when the position opens.
+   // Consult its entry-time version, never a link/label discovered afterwards.
+   // No historical partial is invented: only its adjacent post-entry opposing
+   // event can request a full close, and only at an executable losing price.
+   static bool PreEntryContinuation(CTradeRejectionHistory &history, int slot,
+                                     ENUM_TIMEFRAMES tf, int direction, double entry,
+                                     double executionPrice, datetime opened, datetime now,
+                                     SMarcoOpposingSequence &state, SMarcoSequenceSignal &result)
+     {
+      if(state.step!=0 || state.pending || now<=opened || direction*(executionPrice-entry)>=0) return false;
+      SRejectionEvent first; bool found=false;
+      for(int i=0;i<history.EventCount();i++)
+        {
+         SRejectionEvent event;
+         if(!history.EventAt(i,opened,event) || Direction(event.name)==0) continue;
+         if(!found || event.time>first.time) { first=event; found=true; }
+        }
+      string id;
+      if(!found || first.time>=opened || Direction(first.name)!=-direction ||
+         !Source(history,first,-direction,tf,id)) return false;
+      // A later reclassification reversing the first event cancels its chain.
+      bool stillOpposing=false;
+      SRejectionEvent next; found=false;
+      for(int i=0;i<history.EventCount();i++)
+        {
+         SRejectionEvent event;
+         if(!history.EventAt(i,now,event)) continue;
+         if(event.time==first.time) stillOpposing=Direction(event.name)==-direction;
+         if(event.time<=first.time || Direction(event.name)==0) continue;
+         if(!found || event.time<next.time) { next=event; found=true; }
+        }
+      if(!stillOpposing || !found || next.available<=opened || next.time<=state.seen[slot] ||
+         Direction(next.name)!=-direction) return false;
+      state.seen[slot]=next.time;
+      state.step=2; state.tf=(int)tf; state.firstEvent=first.time; state.firstProfit=false;
+      state.pending=true; state.share=1.0; state.requestedLots=0;
+      result->action=2; result->step=2; result->tf=(int)tf; result->eventTime=next.time;
+      result->lbId=id; result->share=1.0; result->profit=false;
+      PrintFormat("[PRE-ENTRY OPPOSING CONTINUATION] source=%s LB=%s first=%s opened=%s second=%s region=SL share=100%%",
+                  EnumToString(tf),id,TimeToString(first.time,TIME_DATE|TIME_SECONDS),
+                  TimeToString(opened,TIME_DATE|TIME_SECONDS),TimeToString(next.time,TIME_DATE|TIME_SECONDS));
+      return true;
+     }
+
    static SMarcoSequenceSignal Advance(CTradeRejectionHistory &history, SMarcoOpposingSequence &state,
                                        int slot, ENUM_TIMEFRAMES tf, int direction, double entry,
-                                       double executionPrice, datetime opened, datetime now)
+                                       double executionPrice, datetime opened, datetime now, bool checkPreEntry=true)
      {
       SMarcoSequenceSignal result; ZeroMemory(result);
       if(state.pending || state.step>=2 || (state.step==1 && state.tf!=(int)tf)) return result;
+      if(checkPreEntry && PreEntryContinuation(history,slot,tf,direction,entry,executionPrice,opened,now,state,result)) return result;
       // Select by event time, not insertion order: label revisions are appended
       // to history but must never become another first/second structure->
       for(int pass=0;pass<history.EventCount();pass++)

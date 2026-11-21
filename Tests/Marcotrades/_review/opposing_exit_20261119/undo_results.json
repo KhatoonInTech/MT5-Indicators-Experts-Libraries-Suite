@@ -1,0 +1,43 @@
+{
+  "sources": [
+    {
+      "file": "Include/Custom/Marcotrades/opposing_sequence.mqh",
+      "restored_sha256": "e7a390aa03a8f03e4b32c11ef285eade9394067a407c22adaa238a5dd2eca5b2"
+    },
+    {
+      "file": "Tests/Marcotrades/run_opposing_sequence_tests.py",
+      "restored_sha256": "1ad96d38ad67d2c1de2ae88f37e1194f1680bc916014d29f97e809e863d7cc56"
+    },
+    {
+      "file": "Indicators/Custom/Marcotrades/marco_backtest_trades.mq5",
+      "restored_sha256": "3eb2ea31b16b7982860f10c7ac05021eff7669ee6ee5b19bd1bb6598742f94ec"
+    },
+    {
+      "file": "Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5",
+      "restored_sha256": "ac12c8b934560182b7ba279750a9bab2412b1703baff7aeb38f9581398581fcd"
+    },
+    {
+      "file": "Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5",
+      "restored_sha256": "6d6515a898c8a9facd1c0967a1b635c73e785f92991ef24d0a543ced2d388c9c"
+    }
+  ],
+  "builds": [
+    {
+      "file": "Indicators\\Custom\\Marcotrades\\marco_backtest_trades.ex5",
+      "sha256": "83af83a90c4d1472f401bc690796f66fed7f936f6623aa05d5ef15ecdf17c360",
+      "result": "Result: 0 errors, 12 warnings, 34741 ms elapsed, cpu='X64 Regular'"
+    },
+    {
+      "file": "Experts\\Custom EAs\\Backtesting\\marco_backtest_ea.ex5",
+      "sha256": "ba843a805f41602ff6c7c4f974b3e5a3d58447973752d5c87728f8fcfab2e696",
+      "result": "Result: 0 errors, 12 warnings, 34683 ms elapsed, cpu='X64 Regular'"
+    },
+    {
+      "file": "Experts\\Custom EAs\\Marcotrades\\marco_live_auto_ea.ex5",
+      "sha256": "290e1868a43ca1dd8f60db2aa03a696d8e7334d730bd0ef2fc7d3d64ccb0c886",
+      "result": "Result: 0 errors, 0 warnings, 33290 ms elapsed, cpu='X64 Regular'"
+    }
+  ],
+  "original_sequence_assertions_passed": 294,
+  "status": "Reverted; awaiting clarification before reimplementation"
+}

@@ -1,0 +1,32 @@
+C:\Users\Super\AppData\Local\Temp\marco_indicator_cache_tests_0gmwakxt\cache.cpp: In function 'void DrawAll()':
+C:\Users\Super\AppData\Local\Temp\marco_indicator_cache_tests_0gmwakxt\cache.cpp:822:46: error: 'CHART_COLOR_FOREGROUND' was not declared in this scope
+    color foreground=(color)ChartGetInteger(0,CHART_COLOR_FOREGROUND);
+                                              ^~~~~~~~~~~~~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_indicator_cache_tests_0gmwakxt\cache.cpp:824:57: error: 'g_drawForeground' was not declared in this scope
+    bool repaint=background!=g_background || foreground!=g_drawForeground;
+                                                         ^~~~~~~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_indicator_cache_tests_0gmwakxt\cache.cpp:825:64: error: 'g_drawnTrades' was not declared in this scope
+    if(repaint) { ObjectsDeleteAll(0,g_prefix); ArrayInitialize(g_drawnTrades,false); g_status=""; }
+                                                                ^~~~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_indicator_cache_tests_0gmwakxt\cache.cpp:825:83: error: 'ArrayInitialize' was not declared in this scope
+    if(repaint) { ObjectsDeleteAll(0,g_prefix); ArrayInitialize(g_drawnTrades,false); g_status=""; }
+                                                                                   ^
+C:\Users\Super\AppData\Local\Temp\marco_indicator_cache_tests_0gmwakxt\cache.cpp:827:27: error: 'g_drawnTrades' was not declared in this scope
+    int oldDrawn=ArraySize(g_drawnTrades);
+                           ^~~~~~~~~~~~~
+C:\Users\Super\AppData\Local\Temp\marco_indicator_cache_tests_0gmwakxt\cache.cpp:843:80: error: 'ObjectFind' was not declared in this scope
+       if(!g_drawnTrades[i] || ObjectFind(0,g_prefix+IntegerToString(i)+"_arrow")<0)
+                                                                                ^
+C:\Users\Super\AppData\Local\Temp\marco_indicator_cache_tests_0gmwakxt\cache.cpp: In function 'int OnInit()':
+C:\Users\Super\AppData\Local\Temp\marco_indicator_cache_tests_0gmwakxt\cache.cpp:934:54: error: 'EventSetMillisecondTimer' was not declared in this scope
+       if(!g_finished && !EventSetMillisecondTimer(100)) return INIT_FAILED;
+                                                      ^
+C:\Users\Super\AppData\Local\Temp\marco_indicator_cache_tests_0gmwakxt\cache.cpp:943:36: error: 'EventSetMillisecondTimer' was not declared in this scope
+    if(!EventSetMillisecondTimer(100)) return INIT_FAILED;
+                                    ^
+Traceback (most recent call last):
+  File "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\run_indicator_cache_tests.py", line 195, in <module>
+    subprocess.run([compiler,'-std=c++17','-O2',str(cpp),'-o',str(exe)],check=True)
+  File "C:\Users\Super\anaconda3\Lib\subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['C:\\MinGW\\bin\\g++.EXE', '-std=c++17', '-O2', 'C:\\Users\\Super\\AppData\\Local\\Temp\\marco_indicator_cache_tests_0gmwakxt\\cache.cpp', '-o', 'C:\\Users\\Super\\AppData\\Local\\Temp\\marco_indicator_cache_tests_0gmwakxt\\cache.exe']' returned non-zero exit status 1.

@@ -1,0 +1,32 @@
+--- before/Experts\Custom EAs\Marcotrades\marco_live_auto_ea.mq5
+
++++ Experts\Custom EAs\Marcotrades\marco_live_auto_ea.mq5
+
+@@ -8,7 +8,7 @@
+
+ //|                 With Daily CSV Journal & Dynamic TP Priorities   |
+ //+------------------------------------------------------------------+
+ #property copyright "Marcotrades SMC Architecture"
+-#property version   "1.51"
++#property version   "1.52"
+ 
+ #include <Custom\Marcotrades\marco_live_auto.mqh>
+ 
+@@ -43,6 +43,7 @@
+
+ input ENUM_MARCO_RISK_CAPITAL InpRiskCapital = RISK_CAPITAL_FREE_MARGIN; // Capital used by InpMaxRiskPercent
+ input bool             InpBlockManualTrade         = true;          // Block/Kill Unauthorized Manual Trades
+ input bool             InpAllowOverlappingTrades = true; // Allow same-direction overlap (open trade >= 50% TP; never opposite)
++input bool InpPreferLowerTFLB = true; // Prefer deeper qualified LTF LB overlapping same-direction HTF LB
+ input ulong            InpMagicNumber              = 778899;        // EA Magic Number
+ input group "=== Take Profit Protection & Execution ==="
+ input bool             InpAdjustTPForSpread        = true;          // Adjust TP for Broker Spread (Pre-Trade)
+@@ -170,6 +171,7 @@
+
+    if(!CMarcoSymbolUnits::Configure(InpPipSizeOverrides)) return INIT_PARAMETERS_INCORRECT;
+    CMarcoIndEntryFilter::Configure(InpM1IndEntryFilter);
+    CMarcoPivotEntry::Configure(InpEntryTiming);
++   CMarcoLBTFPreference::Configure(InpPreferLowerTFLB);
+    if(!MathIsValidNumber(InpFallbackRR) || InpFallbackRR<=0)
+      { Print("[TP CONFIG] InpFallbackRR must be positive for staged exits."); return INIT_PARAMETERS_INCORRECT; }
+    Print("🚀 Booting Marcotrades LIVE SMC Auto-Trader...");

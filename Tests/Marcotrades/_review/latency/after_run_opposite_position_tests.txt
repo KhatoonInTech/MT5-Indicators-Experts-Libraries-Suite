@@ -1,0 +1,2 @@
+PASS: 206 opposite-position checks
+PASS: restoring the former missing-direction check fails regression

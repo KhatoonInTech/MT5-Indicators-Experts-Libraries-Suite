@@ -2942,3 +2942,4 @@
 2026.11.18 19:43:26 [ETHUSDc,PERIOD_M2] [INDICATOR SIMULATION] ETHUSDc PERIOD_M10: 0 trades, W 0 / L 0, 0.00R, balance 500.00 (indicator financial estimates).
 2026.11.18 19:43:27 [ETHUSDc,PERIOD_M2] [INDICATOR SIMULATION] ETHUSDc PERIOD_M12: 0 trades, W 0 / L 0, 0.00R, balance 500.00 (indicator financial estimates).
 2026.11.18 19:43:28 [ETHUSDc,PERIOD_M2] [INDICATOR SIMULATION] ETHUSDc PERIOD_M15: 0 trades, W 0 / L 0, 0.00R, balance 500.00 (indicator financial estimates).
+2026.11.18 20:16:00 [ETHUSDc,PERIOD_M2] [LIFECYCLE] Deinit reason=1

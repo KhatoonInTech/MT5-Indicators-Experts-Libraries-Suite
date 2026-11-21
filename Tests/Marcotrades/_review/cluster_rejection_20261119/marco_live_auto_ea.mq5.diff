@@ -1,0 +1,14 @@
+--- Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5
+
++++ Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5
+
+@@ -8,7 +8,7 @@
+
+ //|                 With Daily CSV Journal & Dynamic TP Priorities   |
+ //+------------------------------------------------------------------+
+ #property copyright "Marcotrades SMC Architecture"
+-#property version   "1.50"
++#property version   "1.51"
+ 
+ #include <Custom\Marcotrades\marco_live_auto.mqh>
+ 

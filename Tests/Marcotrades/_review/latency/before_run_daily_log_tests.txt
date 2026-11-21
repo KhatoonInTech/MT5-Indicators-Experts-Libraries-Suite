@@ -1,0 +1,7 @@
+27 daily logging assertions passed
+4 explicit program-name assertions passed
+Traceback (most recent call last):
+  File "C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Tests\Marcotrades\run_daily_log_tests.py", line 131, in <module>
+    assert text.startswith('#define MARCO_LOG_PROGRAM "'+program.stem+'"'),program
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: C:\Users\Super\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Experts\Custom EAs\POI_Detector\backtest.mq5

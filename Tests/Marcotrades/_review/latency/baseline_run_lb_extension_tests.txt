@@ -1,0 +1,1 @@
+PASS: 95 LB extension checks: actual engine, both directions, simultaneous TFs, source preference, 75% threshold, deduplication

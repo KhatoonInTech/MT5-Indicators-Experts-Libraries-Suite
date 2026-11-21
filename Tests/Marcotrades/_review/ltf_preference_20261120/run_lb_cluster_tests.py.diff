@@ -1,0 +1,13 @@
+--- before/Tests\Marcotrades\run_lb_cluster_tests.py
+
++++ Tests\Marcotrades\run_lb_cluster_tests.py
+
+@@ -69,6 +69,7 @@
+
+  ~CMarcoBacktestInstance(){delete m_sim;}
+  datetime NextSimulationTime(){return m_sim&&!m_simComplete?frames[m_sim->i].at:0;}
+  void RegisterPreparedClusters(datetime now){if(m_sim&&m_sim->prepared){auto f=frames[m_sim->i];if(f.active&&!f.mitigated)s_clusters.Observe("S",tf,id,side,lo,hi,now,false);}}
++ void RegisterPreparedTFPreferences(datetime){} // Entry preference has its own production-policy suite.
+  bool RunSimulation(bool,bool,int,double,bool,bool,double,bool,bool,bool,bool,bool,bool,datetime through,bool initialize,bool prepare){
+   if(!m_sim)m_sim=new Context();
+   if(initialize)return !failInit;

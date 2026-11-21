@@ -1,0 +1,3 @@
+36 daily logging assertions passed
+4 explicit program-name assertions passed
+35 instrumented custom programs checked (50 custom programs discovered)

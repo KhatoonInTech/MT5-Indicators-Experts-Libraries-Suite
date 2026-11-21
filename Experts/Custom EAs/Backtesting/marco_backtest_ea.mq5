@@ -8,7 +8,7 @@
 //|                 With Overlapping Trade Concurrency Control       |
 //+------------------------------------------------------------------+
 #property copyright "Marcotrades SMC Architecture"
-#property version   "1.70"
+#property version   "1.73"
 
 #include <Custom\Marcotrades\marco_backtest.mqh>
 #include <Custom\General\WA_agent.mqh>
@@ -30,6 +30,7 @@ input double          InpStartingCapital          = 500;               // Simula
 input double          InpMaxRiskPercent           = 25.0;                // Risk per trade (% of selected capital)
 input ENUM_MARCO_RISK_CAPITAL InpRiskCapital = RISK_CAPITAL_FREE_MARGIN; // Capital used by InpMaxRiskPercent
 input bool            InpAllowOverlappingTrades = true; // Allow same-direction overlap (open trade >= 50% TP; never opposite)
+input bool InpPreferLowerTFLB = true; // Prefer deeper qualified LTF LB overlapping same-direction HTF LB
 input double          InpSLBufferPips             = 75.0;                 // SL Buffer outside Liquidity Block (Pips)
 input string InpPipSizeOverrides = ""; // Price per pip overrides: US500=0.1;XAUUSD=0.01
 input ENUM_MARCO_ENTRY_TF InpEntryTF = ENTRY_TF_M1; // Entry TF: M1 / LB TF (M1 always requires pivot confirmation)
@@ -186,6 +187,7 @@ int OnInit()
    if(!CMarcoSymbolUnits::Configure(InpPipSizeOverrides)) return INIT_PARAMETERS_INCORRECT;
    CMarcoIndEntryFilter::Configure(InpM1IndEntryFilter);
    CMarcoPivotEntry::Configure(InpEntryTiming);
+   CMarcoLBTFPreference::Configure(InpPreferLowerTFLB);
    if(!MathIsValidNumber(InpFallbackRR) || InpFallbackRR<=0)
      { Print("[TP CONFIG] InpFallbackRR must be positive for staged exits."); return INIT_PARAMETERS_INCORRECT; }
    if(g_preserve_chart_change && g_batch_initialized)

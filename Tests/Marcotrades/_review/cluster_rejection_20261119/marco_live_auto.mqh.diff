@@ -1,0 +1,108 @@
+--- Include/Custom/Marcotrades/marco_live_auto.mqh
+
++++ Include/Custom/Marcotrades/marco_live_auto.mqh
+
+@@ -358,6 +358,7 @@
+
+    datetime          createdTime;
+    datetime          confirmedTime;
+    datetime          entryTriggerTime; // Entry-only gate; policy depends on the LB trigger type.
++   datetime          opposingRejectedAt; // Opposing-structure rejection, distinct from a filled trade.
+    bool              sourceActive; // Still present in the authoritative LB engine.
+    datetime          firstTouchTime;
+    datetime          m1TouchTime;
+@@ -1037,6 +1038,8 @@
+
+       STradeRejection result = history.OpposingChoch(m_htf_lbs[k].isBullish, origin, legEnd,
+                         touch, now, tf, m_slBufferPips * GetPipSize(m_symbol));
+       if(result.action != TRADE_RETIRE_ZONE) return false;
++      m_htf_lbs[k].opposingRejectedAt=now;
++      m_clusterSyncedBar=0; // Persist the rejection before another setup can enter.
+       CTradeRejection::Retire(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated, m_htf_lbs[k].mitigationTime, now);
+       m_htf_lbs[k].m1PivotTime = 0; m_htf_lbs[k].m1PivotPrice = 0.0; m_htf_lbs[k].m1ConfirmTime = 0;
+       PrintFormat("[TRADE REJECTED] %s %s LB=%s reason=OPPOSING_STRUCTURE_LB source=%s opposing=%s event=%s at=%s",
+@@ -1094,6 +1097,8 @@
+
+       if(!m1LBContext.FindOpposingOrigin(isBull, originTime, originPrice, now,
+                                         m_slBufferPips * GetPipSize(m_symbol), opposingId))
+          return false;
++      m_htf_lbs[k].opposingRejectedAt=now;
++      m_clusterSyncedBar=0; // Persist the rejection before another setup can enter.
+       CTradeRejection::Retire(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated, m_htf_lbs[k].mitigationTime, now);
+       m_htf_lbs[k].m1PivotTime = 0;
+       m_htf_lbs[k].m1PivotPrice = 0.0;
+@@ -1650,10 +1655,24 @@
+
+            {
+             CLiquidityBlock* lb=(CLiquidityBlock*)logic.m_liquidity_blocks.At(z);
+             if(lb==NULL || lb.id!=m_htf_lbs[k].id || (pass==0)!=lb.isMitigated) continue;
+-            book.Observe(m_symbol,(int)m_tradeTF,lb.id,lb.isBullish ? 1 : -1,lb.zoneLow,lb.zoneHigh,now,lb.isMitigated,lb.createdTime);
++            datetime freshQualified=0;
++            if(lb.triggerType==LB_TRIGGER_BL_IND || lb.triggerType==LB_TRIGGER_BR_IND)
++               freshQualified=m_htfRawExit.FreshClusterQualification(lb.isBullish,lb.createdTime,lb.causalChochTime,now);
++            book.Observe(m_symbol,(int)m_tradeTF,lb.id,lb.isBullish ? 1 : -1,lb.zoneLow,lb.zoneHigh,now,lb.isMitigated,lb.createdTime,freshQualified);
++            if(m_htf_lbs[k].opposingRejectedAt>0)
++               book.RejectOpposing(m_symbol,(int)m_tradeTF,lb.id,m_htf_lbs[k].opposingRejectedAt);
+             break;
+            }
+         }
++
++      // Preserve a recorded rejection even if its source was reclassified away.
++      if(pass==1)
++         for(int k=0;k<m_htf_lb_count;k++)
++            if(m_htf_lbs[k].entryTriggerTime>0 && m_htf_lbs[k].opposingRejectedAt>0 &&
++               m_htf_lbs[k].createdTime>=CMarcoLBEntryClusters::Day(now))
++              {
++               book.RejectOpposing(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,m_htf_lbs[k].opposingRejectedAt);
++              }
+ 
+       // Reclassification can remove a source object. Its recorded premises must
+       // still be allowed to mitigate; disappearance alone does not reset a cluster.
+@@ -2187,6 +2206,7 @@
+
+                      m_htf_lbs[sz].createdTime          = src.createdTime;
+                      m_htf_lbs[sz].confirmedTime        = m_htf_time[i];
+                      m_htf_lbs[sz].entryTriggerTime     = 0;
++                     m_htf_lbs[sz].opposingRejectedAt   = 0;
+                      m_htf_lbs[sz].sourceActive         = true;
+                      m_htf_lbs[sz].firstTouchTime       = 0;
+                      m_htf_lbs[sz].m1TouchTime = 0;
+@@ -2452,6 +2472,7 @@
+
+                   m_htf_lbs[sz].createdTime          = src.createdTime;
+                   m_htf_lbs[sz].confirmedTime        = m_htf_time[new_i];
+                   m_htf_lbs[sz].entryTriggerTime     = 0;
++                  m_htf_lbs[sz].opposingRejectedAt   = 0;
+                   m_htf_lbs[sz].sourceActive         = true;
+                   m_htf_lbs[sz].firstTouchTime       = 0;
+                   m_htf_lbs[sz].m1TouchTime = 0;
+@@ -3007,7 +3028,7 @@
+
+              SkipIndEntryPrice(k,TimeCurrent(),isBull ? ask : bid,firstPivotTime,firstPivotConfirmTime))) continue;
+ 
+          if(HasOppositePosition(isBull)) continue;
+-         if(!entryAllowed)
++         if(!entryAllowed || m_clusterSyncedBar==0)
+             continue;
+          // Opposing Leg Filter (Anti-Bait Trap Guard)
+          if(IsLegComingFromOppositeLB(isBull, firstPivotTime, entryZigZag, buffer, TimeCurrent()))
+@@ -3079,7 +3100,7 @@
+
+          string clusterSource=""; datetime clusterUsed=0;
+          if(clusterState.book.Blocked(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,entryAttemptTime,clusterSource,clusterUsed))
+            {
+-            PrintFormat("[LB CLUSTER BLOCK] %s %s LB=%s: overlapping %s traded at %s; all cluster LBs must mitigate or a new broker day must start.",
++            PrintFormat("[LB CLUSTER BLOCK] %s %s LB=%s: block source=%s recorded_at=%s; a traded cluster remains blocked until all members mitigate or the next broker day.",
+                         m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,clusterSource,TimeToString(clusterUsed,TIME_DATE|TIME_SECONDS));
+             continue;
+            }
+@@ -3696,6 +3717,8 @@
+
+            }
+          // 1. Process Live Scan & Signal Execution
+          m_instances[m_current_scan_idx].ProcessLive(m_trade, m_wa, m_sendWa,preparedOK[prepared]);
++          if(m_instances[m_current_scan_idx].m_clusterSyncedBar==0)
++             preparedOK[prepared]=PrepareSymbolClusters(symbol);
+ 
+          // 2. Active 1-Pip Vicinity Rejection Exit Evaluation
+          m_instances[m_current_scan_idx].CheckTPVicinityRejection(m_trade, m_wa, m_sendWa);

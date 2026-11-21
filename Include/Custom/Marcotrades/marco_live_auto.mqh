@@ -21,6 +21,7 @@
 #include <Custom\Marcotrades\trade_rejection.mqh>
 #include <Custom\Marcotrades\m1_ind_entry.mqh>
 #include <Custom\Marcotrades\pivot_entry.mqh>
+#include <Custom\Marcotrades\lb_tf_preference.mqh>
 #include <Custom\Marcotrades\broker_execution.mqh>
 #include <Custom\Marcotrades\structure_exit.mqh>
 #include <Custom\Marcotrades\opposing_sequence.mqh>
@@ -358,6 +359,8 @@ struct SLiveHTFLB
    datetime          createdTime;
    datetime          confirmedTime;
    datetime          entryTriggerTime; // Entry-only gate; policy depends on the LB trigger type.
+   datetime          opposingRejectedAt; // Opposing-structure rejection, distinct from a filled trade.
+   string            preferredLTF; // Diagnostic only; does not retire the HTF setup.
    bool              sourceActive; // Still present in the authoritative LB engine.
    datetime          firstTouchTime;
    datetime          m1TouchTime;
@@ -961,6 +964,21 @@ public:
      {
       SMarcoSequenceSignal signal; ZeroMemory(signal);
       bool preferM1=m_entryTF==ENTRY_TF_M1;
+      // A full pre-entry continuation on either TF takes precedence over
+      // starting an ordinary post-entry partial on the other TF in this cycle.
+      if(plan.sequence.step==0 && !plan.sequence.pending)
+         for(int pass=0;pass<2;pass++)
+           {
+            bool m1=(pass==0 ? preferM1 : !preferM1);
+            if(m1)
+              {
+               if(m1LBContext==NULL || m_tradeTF==PERIOD_M1) continue;
+               if(CMarcoOpposingSequence::PreEntryContinuation(m1LBContext.rawExitHistory,1,PERIOD_M1,
+                     plan.direction,plan.entry,price,opened,now,plan.sequence,signal)) return signal;
+              }
+            else if(CMarcoOpposingSequence::PreEntryContinuation(m_htfRawExit,0,m_tradeTF,
+                     plan.direction,plan.entry,price,opened,now,plan.sequence,signal)) return signal;
+           }
       for(int pass=0;pass<2;pass++)
         {
          bool m1=(pass==0 ? preferM1 : !preferM1);
@@ -968,10 +986,10 @@ public:
            {
             if(m1LBContext==NULL || m_tradeTF==PERIOD_M1) continue;
             signal=CMarcoOpposingSequence::Advance(m1LBContext.rawExitHistory,plan.sequence,1,PERIOD_M1,
-                                                  plan.direction,plan.entry,price,opened,now);
+                                                  plan.direction,plan.entry,price,opened,now,false);
            }
          else signal=CMarcoOpposingSequence::Advance(m_htfRawExit,plan.sequence,0,m_tradeTF,
-                                                     plan.direction,plan.entry,price,opened,now);
+                                                     plan.direction,plan.entry,price,opened,now,false);
          if(signal.step>0 || plan.sequence.step>=2) break;
         }
       return signal;
@@ -1022,6 +1040,8 @@ public:
       STradeRejection result = history.OpposingChoch(m_htf_lbs[k].isBullish, origin, legEnd,
                         touch, now, tf, m_slBufferPips * GetPipSize(m_symbol));
       if(result.action != TRADE_RETIRE_ZONE) return false;
+      m_htf_lbs[k].opposingRejectedAt=now;
+      m_clusterSyncedBar=0; // Persist the rejection before another setup can enter.
       CTradeRejection::Retire(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated, m_htf_lbs[k].mitigationTime, now);
       m_htf_lbs[k].m1PivotTime = 0; m_htf_lbs[k].m1PivotPrice = 0.0; m_htf_lbs[k].m1ConfirmTime = 0;
       PrintFormat("[TRADE REJECTED] %s %s LB=%s reason=OPPOSING_STRUCTURE_LB source=%s opposing=%s event=%s at=%s",
@@ -1079,6 +1099,8 @@ public:
       if(!m1LBContext.FindOpposingOrigin(isBull, originTime, originPrice, now,
                                         m_slBufferPips * GetPipSize(m_symbol), opposingId))
          return false;
+      m_htf_lbs[k].opposingRejectedAt=now;
+      m_clusterSyncedBar=0; // Persist the rejection before another setup can enter.
       CTradeRejection::Retire(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated, m_htf_lbs[k].mitigationTime, now);
       m_htf_lbs[k].m1PivotTime = 0;
       m_htf_lbs[k].m1PivotPrice = 0.0;
@@ -1635,10 +1657,24 @@ public:
            {
             CLiquidityBlock* lb=(CLiquidityBlock*)logic.m_liquidity_blocks.At(z);
             if(lb==NULL || lb.id!=m_htf_lbs[k].id || (pass==0)!=lb.isMitigated) continue;
-            book.Observe(m_symbol,(int)m_tradeTF,lb.id,lb.isBullish ? 1 : -1,lb.zoneLow,lb.zoneHigh,now,lb.isMitigated,lb.createdTime);
+            datetime freshQualified=0;
+            if(lb.triggerType==LB_TRIGGER_BL_IND || lb.triggerType==LB_TRIGGER_BR_IND)
+               freshQualified=m_htfRawExit.FreshClusterQualification(lb.isBullish,lb.createdTime,lb.causalChochTime,now);
+            book.Observe(m_symbol,(int)m_tradeTF,lb.id,lb.isBullish ? 1 : -1,lb.zoneLow,lb.zoneHigh,now,lb.isMitigated,lb.createdTime,freshQualified);
+            if(m_htf_lbs[k].opposingRejectedAt>0)
+               book.RejectOpposing(m_symbol,(int)m_tradeTF,lb.id,m_htf_lbs[k].opposingRejectedAt);
             break;
            }
         }
+
+      // Preserve a recorded rejection even if its source was reclassified away.
+      if(pass==1)
+         for(int k=0;k<m_htf_lb_count;k++)
+            if(m_htf_lbs[k].entryTriggerTime>0 && m_htf_lbs[k].opposingRejectedAt>0 &&
+               m_htf_lbs[k].createdTime>=CMarcoLBEntryClusters::Day(now))
+              {
+               book.RejectOpposing(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,m_htf_lbs[k].opposingRejectedAt);
+              }
 
       // Reclassification can remove a source object. Its recorded premises must
       // still be allowed to mitigate; disappearance alone does not reset a cluster.
@@ -1659,6 +1695,53 @@ public:
                   CTradeRejection::BoundaryBroken(node.side==1,m_htf_low[r],m_htf_high[r],node.low,node.high,0.0))
                  { book.nodes[n].mitigated=true; break; }
            }
+     }
+
+   // Publish current entry candidates, not historical cluster boundary unions.
+   void ObserveTFPreferences(CMarcoLBEntryClusters &book,datetime now,CLiquidityBlockLogic* logic)
+     {
+      if(!CMarcoLBTFPreference::Enabled()) return;
+      CMarcoLBTFPreference::ResetOwner(m_symbol,m_tradeTF);
+      if(logic==NULL) return;
+      datetime day=CMarcoLBEntryClusters::Day(now);
+      for(int k=0;k<m_htf_lb_count;k++)
+        {
+         if(!m_htf_lbs[k].sourceActive || m_htf_lbs[k].entryTriggerTime<=0 ||
+            CTradeRejection::Used(m_htf_lbs[k].touchCount,m_htf_lbs[k].isMitigated)) continue;
+         datetime available=m_htf_lbs[k].entryTriggerTime+PeriodSeconds(m_tradeTF);
+         bool ind=(m_htf_lbs[k].triggerType==LB_TRIGGER_BL_IND || m_htf_lbs[k].triggerType==LB_TRIGGER_BR_IND);
+         datetime origin=ind ? m_htf_lbs[k].inducementOriginTime : m_htf_lbs[k].sweepLineTime;
+         if(available>now || CTradeRejection::OutsideSession(origin,m_htf_lbs[k].createdTime,m_htf_lbs[k].confirmedTime,day)) continue;
+         string source=""; datetime used=0;
+         if(!book.Eligible(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,now) ||
+            book.Blocked(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,now,source,used)) continue;
+         for(int z=0;z<logic.m_liquidity_blocks.Total();z++)
+           {
+            CLiquidityBlock* lb=(CLiquidityBlock*)logic.m_liquidity_blocks.At(z);
+            if(lb==NULL || lb.id!=m_htf_lbs[k].id) continue;
+            if(!lb.isMitigated)
+               CMarcoLBTFPreference::Observe(m_symbol,m_tradeTF,lb.id,lb.isBullish,
+                                              lb.zoneLow,lb.zoneHigh,available,now);
+            break;
+           }
+        }
+     }
+
+   bool DeferToLowerTF(int k,datetime now)
+     {
+      if(!CMarcoLBTFPreference::Enabled()) return false;
+      SMarcoLBTFChoice choice;
+      if(!CMarcoLBTFPreference::Preferred(m_symbol,m_tradeTF,m_htf_lbs[k].isBullish,
+                                          m_htf_lbs[k].zoneLow,m_htf_lbs[k].zoneHigh,now,choice))
+        { m_htf_lbs[k].preferredLTF=""; return false; }
+      string key=EnumToString(choice.tf)+":"+choice.id;
+      if(m_htf_lbs[k].preferredLTF!=key)
+        {
+         PrintFormat("[LTF LB PREFERENCE] %s %s LB=%s deferred to %s LB=%s zone=[%.8f, %.8f]; wait for that setup's touch and entry confirmation.",
+                     m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,EnumToString(choice.tf),choice.id,choice.low,choice.high);
+         m_htf_lbs[k].preferredLTF=key;
+        }
+      return true; // Waiting alone never consumes a setup or a cluster.
      }
 
    datetime m_clusterSyncedBar;
@@ -2172,6 +2255,8 @@ public:
                      m_htf_lbs[sz].createdTime          = src.createdTime;
                      m_htf_lbs[sz].confirmedTime        = m_htf_time[i];
                      m_htf_lbs[sz].entryTriggerTime     = 0;
+                     m_htf_lbs[sz].opposingRejectedAt   = 0;
+                     m_htf_lbs[sz].preferredLTF         = "";
                      m_htf_lbs[sz].sourceActive         = true;
                      m_htf_lbs[sz].firstTouchTime       = 0;
                      m_htf_lbs[sz].m1TouchTime = 0;
@@ -2437,6 +2522,8 @@ public:
                   m_htf_lbs[sz].createdTime          = src.createdTime;
                   m_htf_lbs[sz].confirmedTime        = m_htf_time[new_i];
                   m_htf_lbs[sz].entryTriggerTime     = 0;
+                  m_htf_lbs[sz].opposingRejectedAt   = 0;
+                  m_htf_lbs[sz].preferredLTF         = "";
                   m_htf_lbs[sz].sourceActive         = true;
                   m_htf_lbs[sz].firstTouchTime       = 0;
                   m_htf_lbs[sz].m1TouchTime = 0;
@@ -2907,6 +2994,7 @@ public:
          ObserveRejectionTouch(k, TimeCurrent(), bid, bid, TimeCurrent(), PERIOD_M1);
          if(CheckChochRejection(k, TimeCurrent(), zzHtf, m_tradeTF, m_htfRejection) ||
             (m1LBContext != NULL && CheckChochRejection(k, TimeCurrent(), zzEntry, PERIOD_M1, m1LBContext.rejectionHistory))) continue;
+         if(DeferToLowerTF(k,TimeCurrent())) continue;
          double firstPivotPrice = 0.0;
          datetime firstPivotTime = 0;
          datetime firstPivotConfirmTime = 0;
@@ -2992,7 +3080,7 @@ public:
              SkipIndEntryPrice(k,TimeCurrent(),isBull ? ask : bid,firstPivotTime,firstPivotConfirmTime))) continue;
 
          if(HasOppositePosition(isBull)) continue;
-         if(!entryAllowed)
+         if(!entryAllowed || m_clusterSyncedBar==0)
             continue;
          // Opposing Leg Filter (Anti-Bait Trap Guard)
          if(IsLegComingFromOppositeLB(isBull, firstPivotTime, entryZigZag, buffer, TimeCurrent()))
@@ -3064,7 +3152,7 @@ public:
          string clusterSource=""; datetime clusterUsed=0;
          if(clusterState.book.Blocked(m_symbol,(int)m_tradeTF,m_htf_lbs[k].id,entryAttemptTime,clusterSource,clusterUsed))
            {
-            PrintFormat("[LB CLUSTER BLOCK] %s %s LB=%s: overlapping %s traded at %s; all cluster LBs must mitigate or a new broker day must start.",
+            PrintFormat("[LB CLUSTER BLOCK] %s %s LB=%s: block source=%s recorded_at=%s; a traded cluster remains blocked until all members mitigate or the next broker day.",
                         m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,clusterSource,TimeToString(clusterUsed,TIME_DATE|TIME_SECONDS));
             continue;
            }
@@ -3617,19 +3705,27 @@ public:
          if(inst.m_last_htf_bar<=0 || inst.m_last_entry_bar<=0) return false;
          if(inst.m_clusterSyncedBar!=inst.m_last_htf_bar || inst.m_clusterSyncedDay!=day) changed=true;
         }
-      if(!changed) return true;
+      if(!changed && !CMarcoLBTFPreference::Enabled()) return true;
       CMarcoLiveLBClusters state;
       if(!state.Open(symbol,now)) return false;
-      for(int pass=0;pass<2;pass++)
+      if(changed)
         {
-         if(pass==1) state.book.RetireCompleted();
-         for(int i=0;i<m_total_instances;i++)
+         for(int pass=0;pass<2;pass++)
            {
-            CMarcoLiveAutoInstance* inst=m_instances[i];
-            if(inst.m_symbol==symbol) inst.ObserveEntryClusters(state.book,now,inst.lbLogicHtf,pass);
+            if(pass==1) state.book.RetireCompleted();
+            for(int i=0;i<m_total_instances;i++)
+              {
+               CMarcoLiveAutoInstance* inst=m_instances[i];
+               if(inst.m_symbol==symbol) inst.ObserveEntryClusters(state.book,now,inst.lbLogicHtf,pass);
+              }
            }
+         if(!state.Save()) return false;
         }
-      if(!state.Save()) return false;
+      // All TFs are updated before publishing; never let scan order select the HTF first.
+      if(CMarcoLBTFPreference::Enabled())
+         for(int i=0;i<m_total_instances;i++)
+            if(m_instances[i].m_symbol==symbol)
+               m_instances[i].ObserveTFPreferences(state.book,now,m_instances[i].lbLogicHtf);
       for(int i=0;i<m_total_instances;i++)
          if(m_instances[i].m_symbol==symbol)
            {
@@ -3681,6 +3777,8 @@ public:
            }
          // 1. Process Live Scan & Signal Execution
          m_instances[m_current_scan_idx].ProcessLive(m_trade, m_wa, m_sendWa,preparedOK[prepared]);
+          if(m_instances[m_current_scan_idx].m_clusterSyncedBar==0)
+             preparedOK[prepared]=PrepareSymbolClusters(symbol);
 
          // 2. Active 1-Pip Vicinity Rejection Exit Evaluation
          m_instances[m_current_scan_idx].CheckTPVicinityRejection(m_trade, m_wa, m_sendWa);

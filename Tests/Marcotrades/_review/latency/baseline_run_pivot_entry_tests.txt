@@ -1,0 +1,2 @@
+253 pivot-entry and first-candle exit checks passed
+Three-client configuration, cache key and unchanged ZigZag verified

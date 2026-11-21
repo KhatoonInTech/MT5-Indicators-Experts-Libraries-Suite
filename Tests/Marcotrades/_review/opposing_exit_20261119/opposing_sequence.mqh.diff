@@ -1,0 +1,68 @@
+--- Include/Custom/Marcotrades/opposing_sequence.mqh before
++++ Include/Custom/Marcotrades/opposing_sequence.mqh current
+@@ -25,15 +25,48 @@
+    static bool Source(CTradeRejectionHistory &history, const SRejectionEvent &event,
+                       int direction, ENUM_TIMEFRAMES tf, string &id)
+      {
+-      for(int i=history.ZoneCount()-1;i>=0;i--)
++      id="";
++      SRejectionEvent linked=event;
++      // A continuation BOS can have a pivot outside its original LB. Follow
++      // adjacent same-direction structures using only versions known then.
++      for(int chain=0;chain<history.EventCount();chain++)
+         {
+-         SRejectionLB lb;
+-         if(!history.ZoneAt(i,lb) || lb.bull!=(direction==1) || lb.available>event.available ||
+-            (lb.until>0 && event.available>=lb.until)) continue;
+-         if(lb.choch!=event.time &&
+-            !CTradeRejection::OriginInside(event.originTime,event.originPrice,lb.created,
+-                                          lb.mitigation,PeriodSeconds(tf),lb.low,lb.high,0)) continue;
+-         id=lb.id; return true;
++         if(Direction(linked.name)!=direction) break;
++         for(int i=history.ZoneCount()-1;i>=0;i--)
++           {
++            SRejectionLB lb;
++            if(!history.ZoneAt(i,lb) || lb.bull!=(direction==1) || lb.available>event.available ||
++               (lb.until>0 && event.available>=lb.until)) continue;
++            // Preserve the existing direct-event rule. Only an inherited link
++            // needs its older source to remain unmitigated at this later event.
++            if(chain>0 && lb.mitigation>0 && event.available>=lb.mitigation+PeriodSeconds(tf)) continue;
++            bool produced=lb.choch==linked.time;
++            bool stemmed=false;
++            // Use the source boundaries available at the linked event, not
++            // a later expanded zone that happens to include its old pivot.
++            if(!produced)
++               for(int v=i;v>=0;v--)
++                 {
++                  SRejectionLB source;
++                  if(!history.ZoneAt(v,source) || source.id!=lb.id ||
++                     source.available>linked.available ||
++                     (source.until>0 && linked.available>=source.until)) continue;
++                  stemmed=CTradeRejection::OriginInside(linked.originTime,linked.originPrice,
++                            source.created,source.mitigation,PeriodSeconds(tf),source.low,source.high,0);
++                  break;
++                 }
++            if(!produced && !stemmed) continue;
++            id=lb.id; return true;
++           }
++         SRejectionEvent previous; bool found=false;
++         for(int e=0;e<history.EventCount();e++)
++           {
++            SRejectionEvent candidate;
++            if(!history.EventAt(e,event.available,candidate) || candidate.time>=linked.time) continue;
++            if(!found || candidate.time>previous.time) { previous=candidate; found=true; }
++           }
++         if(!found) break;
++         linked=previous;
+         }
+       return false;
+      }
+@@ -72,7 +105,7 @@
+             state.step=2;
+             if(Direction(next.name)!=opposing) return result;
+             result.profit=direction*(executionPrice-entry)>0;
+-            result.share=result.profit ? (state.firstProfit ? 0.25 : 0.0) : 1.0;
++            result.share=state.firstProfit && result.profit ? 0.25 : 1.0;
+            }
+          else
+            {

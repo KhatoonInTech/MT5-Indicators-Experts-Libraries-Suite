@@ -1,0 +1,102 @@
+[
+  {
+    "test": "run_broker_execution_tests.py",
+    "code": 0,
+    "seconds": 7.691862299921922
+  },
+  {
+    "test": "run_daily_log_tests.py",
+    "code": 1,
+    "seconds": 9.336294599925168
+  },
+  {
+    "test": "run_entry_sizing_tests.py",
+    "code": 0,
+    "seconds": 6.107497500022873
+  },
+  {
+    "test": "run_entry_trigger_structure_tests.py",
+    "code": 0,
+    "seconds": 12.565384699963033
+  },
+  {
+    "test": "run_history_context_tests.py",
+    "code": 0,
+    "seconds": 16.980224999948405
+  },
+  {
+    "test": "run_ind_structure_tests.py",
+    "code": 1,
+    "seconds": 1.3451938000507653
+  },
+  {
+    "test": "run_indicator_cache_tests.py",
+    "code": 0,
+    "seconds": 9.478918100008741
+  },
+  {
+    "test": "run_lb_cluster_tests.py",
+    "code": 0,
+    "seconds": 21.116787699982524
+  },
+  {
+    "test": "run_lb_extension_tests.py",
+    "code": 0,
+    "seconds": 7.989551399950869
+  },
+  {
+    "test": "run_liquidity_warmup_tests.py",
+    "code": 0,
+    "seconds": 5.301511500030756
+  },
+  {
+    "test": "run_m1_touch_tests.py",
+    "code": 0,
+    "seconds": 24.9089718000032
+  },
+  {
+    "test": "run_opposing_entry_tests.py",
+    "code": 0,
+    "seconds": 13.608703300007619
+  },
+  {
+    "test": "run_opposing_sequence_tests.py",
+    "code": 0,
+    "seconds": 8.541111300000921
+  },
+  {
+    "test": "run_opposite_position_tests.py",
+    "code": 0,
+    "seconds": 8.613423699978739
+  },
+  {
+    "test": "run_pivot_entry_tests.py",
+    "code": 0,
+    "seconds": 3.8410334000363946
+  },
+  {
+    "test": "run_staged_tp_tests.py",
+    "code": 0,
+    "seconds": 9.103585900040343
+  },
+  {
+    "test": "run_structure_exit_tests.py",
+    "code": 0,
+    "seconds": 7.1280689999694005
+  },
+  {
+    "test": "run_structure_only_tests.py",
+    "code": 0,
+    "seconds": 32.038963299943134
+  },
+  {
+    "test": "run_symbol_units_tests.py",
+    "code": 0,
+    "seconds": 7.1065881999675184
+  },
+  {
+    "test": "run_zone_context_tests.py",
+    "code": 0,
+    "seconds": 5.590402000001632
+  }
+]

@@ -1,0 +1,102 @@
+[
+  {
+    "test": "run_broker_execution_tests.py",
+    "code": 0,
+    "seconds": 8.425215600058436
+  },
+  {
+    "test": "run_daily_log_tests.py",
+    "code": 1,
+    "seconds": 9.35202610003762
+  },
+  {
+    "test": "run_entry_sizing_tests.py",
+    "code": 0,
+    "seconds": 5.868439499987289
+  },
+  {
+    "test": "run_entry_trigger_structure_tests.py",
+    "code": 0,
+    "seconds": 10.945791600039229
+  },
+  {
+    "test": "run_history_context_tests.py",
+    "code": 0,
+    "seconds": 16.05915670003742
+  },
+  {
+    "test": "run_ind_structure_tests.py",
+    "code": 1,
+    "seconds": 1.686373099917546
+  },
+  {
+    "test": "run_indicator_cache_tests.py",
+    "code": 0,
+    "seconds": 8.929316199966706
+  },
+  {
+    "test": "run_lb_cluster_tests.py",
+    "code": 0,
+    "seconds": 18.209322300041094
+  },
+  {
+    "test": "run_lb_extension_tests.py",
+    "code": 1,
+    "seconds": 1.9850946000078693
+  },
+  {
+    "test": "run_liquidity_warmup_tests.py",
+    "code": 0,
+    "seconds": 3.996938699972816
+  },
+  {
+    "test": "run_m1_touch_tests.py",
+    "code": 0,
+    "seconds": 24.47891810000874
+  },
+  {
+    "test": "run_opposing_entry_tests.py",
+    "code": 1,
+    "seconds": 1.9247233000351116
+  },
+  {
+    "test": "run_opposing_sequence_tests.py",
+    "code": 1,
+    "seconds": 2.791145500028506
+  },
+  {
+    "test": "run_opposite_position_tests.py",
+    "code": 0,
+    "seconds": 9.039509399910457
+  },
+  {
+    "test": "run_pivot_entry_tests.py",
+    "code": 0,
+    "seconds": 4.124820500030182
+  },
+  {
+    "test": "run_staged_tp_tests.py",
+    "code": 0,
+    "seconds": 8.403870499925688
+  },
+  {
+    "test": "run_structure_exit_tests.py",
+    "code": 1,
+    "seconds": 2.597686400054954
+  },
+  {
+    "test": "run_structure_only_tests.py",
+    "code": 0,
+    "seconds": 23.863623299985193
+  },
+  {
+    "test": "run_symbol_units_tests.py",
+    "code": 0,
+    "seconds": 6.310337099945173
+  },
+  {
+    "test": "run_zone_context_tests.py",
+    "code": 0,
+    "seconds": 6.259122600080445
+  }
+]

@@ -1,0 +1,94 @@
+{
+  "changed_sources": [
+    {
+      "path": "Include\\Custom\\Marcotrades\\lb_tf_preference.mqh",
+      "sha256": "0984beef35a798fc2567ec21178a4f8967d1fadaaade774e9fc261d863998f17",
+      "new": true
+    },
+    {
+      "path": "Include\\Custom\\Marcotrades\\marco_backtest.mqh",
+      "sha256": "bd3a3d358b7569d55c12825f591f970a8959affd389891bd86e33e1d1d9eabab",
+      "new": false
+    },
+    {
+      "path": "Include\\Custom\\Marcotrades\\marco_live_auto.mqh",
+      "sha256": "0f4371709ec1de5b00fef241ded14a08dbeb0fc583114f7f560cdefe702335bd",
+      "new": false
+    },
+    {
+      "path": "Experts\\Custom EAs\\Backtesting\\marco_backtest_ea.mq5",
+      "sha256": "ce965a73617a72d6802d03c00781737ce90d0b7a2fbb1fee530ebd461995345b",
+      "new": false
+    },
+    {
+      "path": "Experts\\Custom EAs\\Marcotrades\\marco_live_auto_ea.mq5",
+      "sha256": "34c9ea329063cc746d2b50a69e900f8b0fb9910d08c0cc8b3db7f2004dd4bd1d",
+      "new": false
+    },
+    {
+      "path": "Indicators\\Custom\\Marcotrades\\marco_backtest_trades.mq5",
+      "sha256": "e934f7d7b25bc0f5468c1769eae600e5cde3cc5c0f1464130cdcbdb531390f26",
+      "new": false
+    },
+    {
+      "path": "Tests\\Marcotrades\\run_indicator_cache_tests.py",
+      "sha256": "43472a11dfc26b275d1f3a361e95cc8ac639574069a46fb729d8f25fe9ec2fc7",
+      "new": false
+    },
+    {
+      "path": "Tests\\Marcotrades\\run_lb_cluster_tests.py",
+      "sha256": "4931592e5ce2038e7ede61f893741185d0cf42c238ad75679472509ea96f8708",
+      "new": false
+    },
+    {
+      "path": "Tests\\Marcotrades\\run_lb_tf_preference_tests.py",
+      "sha256": "89ca5f8af13d2f819c5fcbf9336c4a1b6860588209e32a0f72d6ddbf4aa1fbdc",
+      "new": true
+    }
+  ],
+  "builds": [
+    {
+      "source": "Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5",
+      "version": "1.52",
+      "result": "Result: 0 errors, 0 warnings, 13363 ms elapsed, cpu='X64 Regular'",
+      "warnings_unchanged": true,
+      "binary_sha256": "28d7de54508caa68c4c7d34a3526b236e7ba6363803c982fb3b2350eda2eb809"
+    },
+    {
+      "source": "Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5",
+      "version": "1.73",
+      "result": "Result: 0 errors, 12 warnings, 15684 ms elapsed, cpu='X64 Regular'",
+      "warnings_unchanged": true,
+      "binary_sha256": "9a7c3be007c3cbdd78881c5814a6008ae337cc4674e533c0c7fe93979d3a402a"
+    },
+    {
+      "source": "Indicators/Custom/Marcotrades/marco_backtest_trades.mq5",
+      "version": "2.31",
+      "result": "Result: 0 errors, 12 warnings, 16377 ms elapsed, cpu='X64 Regular'",
+      "warnings_unchanged": true,
+      "binary_sha256": "d580e961f396f9ae263e2568c83f5789e06aac5b13409515a054f1dea1b6c43e"
+    }
+  ],
+  "regression_assertions": {
+    "lower_tf_preference": 432,
+    "cluster_persistence_scheduler": 557,
+    "pivot_entry": 253,
+    "indicator_cache": 80,
+    "opposing_sequence": 1028,
+    "opposing_entry": 77,
+    "staged_tp": 12534,
+    "entry_trigger_structure": 108
+  },
+  "protected_headers_unchanged": [
+    "Include\\ZigZag\\ZigZag.mqh",
+    "Include\\Custom\\Marcotrades\\Inducements.mqh",
+    "Include\\Custom\\Marcotrades\\lb_entry_clusters.mqh",
+    "Include\\Custom\\Marcotrades\\lb_entry_clusters_live.mqh",
+    "Include\\Custom\\Marcotrades\\liquidity_blocks.mqh",
+    "Include\\Custom\\Marcotrades\\opposing_sequence.mqh",
+    "Include\\Custom\\Marcotrades\\staged_tp.mqh",
+    "Include\\Custom\\Marcotrades\\trade_rejection.mqh",
+    "Include\\Custom\\ZigZag\\ZigZag.mqh"
+  ],
+  "full_mt5_replay": false
+}

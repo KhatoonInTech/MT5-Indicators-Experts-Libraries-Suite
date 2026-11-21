@@ -1,0 +1,9 @@
+[
+  "Include\\Custom\\Marcotrades\\marco_backtest.mqh",
+  "Include\\Custom\\Marcotrades\\marco_live_auto.mqh",
+  "Include\\Custom\\Marcotrades\\opposing_sequence.mqh",
+  "Experts\\Custom EAs\\Backtesting\\marco_backtest_ea.mq5",
+  "Experts\\Custom EAs\\Marcotrades\\marco_live_auto_ea.mq5",
+  "Indicators\\Custom\\Marcotrades\\marco_backtest_trades.mq5",
+  "Tests\\Marcotrades\\run_opposing_sequence_tests.py"
+]

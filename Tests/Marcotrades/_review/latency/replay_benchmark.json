@@ -1,0 +1,102 @@
+[
+  {
+    "fixture": "us30_20261112_m1.csv",
+    "merge": 0,
+    "entry_policy": 0,
+    "identical_trace_sha256": "1cf4b437cdd8ab64e1e336ac717412195698d036c27ada1b14b049c89665a2a9",
+    "median_ms": {},
+    "samples_ms": {
+      "baseline": [],
+      "optimized": []
+    },
+    "speedup": null
+  },
+  {
+    "fixture": "us30_20261112_m1.csv",
+    "merge": 0,
+    "entry_policy": 1,
+    "identical_trace_sha256": "af198f39f69a5e7b0901fcdc8dad54d88aa0e9f0c705e7c769ac44d6f5cf77ce",
+    "median_ms": {},
+    "samples_ms": {
+      "baseline": [],
+      "optimized": []
+    },
+    "speedup": null
+  },
+  {
+    "fixture": "us30_20261112_m1.csv",
+    "merge": 1,
+    "entry_policy": 0,
+    "identical_trace_sha256": "eda23d567a2bded6925c4e6a670340d5957f5786d26076023a9bda7c7f01ccd9",
+    "median_ms": {},
+    "samples_ms": {
+      "baseline": [],
+      "optimized": []
+    },
+    "speedup": null
+  },
+  {
+    "fixture": "us30_20261112_m1.csv",
+    "merge": 1,
+    "entry_policy": 1,
+    "identical_trace_sha256": "5dcd3a8b096ebe38c818680681e353d3e3face151aa8abbccf313df74c1a9b39",
+    "median_ms": {},
+    "samples_ms": {
+      "baseline": [],
+      "optimized": []
+    },
+    "speedup": null
+  },
+  {
+    "decision_stride": 10,
+    "fixture": "us30_20261117_guard_m1.csv",
+    "merge": 0,
+    "entry_policy": 0,
+    "identical_trace_sha256": "0e0e8dcdcb0796368738d7c7f68985f372a8c045d9e717c1aa2763121eb52e1a",
+    "median_ms": {},
+    "samples_ms": {
+      "baseline": [],
+      "optimized": []
+    },
+    "speedup": null
+  },
+  {
+    "decision_stride": 10,
+    "fixture": "us30_20261117_guard_m1.csv",
+    "merge": 0,
+    "entry_policy": 1,
+    "identical_trace_sha256": "51d424b3752a9b8aa26bc25ccca38aca8f0848b7ef7fa66f0b0e76743a8de66c",
+    "median_ms": {},
+    "samples_ms": {
+      "baseline": [],
+      "optimized": []
+    },
+    "speedup": null
+  },
+  {
+    "decision_stride": 10,
+    "fixture": "us30_20261117_guard_m1.csv",
+    "merge": 1,
+    "entry_policy": 0,
+    "identical_trace_sha256": "48f7a7afd5f41092127de32c0e53104c98cec1a7bfd2a678ec0ae7c5fc666826",
+    "median_ms": {},
+    "samples_ms": {
+      "baseline": [],
+      "optimized": []
+    },
+    "speedup": null
+  },
+  {
+    "decision_stride": 10,
+    "fixture": "us30_20261117_guard_m1.csv",
+    "merge": 1,
+    "entry_policy": 1,
+    "identical_trace_sha256": "4533d5ffce63c4e0f7d955222d85d4b9dd10927d1a85e826569e091051809523",
+    "median_ms": {},
+    "samples_ms": {
+      "baseline": [],
+      "optimized": []
+    },
+    "speedup": null
+  }
+]

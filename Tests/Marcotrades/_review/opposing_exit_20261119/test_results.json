@@ -1,0 +1,32 @@
+[
+  {
+    "test": "run_opposing_sequence_tests.py",
+    "exit": 0,
+    "output": "406 opposing-sequence assertions passed"
+  },
+  {
+    "test": "run_structure_exit_tests.py",
+    "exit": 0,
+    "output": "PASS: 56 structural-exit checks (both directions, causal links, time availability, overlap, precedence)"
+  },
+  {
+    "test": "run_staged_tp_tests.py",
+    "exit": 0,
+    "output": "PASS: 12534 assertions; staged TP, structural exits, half-remaining sizing, durable broker retries and v1 migration"
+  },
+  {
+    "test": "run_opposing_entry_tests.py",
+    "exit": 0,
+    "output": "PASS: 59 opposing-structure/qualified-leg checks, including recorded ETHUSDc decision\nPASS: restoring CHoCH-only entry filter fails regression"
+  },
+  {
+    "test": "run_indicator_cache_tests.py",
+    "exit": 0,
+    "output": "PASS: 80 cache/lifecycle checks; all-TF records, unfinished batch restart, overlap, filters, invalidation and corruption"
+  },
+  {
+    "test": "run_pivot_entry_tests.py",
+    "exit": 0,
+    "output": "253 pivot-entry and first-candle exit checks passed\nThree-client configuration, cache key and unchanged ZigZag verified"
+  }
+]

@@ -1,0 +1,40 @@
+Rollback to before latency-reduction implementation
+
+Source rollback verified against baseline_sources.zip: 141 source files match byte-for-byte.
+All 15 modified files restored; all 8 newly introduced files removed.
+Subsequent opposing-exit implementation is also undone.
+Unrelated user files, trading logs, account state and VPS packaging scripts were not changed.
+Rebuild results are recorded incrementally in build_results.json. Final verification follows in final_verification.json.
+
+RESTORED FILES
+Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5
+Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5
+Include/Custom/General/daily_log.mqh
+Include/Custom/Marcotrades/Inducements.mqh
+Include/Custom/Marcotrades/marco_backtest.mqh
+Include/Custom/Marcotrades/marco_live_auto.mqh
+Include/Custom/Marcotrades/trade_rejection.mqh
+Indicators/Custom/Marcotrades/liquiduity_block.mq5
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5
+Tests/Marcotrades/run_daily_log_tests.py
+Tests/Marcotrades/run_history_context_tests.py
+Tests/Marcotrades/run_ind_structure_tests.py
+Tests/Marcotrades/run_indicator_cache_tests.py
+Tests/Marcotrades/run_lb_cluster_tests.py
+Tools/instrument_daily_logging.py
+
+REMOVED FILES
+Include/Custom/Marcotrades/calculation_context.mqh
+Include/Custom/Marcotrades/calculation_pool.mqh
+Tests/Marcotrades/benchmark_latency_metrics.py
+Tests/Marcotrades/benchmark_latency_replay.py
+Tests/Marcotrades/latency_reference_history.cpp
+Tests/Marcotrades/run_calculation_pool_tests.py
+Tests/Marcotrades/run_latency_history_tests.py
+Tests/Marcotrades/run_live_schedule_tests.py
+
+Restored main versions: live EA 1.49; backtest EA 1.70; simulator 2.28; liquidity indicator 1.26.
+No new strategy changes or clarification-dependent changes will be applied as part of this rollback.
+The prior optimization files and compiled binaries are archived in before_rollback.zip for traceability.
+
+FINAL RESULT: rollback complete. All 141 baseline sources match exactly. All 32 affected binaries rebuilt successfully with zero errors. Final source/binary hashes are in final_verification.json.

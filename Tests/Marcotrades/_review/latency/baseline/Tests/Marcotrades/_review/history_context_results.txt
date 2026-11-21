@@ -1,0 +1,11 @@
+TF=1 prior pivots and market structure carried; uninterrupted replay matches
+TF=2 prior pivots and market structure carried; uninterrupted replay matches
+TF=3 prior pivots and market structure carried; uninterrupted replay matches
+TF=4 prior pivots and market structure carried; uninterrupted replay matches
+TF=5 prior pivots and market structure carried; uninterrupted replay matches
+TF=10 prior pivots and market structure carried; uninterrupted replay matches
+TF=12 prior pivots and market structure carried; uninterrupted replay matches
+TF=15 prior pivots and market structure carried; uninterrupted replay matches
+TF=30 prior pivots and market structure carried; uninterrupted replay matches
+TF=60 prior pivots and market structure carried; uninterrupted replay matches
+3895 history/rollover assertions passed; production integration guards passed

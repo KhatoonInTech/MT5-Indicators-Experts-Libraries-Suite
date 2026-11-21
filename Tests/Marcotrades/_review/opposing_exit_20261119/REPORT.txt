@@ -1,0 +1,45 @@
+REVERTED AT USER REQUEST. The implementation described below is historical and is no longer the current source. See undo_sources.json and *.undo.compile.log. New implementation awaits clarified rules.
+
+Opposing structure exit correction - 19 November 2026
+
+CONFIRMED CODE DEFECTS AND CHANGES
+1. Opposing-sequence Source previously tested only the current event's own pivot/causal CHoCH. It did not inherit the source LB through consecutive same-direction BOS/sweep events. It now walks adjacent same-direction event versions available at the current event. Historical source geometry is used; later zone expansion cannot fabricate an earlier pivot link. An intervening reversal breaks the chain. Removed sources and mitigated inherited sources do not start a new sequence. Original direct-event source behavior is preserved.
+2. The previous SL -> TP policy explicitly kept the remainder open. The user's latest instruction replaces that with closing all remaining volume. Both buy and sell use the same shared method.
+
+CURRENT POST-ENTRY EXIT MATRIX (InpApplyEntryLBPolicyToPreventionExits=true)
+First TP: close 25% of then-open volume; profitable partial retains the existing BE behavior.
+First SL: close 50% of then-open volume.
+TP -> TP: close 25% of remaining volume.
+TP -> SL: close all remaining (earlier policy retained pending clarification).
+SL -> SL or SL -> TP: close all remaining.
+A reversal ends the outstanding consecutive sequence. The second event remains on the same timeframe as the first. Existing retry/persistence/lot-grid behavior is retained.
+
+PENDING CLARIFICATIONS
+The user was asked whether a structure preceding entry should count as step 1, and whether TP -> SL should retain its full-close rule or close 25%. Neither answer has arrived at report creation. Pre-entry structures currently provide source ancestry only; they do not count as a position's completed exit step and no pre-entry partial is simulated. No entry/prevention rule was changed.
+
+SCREENSHOT LIMITS
+No AUS200 entries were found in the local November 18/19 simulator logs searched. This is a code-defect reproduction, not an exact replay of the photographed trade. The simulator resolves hard SL/TP hits in a closed candle before executing structures newly confirmed by that candle. A hard SL reached earlier cannot be replaced by a later BOS exit. The screenshot's second BOS appears below the buy SL, so event/stop timestamps are needed to determine the exact cause.
+
+FILES CHANGED THIS TURN
+Include/Custom/Marcotrades/opposing_sequence.mqh
+Tests/Marcotrades/run_opposing_sequence_tests.py
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5 - 2.30, cache schema/key 30
+Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5 - 1.72
+Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5 - 1.51
+The corresponding three EX5 files are rebuilt. No liquidity indicator or ZigZag source changes.
+
+VALIDATION
+Six suites passed: opposing sequence 406; structure exits 56; staged TP/live persistence/retry 12534; opposing entry 59 plus mutation check; cache/lifecycle 80; pivot entry/first-candle exits 253.
+Sequence cases cover buy/sell, M1/M2/M3 sources, BOS origins outside the original LB, historical availability/reclassification, reversal breaks, removed/mitigated inherited sources, later boundary expansion, all four profit/loss combinations, lot sizing, pending/rejected requests and saved live-state reloads.
+Restoring the old direct-only Source method fails new regression check 69. The old SL -> TP rule failed check 25 before the policy change.
+Tests execute production methods through offline C++ adapters and a fake broker. They are not native tick replay or actual broker fill verification.
+Custom ZigZag SHA256 remains 949bc8de05d8731e0ccfb0ef70e429a0e182a6fa1eddd56b5564863a97d152a5.
+No orders sent; no EA attached/reloaded; no VPS package exported.
+
+The original scoped sources are saved in before.zip. Per-file diffs, test outputs and native build logs accompany this report.
+
+FINAL NATIVE BUILDS
+marco_backtest_ea.final.compile.log: Result: 0 errors, 12 warnings, 41219 ms elapsed, cpu='X64 Regular'
+marco_backtest_trades.final.compile.log: Result: 0 errors, 12 warnings, 46529 ms elapsed, cpu='X64 Regular'
+marco_live_auto_ea.final.compile.log: Result: 0 errors, 0 warnings, 45906 ms elapsed, cpu='X64 Regular'
+All three program input declarations match this turn's baseline. Source and rebuilt-binary hashes are in changed_files.json.

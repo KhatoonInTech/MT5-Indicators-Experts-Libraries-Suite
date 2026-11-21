@@ -1,0 +1,65 @@
+Lower-timeframe LB preference - 20 November 2026
+
+Input: InpPreferLowerTFLB = true in the live EA, backtest EA and trade simulator.
+False bypasses the new preference. Lower TF supplies the actual setup, with its
+normal entry confirmation, SL, sizing, TP, entry prevention and exit rules.
+
+Same symbol/direction, strictly lower enabled setup TF:
+BUY: HTF low < LTF high < HTF high.
+SELL: HTF low < LTF low < HTF high.
+Contained zones qualify, and the distal edge may extend below the HTF low for
+buys or above the HTF high for sells. Mere boundary contact, shallower overlaps,
+opposite sides and same TFs do not qualify. Any LB type can be preferred after
+passing its existing entry qualification.
+
+With M1 entry selected, the LTF setup requires its own M1 touch and confirmed
+pivot within its boundaries. A pivot only in the outer HTF zone cannot trigger
+that HTF setup while the valid preference exists.
+
+Candidates exclude unqualified/future, previous-day, consumed, reclassified,
+mitigated and cluster-blocked LBs. Current LB boundaries are used rather than
+historical cluster envelopes. All TF cluster members register before preference
+publication, preserving rejection-only cluster renewal. Waiting consumes no
+setup or cluster. Actual entries retain the existing durable cluster lock.
+When no eligible deeper LTF remains, the HTF resumes its existing rules;
+retired setups are not revived. Multiple nesting levels defer larger TFs.
+
+Scope: setup TFs loaded in the same program. Other charts do not supply
+candidate snapshots. Existing cross-chart durable trade reservations remain.
+No trade journal format changes. The simulator cache is version 31 and the
+bool participates in its key. Diagnostics use [LTF LB PREFERENCE], once per
+changed preference instead of on every tick.
+
+Validation: eight regression suites passed, including production candidate
+publisher methods from both engines. Mutation checks detect invalid overlap,
+premature cluster retirement and CHoCH-only blocking. No full MT5 recorded
+history/tick replay or broker execution was performed. No speed claim.
+ZigZag, LB/IND detection, cluster policy/journal and TP/exit headers unchanged.
+Packaging scripts inspected: new Include/Custom headers are already included.
+
+Checks:
+lower_tf_preference: 432
+cluster_persistence_scheduler: 557
+pivot_entry: 253
+indicator_cache: 80
+opposing_sequence: 1028
+opposing_entry: 77
+staged_tp: 12534
+entry_trigger_structure: 108
+
+Changed source files:
+Include\Custom\Marcotrades\lb_tf_preference.mqh
+Include\Custom\Marcotrades\marco_backtest.mqh
+Include\Custom\Marcotrades\marco_live_auto.mqh
+Experts\Custom EAs\Backtesting\marco_backtest_ea.mq5
+Experts\Custom EAs\Marcotrades\marco_live_auto_ea.mq5
+Indicators\Custom\Marcotrades\marco_backtest_trades.mq5
+Tests\Marcotrades\run_indicator_cache_tests.py
+Tests\Marcotrades\run_lb_cluster_tests.py
+Tests\Marcotrades\run_lb_tf_preference_tests.py
+
+Rebuilt programs:
+Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5 v1.52 - Result: 0 errors, 0 warnings, 13363 ms elapsed, cpu='X64 Regular'
+Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5 v1.73 - Result: 0 errors, 12 warnings, 15684 ms elapsed, cpu='X64 Regular'
+Indicators/Custom/Marcotrades/marco_backtest_trades.mq5 v2.31 - Result: 0 errors, 12 warnings, 16377 ms elapsed, cpu='X64 Regular'
+Existing warning messages match the previous build.

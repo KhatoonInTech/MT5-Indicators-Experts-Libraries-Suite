@@ -1,0 +1,38 @@
+--- Indicators/Custom/Marcotrades/marco_backtest_trades.mq5 before
++++ Indicators/Custom/Marcotrades/marco_backtest_trades.mq5 current
+@@ -2,7 +2,7 @@
+ #include <Custom\General\daily_log.mqh>
+ // Independent chart indicator: simulates its own trades and draws risk/reward areas.
+ #property copyright "Marcotrades"
+-#property version   "2.29"
++#property version   "2.30"
+ #property indicator_chart_window
+ #property indicator_buffers 0
+ #property indicator_plots   0
+@@ -146,7 +146,7 @@
+ // Raw PERIOD_CURRENT is keyed here; its simulation meaning is frozen in the snapshot.
+ string SimulationCacheKey()
+   {
+-   string key="MarcoTradeCache29|"+IntegerToString((long)__DATETIME__)+"|"+_Symbol+"|"+
++   string key="MarcoTradeCache30|"+IntegerToString((long)__DATETIME__)+"|"+_Symbol+"|"+
+               AccountInfoString(ACCOUNT_SERVER)+"|"+IntegerToString(AccountInfoInteger(ACCOUNT_LOGIN))+"|"+
+               AccountInfoString(ACCOUNT_CURRENCY)+"|"+IntegerToString(AccountInfoInteger(ACCOUNT_LEVERAGE));
+    for(int i=0;i<ArraySize(g_setupTFs);i++) key+="|SetupTF="+IntegerToString((long)g_setupTFs[i]);
+@@ -224,7 +224,7 @@
+    int file=FileOpen(temp,FILE_WRITE|FILE_BIN|FILE_UNICODE);
+    if(file==INVALID_HANDLE) return false;
+    STradeCacheHeader header; ZeroMemory(header);
+-   header.magic=0x4D545243; header.version=29;
++   header.magic=0x4D545243; header.version=30;
+    header.nextTF=g_nextTF; header.waitAttempts=g_waitAttempts; header.skipped=g_skipped;
+    header.totalTrades=g_totalTrades; header.wins=g_wins; header.losses=g_losses;
+    header.records=ArraySize(g_trades);
+@@ -281,7 +281,7 @@
+    STradeCacheHeader header; ZeroMemory(header);
+    string key,progress;
+    bool ok=FileReadStruct(file,header)==sizeof(header);
+-   if(ok) ok=(header.finished || (header.nextTF==0 && header.records==0 && header.overlapRecords==0)) && header.magic==0x4D545243 && header.version==29 && header.nextTF>=0 && header.nextTF<=ArraySize(g_setupTFs) &&
++   if(ok) ok=(header.finished || (header.nextTF==0 && header.records==0 && header.overlapRecords==0)) && header.magic==0x4D545243 && header.version==30 && header.nextTF>=0 && header.nextTF<=ArraySize(g_setupTFs) &&
+              header.records>=0 && header.records<=1000000 && header.overlapRecords>=0 && header.overlapRecords<=1000000 &&
+              (ulong)header.records*sizeof(STradeCacheRecord)+(ulong)header.overlapRecords*sizeof(STradeCacheOverlap)<=FileSize(file) &&
+              header.windowEnd>InpStartWindow && header.vicinityTF>0 &&

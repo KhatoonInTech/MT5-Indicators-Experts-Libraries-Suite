@@ -282,6 +282,26 @@ public:
       return found;
      }
    int ZoneCount() { return ArraySize(zones); }
+   // Qualification for a fresh IND LB in a rejection-only cluster. The causal
+   // event and its immediate successor must both belong to the new origin's
+   // direction. Availability is preserved; future structures cannot qualify it.
+   datetime FreshClusterQualification(bool bull,datetime origin,datetime cause,datetime now)
+     {
+      if(origin<=0 || cause<origin) return 0;
+      int direction=bull ? 1 : -1;
+      SRejectionEvent first,next; bool haveFirst=false,haveNext=false;
+      for(int i=0;i<ArraySize(events);i++)
+        {
+         SRejectionEvent event;
+         if(!EventAt(i,now,event)) continue;
+         if(event.time==cause) { first=event; haveFirst=true; }
+         if(event.time<=cause || StructureDirection(event.name)==0) continue;
+         if(!haveNext || event.time<next.time) { next=event; haveNext=true; }
+        }
+      if(!haveFirst || !haveNext || StructureDirection(first.name)!=direction ||
+         StructureDirection(next.name)!=direction) return 0;
+      return MathMax(first.available,next.available);
+     }
    bool ZoneAt(int index, SRejectionLB &zone)
      {
       if(index<0 || index>=ArraySize(zones)) return false;
@@ -775,12 +795,57 @@ public:
       return false;
      }
 
+   // The first linked event may already be known when the position opens.
+   // Consult its entry-time version, never a link/label discovered afterwards.
+   // No historical partial is invented: only its adjacent post-entry opposing
+   // event can request a full close, and only at an executable losing price.
+   static bool PreEntryContinuation(CTradeRejectionHistory &history, int slot,
+                                     ENUM_TIMEFRAMES tf, int direction, double entry,
+                                     double executionPrice, datetime opened, datetime now,
+                                     SMarcoOpposingSequence &state, SMarcoSequenceSignal &result)
+     {
+      if(state.step!=0 || state.pending || now<=opened || direction*(executionPrice-entry)>=0) return false;
+      SRejectionEvent first; bool found=false;
+      for(int i=0;i<history.EventCount();i++)
+        {
+         SRejectionEvent event;
+         if(!history.EventAt(i,opened,event) || Direction(event.name)==0) continue;
+         if(!found || event.time>first.time) { first=event; found=true; }
+        }
+      string id;
+      if(!found || first.time>=opened || Direction(first.name)!=-direction ||
+         !Source(history,first,-direction,tf,id)) return false;
+      // A later reclassification reversing the first event cancels its chain.
+      bool stillOpposing=false;
+      SRejectionEvent next; found=false;
+      for(int i=0;i<history.EventCount();i++)
+        {
+         SRejectionEvent event;
+         if(!history.EventAt(i,now,event)) continue;
+         if(event.time==first.time) stillOpposing=Direction(event.name)==-direction;
+         if(event.time<=first.time || Direction(event.name)==0) continue;
+         if(!found || event.time<next.time) { next=event; found=true; }
+        }
+      if(!stillOpposing || !found || next.available<=opened || next.time<=state.seen[slot] ||
+         Direction(next.name)!=-direction) return false;
+      state.seen[slot]=next.time;
+      state.step=2; state.tf=(int)tf; state.firstEvent=first.time; state.firstProfit=false;
+      state.pending=true; state.share=1.0; state.requestedLots=0;
+      result.action=2; result.step=2; result.tf=(int)tf; result.eventTime=next.time;
+      result.lbId=id; result.share=1.0; result.profit=false;
+      PrintFormat("[PRE-ENTRY OPPOSING CONTINUATION] source=%s LB=%s first=%s opened=%s second=%s region=SL share=100%%",
+                  EnumToString(tf),id,TimeToString(first.time,TIME_DATE|TIME_SECONDS),
+                  TimeToString(opened,TIME_DATE|TIME_SECONDS),TimeToString(next.time,TIME_DATE|TIME_SECONDS));
+      return true;
+     }
+
    static SMarcoSequenceSignal Advance(CTradeRejectionHistory &history, SMarcoOpposingSequence &state,
                                        int slot, ENUM_TIMEFRAMES tf, int direction, double entry,
-                                       double executionPrice, datetime opened, datetime now)
+                                       double executionPrice, datetime opened, datetime now, bool checkPreEntry=true)
      {
       SMarcoSequenceSignal result; ZeroMemory(result);
       if(state.pending || state.step>=2 || (state.step==1 && state.tf!=(int)tf)) return result;
+      if(checkPreEntry && PreEntryContinuation(history,slot,tf,direction,entry,executionPrice,opened,now,state,result)) return result;
       // Select by event time, not insertion order: label revisions are appended
       // to history but must never become another first/second structure.
       for(int pass=0;pass<history.EventCount();pass++)
@@ -1188,6 +1253,79 @@ public:
   };
 #endif
 
+enum {ENTRY_TF_M1=1, ENTRY_TF_LB=2}; struct EntryContext { CTradeRejectionHistory rawExitHistory; };
+class LiveObserver { public: int m_entryTF=ENTRY_TF_M1,m_tradeTF=PERIOD_M3; EntryContext *m1LBContext=nullptr; CTradeRejectionHistory m_htfRawExit;
+   SMarcoSequenceSignal ObserveOpposingSequence(SMarcoTPPlan &plan, datetime opened, datetime now, double price)
+     {
+      SMarcoSequenceSignal signal; ZeroMemory(signal);
+      bool preferM1=m_entryTF==ENTRY_TF_M1;
+      // A full pre-entry continuation on either TF takes precedence over
+      // starting an ordinary post-entry partial on the other TF in this cycle.
+      if(plan.sequence.step==0 && !plan.sequence.pending)
+         for(int pass=0;pass<2;pass++)
+           {
+            bool m1=(pass==0 ? preferM1 : !preferM1);
+            if(m1)
+              {
+               if(m1LBContext==NULL || m_tradeTF==PERIOD_M1) continue;
+               if(CMarcoOpposingSequence::PreEntryContinuation(m1LBContext->rawExitHistory,1,PERIOD_M1,
+                     plan.direction,plan.entry,price,opened,now,plan.sequence,signal)) return signal;
+              }
+            else if(CMarcoOpposingSequence::PreEntryContinuation(m_htfRawExit,0,m_tradeTF,
+                     plan.direction,plan.entry,price,opened,now,plan.sequence,signal)) return signal;
+           }
+      for(int pass=0;pass<2;pass++)
+        {
+         bool m1=(pass==0 ? preferM1 : !preferM1);
+         if(m1)
+           {
+            if(m1LBContext==NULL || m_tradeTF==PERIOD_M1) continue;
+            signal=CMarcoOpposingSequence::Advance(m1LBContext->rawExitHistory,plan.sequence,1,PERIOD_M1,
+                                                  plan.direction,plan.entry,price,opened,now,false);
+           }
+         else signal=CMarcoOpposingSequence::Advance(m_htfRawExit,plan.sequence,0,m_tradeTF,
+                                                     plan.direction,plan.entry,price,opened,now,false);
+         if(signal.step>0 || plan.sequence.step>=2) break;
+        }
+      return signal;
+     }
+};
+class BacktestObserver { public: int m_entryTF=ENTRY_TF_M1,m_tradeTF=PERIOD_M3; EntryContext *m1LBContext=nullptr; CTradeRejectionHistory m_htfRawExit;
+   SMarcoSequenceSignal ObserveOpposingSequence(SMarcoTPPlan &plan, datetime opened, datetime now, double price)
+     {
+      SMarcoSequenceSignal signal; ZeroMemory(signal);
+      bool preferM1=m_entryTF==ENTRY_TF_M1;
+      // A full pre-entry continuation on either TF takes precedence over
+      // starting an ordinary post-entry partial on the other TF in this cycle.
+      if(plan.sequence.step==0 && !plan.sequence.pending)
+         for(int pass=0;pass<2;pass++)
+           {
+            bool m1=(pass==0 ? preferM1 : !preferM1);
+            if(m1)
+              {
+               if(m1LBContext==NULL || m_tradeTF==PERIOD_M1) continue;
+               if(CMarcoOpposingSequence::PreEntryContinuation(m1LBContext->rawExitHistory,1,PERIOD_M1,
+                     plan.direction,plan.entry,price,opened,now,plan.sequence,signal)) return signal;
+              }
+            else if(CMarcoOpposingSequence::PreEntryContinuation(m_htfRawExit,0,m_tradeTF,
+                     plan.direction,plan.entry,price,opened,now,plan.sequence,signal)) return signal;
+           }
+      for(int pass=0;pass<2;pass++)
+        {
+         bool m1=(pass==0 ? preferM1 : !preferM1);
+         if(m1)
+           {
+            if(m1LBContext==NULL || m_tradeTF==PERIOD_M1) continue;
+            signal=CMarcoOpposingSequence::Advance(m1LBContext->rawExitHistory,plan.sequence,1,PERIOD_M1,
+                                                  plan.direction,plan.entry,price,opened,now,false);
+           }
+         else signal=CMarcoOpposingSequence::Advance(m_htfRawExit,plan.sequence,0,m_tradeTF,
+                                                     plan.direction,plan.entry,price,opened,now,false);
+         if(signal.step>0 || plan.sequence.step>=2) break;
+        }
+      return signal;
+     }
+};
 
 int checks=0;
 void check(bool v){++checks;if(!v){std::cerr<<"Failed check "<<checks<<"\n";abort();}}
@@ -1210,7 +1348,104 @@ void fill(SMarcoTPPlan &p,double price,int now){
 void reset(int d){files.clear();handles.clear();volume=4;sl=100-d*10;tp=100+d*30;bid=ask=100;step=.01;sends=mode=0;modifyAllowed=enabled=true;clockNow=1000;}
 SMarcoLiveTPState load(){SMarcoLiveTPState s;check(CMarcoLiveStagedTP::Load(magic,identifier,s));return s;}
 void save(SMarcoTPPlan p){SMarcoLiveTPState s{};s.plan=p;s.lots=4;s.riskCash=40;s.pendingStage=-1;check(CMarcoLiveStagedTP::Save(magic,identifier,s));}
+void preentry(CTradeRejectionHistory &h,int d,string kind,bool sweep=false,int available=60){
+ h.Observe(sweep?(d==1?"SSL-Swept":"BSL-Swept"):(d==1?"BR-CHoCH":"BL-CHoCH"),40,available,20,105,105);
+ h.BeginZones();h.Zone(kind,d==-1,104,106,20,0,40,available);h.EndZones(available);
+}
+void continuation(CTradeRejectionHistory &h,int d,int time=120,int available=180){
+ // This BOS no longer originates within the LB: it must inherit the first link.
+ h.Observe(d==1?"BR-BOS":"BL-BOS",time,available,110,95,95);
+}
+void preentryTests(){
+ for(int d:{-1,1})for(int tf:{1,3})for(bool swept:{false,true}){
+  string kind=d==1?(swept?"BR-LB-SSL":"BR-LB-IND"):(swept?"BL-LB-BSL":"BL-LB-IND");
+  int slot=tf==1?1:0;
+  // IND and sweep sources both support CHoCH -> entry -> adjacent BOS.
+  for(bool sweepLabel:{false,true}){
+   auto p=plan(d);CTradeRejectionHistory h;preentry(h,d,kind,sweepLabel);
+   eq(advance(h,p,100-d*2,100,slot,tf).action,0);eq(p.sequence.step,0);
+   continuation(h,d);eq(advance(h,p,100-d*2,179,slot,tf).action,0);
+   auto a=advance(h,p,100-d*2,180,slot,tf);
+   eq(a.action,2);eq(a.step,2);eq(a.share,1);eq(a.tf,tf);check(a.lbId==kind);
+   eq(p.sequence.firstEvent,40);eq(p.sequence.closed[0],0);check(!p.breakeven);
+   fill(p,100-d*2,180);eq(p.remaining,0);eq(p.sequence.closed[1],1);
+   eq(advance(h,p,100-d*2,190,slot,tf).action,0);
+  }
+  // An event's closed-bar availability, not its candle's open, is decisive.
+  auto p=plan(d);CTradeRejectionHistory h;preentry(h,d,kind);continuation(h,d,80,140);
+  eq(advance(h,p,100-d*2,140,slot,tf).action,2);
+  // TP or exact entry price cannot trigger the new losing-price full exit.
+  for(double price:{100.0,100.0+d*2}){
+   p=plan(d);h.Reset();preentry(h,d,kind);continuation(h,d);
+   eq(advance(h,p,price,180,slot,tf).action,0);
+   eq(advance(h,p,100-d*2,190,slot,tf).action,0); // No delayed reuse of a consumed BOS.
+  }
+  // There is no close just because the pre-entry structure exists.
+  p=plan(d);h.Reset();preentry(h,d,kind);
+  eq(advance(h,p,100-d*2,500,slot,tf).action,0);
+  // A newer structure already known at entry interrupts the seed.
+  h.Observe(d==1?"BL-BOS":"BR-BOS",70,90,65,95,95);continuation(h,d);
+  eq(advance(h,p,100-d*2,180,slot,tf).action,0);
+  // An intervening post-entry direction change also breaks adjacency.
+  p=plan(d);h.Reset();preentry(h,d,kind);
+  h.Observe(d==1?"BL-BOS":"BR-BOS",110,150,105,95,95);continuation(h,d);
+  eq(advance(h,p,100-d*2,180,slot,tf).action,0);
+  // A revision of the first event to the opposite direction cancels the link.
+  p=plan(d);h.Reset();preentry(h,d,kind);
+  h.Observe(d==1?"BSL-Swept":"SSL-Swept",40,160,20,105,105);continuation(h,d);
+  eq(advance(h,p,100-d*2,180,slot,tf).action,0);
+  // Neither a later LB nor a later relabel may retrofit a pre-entry first event.
+  p=plan(d);h.Reset();preentry(h,d,kind);h.Reset();
+  h.Observe(d==1?"BR-CHoCH":"BL-CHoCH",40,60,20,105,105);
+  h.BeginZones();h.Zone(kind,d==-1,104,106,20,0,40,130);h.EndZones(130);continuation(h,d);
+  eq(advance(h,p,100-d*2,180,slot,tf).action,0);
+  p=plan(d);h.Reset();preentry(h,-d,kind);
+  h.Observe(d==1?"BR-CHoCH":"BL-CHoCH",40,130,20,105,105);continuation(h,d);
+  eq(advance(h,p,100-d*2,180,slot,tf).action,0);
+  // An unlinked latest opposing event cannot borrow an older LB's link.
+  p=plan(d);h.Reset();preentry(h,d,kind);continuation(h,d,70,90);continuation(h,d);
+  eq(advance(h,p,100-d*2,180,slot,tf).action,0);
+  // Histories from different TFs must never form a pair together.
+  p=plan(d);h.Reset();preentry(h,d,kind);CTradeRejectionHistory other;continuation(other,d);
+  eq(advance(h,p,100-d*2,180,slot,tf).action,0);
+  eq(advance(other,p,100-d*2,180,1-slot,tf==1?3:1).action,0);
+  // Existing/recovered cursors must not replay an event already consumed.
+  p=plan(d);h.Reset();preentry(h,d,kind);continuation(h,d);p.sequence.seen[slot]=120;
+  eq(advance(h,p,100-d*2,180,slot,tf).action,0);
+  // Durable live close of the actual remainder, retry after rejection/reload.
+  reset(d);p=plan(d);p.remaining=.75;volume=3;h.Reset();preentry(h,d,kind);continuation(h,d);
+  save(p);auto restored=load();advance(h,restored.plan,100-d*2,180,slot,tf);save(restored.plan);
+  CTrade trade;bid=ask=100-d*2;mode=1;
+  CMarcoLiveStagedTP::Manage(trade,magic,identifier,"TEST",false,1,1);
+  eq(volume,3);eq(load().plan.sequence.requestedLots,3);check(load().plan.sequence.pending);
+  mode=0;clockNow+=6;CMarcoLiveStagedTP::Manage(trade,magic,identifier,"TEST",false,1,1);
+  eq(volume,0);eq(load().plan.sequence.closed[0],0);eq(load().plan.sequence.closed[1],.75);
+  eq(load().plan.sequence.firstEvent,40);eq(sends,2);
+ }
+}
+template<class Observer>void observerTests(){
+ for(int d:{-1,1})for(bool onM1:{false,true})for(int mode:{ENTRY_TF_M1,ENTRY_TF_LB}){
+  Observer o;EntryContext m1;o.m1LBContext=&m1;o.m_entryTF=mode;
+  auto &full=onM1?m1.rawExitHistory:o.m_htfRawExit;
+  auto &partial=onM1?o.m_htfRawExit:m1.rawExitHistory;
+  preentry(full,d,"pre-entry-LB");continuation(full,d,300,360);
+  // The other TF has an ordinary first linked structure in the same cycle.
+  event(partial,d,200);source(partial,d);
+  auto p=plan(d);auto a=o.ObserveOpposingSequence(p,100,360,100-d*2);
+  eq(a.action,2);eq(a.share,1);eq(a.tf,onM1?1:3);eq(p.sequence.closed[0],0);
+  // Profit-side execution retains the normal partial policy on the other TF.
+  p=plan(d);a=o.ObserveOpposingSequence(p,100,360,100+d*2);
+  eq(a.action,1);eq(a.share,.25);eq(a.tf,onM1?3:1);
+ }
+ // A setup on M1 is observed once, not paired with a duplicate M1 context.
+ Observer o;EntryContext m1;o.m1LBContext=&m1;o.m_tradeTF=PERIOD_M1;
+ preentry(o.m_htfRawExit,1,"M1-LB");continuation(o.m_htfRawExit,1);
+ auto p=plan(1);eq(o.ObserveOpposingSequence(p,100,180,98).action,2);
+ eq(o.ObserveOpposingSequence(p,100,181,98).action,0);
+}
 int main(){
+ preentryTests();
+ observerTests<LiveObserver>();observerTests<BacktestObserver>();
  for(int d:{-1,1}){
   for(bool firstProfit:{false,true})for(bool secondProfit:{false,true}){
    auto p=plan(d);CTradeRejectionHistory h;event(h,d,200);source(h,d);

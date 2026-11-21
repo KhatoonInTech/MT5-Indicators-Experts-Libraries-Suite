@@ -1,0 +1,53 @@
+Rejection-only LB cluster renewal
+
+User clarification: if an earlier actual trade occurred in this cluster, BLOCK
+any newly qualified LB. Never use this exception to bypass a recorded trade.
+
+Behavior implemented for buys/sells and all setup TFs, including M1:
+- Record opposing-structure/source rejections separately from trade reservations.
+- Rejected clusters keep older LBs blocked, including older LBs qualifying later.
+- A fresh pure IND LB must have an origin strictly after the recorded rejection,
+  pass existing entry qualification (valid mitigated IND included), and have its
+  own causal same-direction structure plus the next adjacent same-direction
+  structure available. Only then may it pass the rejection-only cluster check.
+- Any prior trade or unresolved entry reservation still blocks the whole cluster.
+- Broker-definitive rejection can release the reservation without erasing the
+  structural-rejection barrier. One successful new trade blocks the cluster.
+- Symbol/side scope, cross-TF overlap, inclusive boundaries, transitive grouping,
+  all-member mitigation reset and broker-day reset remain in force.
+- This changes admission only; all other entry checks and exit policies remain.
+- Live journal v3 retains both reasons and qualification. v2 loading is supported
+  and preserves previous usedAt records; no actual-trade history is cleared.
+- Ordinary entry qualification, ZigZag, labels, SL/TP and previous exit extension
+  were not changed. No liquidity-indicator source changes.
+
+Verification:
+557 cluster/persistence/chronological-scheduling checks + mutation check passed.
+77 opposing-entry/qualification checks + mutation check passed.
+1028 opposing-sequence assertions passed.
+108 entry-trigger structure assertions passed.
+12534 staged-TP/durable-order assertions passed.
+253 pivot-entry checks passed.
+74 indicator-cache/lifecycle checks passed.
+Four consumers compiled with zero errors and unchanged prior warnings.
+No recorded-market MT5 replay or real-account order execution was performed.
+
+Versions: live EA 1.51; backtest EA 1.72; simulator 2.30/cache 30.
+
+Changed source files:
+Include\Custom\Marcotrades\lb_entry_clusters.mqh
+Include\Custom\Marcotrades\lb_entry_clusters_live.mqh
+Include\Custom\Marcotrades\marco_backtest.mqh
+Include\Custom\Marcotrades\marco_live_auto.mqh
+Include\Custom\Marcotrades\trade_rejection.mqh
+Experts\Custom EAs\Backtesting\marco_backtest_ea.mq5
+Experts\Custom EAs\Marcotrades\marco_live_auto_ea.mq5
+Indicators\Custom\Marcotrades\marco_backtest_trades.mq5
+Tests\Marcotrades\run_lb_cluster_tests.py
+Tests\Marcotrades\run_opposing_entry_tests.py
+
+Rebuilt binaries:
+Experts\Custom EAs\Marcotrades\marco_live_auto_ea.ex5
+Experts\Custom EAs\Backtesting\marco_backtest_ea.ex5
+Indicators\Custom\Marcotrades\marco_backtest_trades.ex5
+Indicators\Custom\Marcotrades\liquiduity_block.ex5

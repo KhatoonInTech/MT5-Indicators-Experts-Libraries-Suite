@@ -1,0 +1,14 @@
+--- Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5
+
++++ Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5
+
+@@ -8,7 +8,7 @@
+
+ //|                 With Overlapping Trade Concurrency Control       |
+ //+------------------------------------------------------------------+
+ #property copyright "Marcotrades SMC Architecture"
+-#property version   "1.71"
++#property version   "1.72"
+ 
+ #include <Custom\Marcotrades\marco_backtest.mqh>
+ #include <Custom\General\WA_agent.mqh>

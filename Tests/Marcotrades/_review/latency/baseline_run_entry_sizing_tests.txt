@@ -1,0 +1,1 @@
+PASS: 905 live/backtest sizing checks (parity, buffered SL, remaining exposure, free margin, broker limits and risk validation)

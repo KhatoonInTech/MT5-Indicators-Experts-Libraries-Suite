@@ -1,8 +1,8 @@
-﻿#define MARCO_LOG_PROGRAM "marco_backtest_trades"
+#define MARCO_LOG_PROGRAM "marco_backtest_trades"
 #include <Custom\General\daily_log.mqh>
 // Independent chart indicator: simulates its own trades and draws risk/reward areas.
 #property copyright "Marcotrades"
-#property version   "2.28"
+#property version   "2.31"
 #property indicator_chart_window
 #property indicator_buffers 0
 #property indicator_plots   0
@@ -21,12 +21,13 @@
 #undef ObjectsDeleteAll
 
 input group "=== Strategy Simulator Config ==="
-input datetime        InpStartWindow              = D'2026.11.16 00:00'; // Backtest Start Window (Date/Time)
-input datetime        InpEndWindow                = D'2026.11.16 23:59'; // Backtest End Window (0 for Current Time)
+input datetime        InpStartWindow              = D'2026.11.18 00:00'; // Backtest Start Window (Date/Time)
+input datetime        InpEndWindow                = D'2026.11.18 23:59'; // Backtest End Window (0 for Current Time)
 input double          InpStartingCapital          = 500;               // Simulated Starting Capital ($)
 input double          InpMaxRiskPercent           = 25.0;                // Risk per trade (% of selected capital)
 input ENUM_MARCO_RISK_CAPITAL InpRiskCapital = RISK_CAPITAL_FREE_MARGIN; // Capital used by InpMaxRiskPercent
 input bool            InpAllowOverlappingTrades = true; // Allow same-direction overlap (open trade >= 50% TP; never opposite)
+input bool InpPreferLowerTFLB = true; // Prefer deeper qualified LTF LB overlapping same-direction HTF LB
 input double          InpSLBufferPips             = 75.0;                 // SL Buffer outside Liquidity Block (Pips)
 input string InpPipSizeOverrides = ""; // Price per pip overrides: US500=0.1;XAUUSD=0.01
 input ENUM_MARCO_ENTRY_TF InpEntryTF = ENTRY_TF_M1; // Entry TF: M1 / LB TF (M1 always requires pivot confirmation)
@@ -146,7 +147,7 @@ struct STradeCacheOverlap
 // Raw PERIOD_CURRENT is keyed here; its simulation meaning is frozen in the snapshot.
 string SimulationCacheKey()
   {
-   string key="MarcoTradeCache28|"+IntegerToString((long)__DATETIME__)+"|"+_Symbol+"|"+
+   string key="MarcoTradeCache31|"+IntegerToString((long)__DATETIME__)+"|"+_Symbol+"|"+
               AccountInfoString(ACCOUNT_SERVER)+"|"+IntegerToString(AccountInfoInteger(ACCOUNT_LOGIN))+"|"+
               AccountInfoString(ACCOUNT_CURRENCY)+"|"+IntegerToString(AccountInfoInteger(ACCOUNT_LEVERAGE));
    for(int i=0;i<ArraySize(g_setupTFs);i++) key+="|SetupTF="+IntegerToString((long)g_setupTFs[i]);
@@ -157,6 +158,7 @@ string SimulationCacheKey()
    key+="|InpMaxRiskPercent="+StringFormat("%.17g",InpMaxRiskPercent);
    key+="|InpRiskCapital="+IntegerToString((int)InpRiskCapital);
    key+="|InpAllowOverlappingTrades="+(string)InpAllowOverlappingTrades;
+   key+="|InpPreferLowerTFLB="+(string)InpPreferLowerTFLB;
    key+="|PipOverrides="+InpPipSizeOverrides;
    key+="|InpSLBufferPips="+StringFormat("%.17g",InpSLBufferPips);
    key+="|InpEntryTF="+(string)InpEntryTF;
@@ -224,7 +226,7 @@ bool SaveSimulationCache()
    int file=FileOpen(temp,FILE_WRITE|FILE_BIN|FILE_UNICODE);
    if(file==INVALID_HANDLE) return false;
    STradeCacheHeader header; ZeroMemory(header);
-   header.magic=0x4D545243; header.version=28;
+   header.magic=0x4D545243; header.version=31;
    header.nextTF=g_nextTF; header.waitAttempts=g_waitAttempts; header.skipped=g_skipped;
    header.totalTrades=g_totalTrades; header.wins=g_wins; header.losses=g_losses;
    header.records=ArraySize(g_trades);
@@ -281,7 +283,7 @@ bool LoadSimulationCache()
    STradeCacheHeader header; ZeroMemory(header);
    string key,progress;
    bool ok=FileReadStruct(file,header)==sizeof(header);
-   if(ok) ok=(header.finished || (header.nextTF==0 && header.records==0 && header.overlapRecords==0)) && header.magic==0x4D545243 && header.version==28 && header.nextTF>=0 && header.nextTF<=ArraySize(g_setupTFs) &&
+   if(ok) ok=(header.finished || (header.nextTF==0 && header.records==0 && header.overlapRecords==0)) && header.magic==0x4D545243 && header.version==31 && header.nextTF>=0 && header.nextTF<=ArraySize(g_setupTFs) &&
              header.records>=0 && header.records<=1000000 && header.overlapRecords>=0 && header.overlapRecords<=1000000 &&
              (ulong)header.records*sizeof(STradeCacheRecord)+(ulong)header.overlapRecords*sizeof(STradeCacheOverlap)<=FileSize(file) &&
              header.windowEnd>InpStartWindow && header.vicinityTF>0 &&
@@ -726,6 +728,7 @@ int OnInit()
    if(!CMarcoSymbolUnits::Configure(InpPipSizeOverrides)) return INIT_PARAMETERS_INCORRECT;
    CMarcoIndEntryFilter::Configure(InpM1IndEntryFilter);
    CMarcoPivotEntry::Configure(InpEntryTiming);
+   CMarcoLBTFPreference::Configure(InpPreferLowerTFLB);
    if(!MathIsValidNumber(InpFallbackRR) || InpFallbackRR<=0)
      { Print("[TP CONFIG] InpFallbackRR must be positive for staged exits."); return INIT_PARAMETERS_INCORRECT; }
    g_windowEnd = (InpEndWindow == 0 || InpEndWindow > TimeCurrent()) ? TimeCurrent() : InpEndWindow;

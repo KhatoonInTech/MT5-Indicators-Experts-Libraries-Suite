@@ -1,0 +1,303 @@
+﻿// Shared rejection policy. Data collection, detection and order submission stay with callers.
+#ifndef MARCO_TRADE_REJECTION_MQH
+#define MARCO_TRADE_REJECTION_MQH
+
+enum ENUM_TRADE_REJECTION_ACTION { TRADE_ALLOW, TRADE_SKIP_NOW, TRADE_RETIRE_ZONE };
+enum ENUM_TRADE_REJECTION_REASON
+  {
+   REJECT_NONE, REJECT_USED, REJECT_SESSION, REJECT_UNCONFIRMED,
+   REJECT_PRECONF_TOUCH, REJECT_BOUNDARY, REJECT_MULTIPLE_PIVOTS, REJECT_EXPIRED,
+   REJECT_OPPOSING_ORIGIN, REJECT_OPPOSING_CHOCH_LB, REJECT_OVERLAP,
+   REJECT_SL, REJECT_NO_TP, REJECT_RR, REJECT_EXECUTION, REJECT_FORMATION
+  };
+
+struct STradeRejection
+  {
+   ENUM_TRADE_REJECTION_ACTION action;
+   ENUM_TRADE_REJECTION_REASON reason;
+   ENUM_TIMEFRAMES sourceTF;
+   string opposingId;
+   datetime eventTime;
+  };
+
+class CTradeRejection
+  {
+public:
+   static STradeRejection Decision(ENUM_TRADE_REJECTION_ACTION action, ENUM_TRADE_REJECTION_REASON reason)
+     {
+      STradeRejection result;
+      result.action = action; result.reason = reason;
+      result.sourceTF = PERIOD_CURRENT; result.opposingId = ""; result.eventTime = 0;
+      return result;
+     }
+   static bool Used(int touches, bool mitigated) { return touches > 0 || mitigated; }
+   static void Consume(int &touches, int count = 1) { touches = MathMax(touches, count); }
+   static void Mitigate(bool &mitigated, datetime &at, datetime now) { mitigated = true; at = now; }
+   static void Retire(int &touches, bool &mitigated, datetime &at, datetime now)
+     {
+      if(Used(touches, mitigated)) return;
+      touches++;
+      Mitigate(mitigated, at, now);
+     }
+   static bool OutsideSession(datetime origin, datetime created, datetime confirmed, datetime start)
+     { return origin < start || created < start || confirmed < start; }
+   static bool Unconfirmed(datetime confirmedBar, int seconds, datetime now)
+     { return now < confirmedBar + seconds; }
+   static bool PreConfirmation(bool risky, int priceTouches, int pivotTouches, bool broken)
+     { return broken || (!risky && (priceTouches > 0 || pivotTouches > 0)); }
+   static bool BoundaryBroken(bool bull, double low, double high, double zLow, double zHigh, double buffer)
+     { return bull ? low < zLow - buffer : high > zHigh + buffer; }
+   static bool Intersects(double low, double high, double zLow, double zHigh)
+     { return low <= zHigh && high >= zLow; }
+   static bool NearEntry(bool bull, double low, double high, double zLow, double zHigh, double pip, int digits)
+     { return bull ? low <= NormalizeDouble(zHigh + pip, digits) && high >= zLow :
+                    high >= NormalizeDouble(zLow - pip, digits) && low <= zHigh; }
+   static bool DirectEntry(bool bull, double bid, double ask, double zLow, double zHigh, double buffer)
+     { return bull ? ask <= zHigh && bid >= zLow - buffer : bid >= zLow && ask <= zHigh + buffer; }
+   static bool MultiplePivots(int count) { return count > 1; }
+   static bool NeedsPivot(int count) { return count != 1; }
+   static bool Expired(datetime now, datetime confirmation, int seconds)
+     { return now > confirmation + seconds; }
+   static bool M1Expired(datetime lastClosedBar, datetime confirmation)
+     { return lastClosedBar > confirmation - PeriodSeconds(PERIOD_M1); }
+   static bool M1Pivot(bool bull, bool high, datetime pivot, double price, datetime touch,
+                       datetime available, datetime now, double zLow, double zHigh)
+     { return high != bull && pivot >= touch - touch % 60 && price >= zLow && price <= zHigh && available > touch && available <= now; }
+   static bool OriginInside(datetime origin, double price, datetime created, datetime mitigation,
+                            int seconds, double zLow, double zHigh, double buffer)
+     {
+      bool validTime = origin >= created && (mitigation == 0 || origin <= mitigation + seconds);
+      return (validTime || origin == created) && price >= zLow - buffer && price <= zHigh + buffer;
+     }
+   // Direction is an unconditional symbol-level veto, independent of overlap/TP progress.
+   // Callers restrict this to positions that are still open on the candidate symbol.
+   static bool OppositeDirection(bool candidateBull, int openDirection)
+     { return openDirection == (candidateBull ? -1 : 1); }
+   static bool Overlap(bool allowed, double tpDistance, double covered)
+     { return !allowed || tpDistance <= 0.0 || covered < 0.5 * tpDistance; }
+   static bool InvalidSL(bool bull, double entry, double sl)
+     { return bull ? sl >= entry : sl <= entry; }
+   static bool StopTooClose(double risk, double minimum) { return risk <= minimum || risk <= 0.0; }
+   static bool NoTP(double tp) { return tp == 0.0; }
+   static bool LowRR(bool enabled, bool structural, double rr, double minimum)
+     { return enabled && structural && rr < minimum; }
+   static bool SizingInputs(double free, double risk, double step, double minimum, double maximum)
+     { return free > 0 && risk > 0 && step > 0 && minimum > 0 && maximum >= minimum; }
+   static bool MarginFits(double needed, double free) { return needed <= free * 0.90; }
+   static bool CheckPassed(bool checked, uint code)
+     { return checked && (code == 0 || code == TRADE_RETCODE_DONE); }
+   static bool ReserveFits(double remaining, double free) { return remaining + 1e-8 >= free * 0.10; }
+   static bool ExecutionAllowed(bool terminal, bool program, bool account, bool expert, datetime now, datetime next)
+     { return terminal && program && account && expert && now >= next; }
+   static bool ConsumeOrderResult(uint code)
+     { return code == TRADE_RETCODE_PLACED || code == TRADE_RETCODE_DONE || code == TRADE_RETCODE_DONE_PARTIAL || code == TRADE_RETCODE_TIMEOUT; }
+   static bool WrongOrigin(bool strict, bool bull, bool pivotHigh) { return strict && bull == pivotHigh; }
+   static bool ActiveInducementOverlap(bool bull, double low, double high, datetime origin,
+                                       bool indBull, double indLow, double indHigh, datetime formed, datetime mitigated)
+     { return bull == indBull && formed <= origin && (mitigated == 0 || mitigated >= origin) && Intersects(low, high, indLow, indHigh); }
+   static bool Clustered(double low, double high, double otherLow, double otherHigh, double tolerance)
+     { return Intersects(low, high, otherLow - tolerance, otherHigh + tolerance); }
+   static bool SameLB(bool bull, datetime origin, double low, double high, bool otherBull,
+                      datetime otherOrigin, double otherLow, double otherHigh, double tolerance)
+     { return bull == otherBull && (origin == otherOrigin || (MathAbs(low-otherLow) <= tolerance && MathAbs(high-otherHigh) <= tolerance)); }
+   static int RequiredStructures(int minutes) { return minutes <= 5 ? 5 : 3; }
+  };
+
+// Immutable versions preserve the information available during chronological catch-up.
+struct SRejectionEvent
+  {
+   string name;
+   datetime time, available, originTime, until;
+   double originPrice, linePrice;
+  };
+struct SRejectionLB
+  {
+   string id;
+   bool bull, seen, entryVetoed;
+   double low, high;
+   datetime created, mitigation, choch, available, until;
+  };
+
+class CTradeRejectionHistory
+  {
+private:
+   SRejectionEvent events[];
+   SRejectionLB zones[];
+   STradeRejection AllowWithTrace(string reason, bool diagnostics)
+     {
+      if(diagnostics) Print("[CHOCH AUDIT] decision=ALLOW reason=", reason);
+      return CTradeRejection::Decision(TRADE_ALLOW, REJECT_NONE);
+     }
+public:
+   void Reset() { ArrayResize(events, 0); ArrayResize(zones, 0); }
+   void Observe(string name, datetime time, datetime available, datetime originTime, double originPrice, double linePrice = 0.0)
+     {
+      if(time == 0 || name == "") return;
+      int n = ArraySize(events);
+      // A previous event may be reclassified after a newer event is recorded.
+      // Keep its source and an availability-bounded version; do not reorder the market.
+      for(int i=n-1;i>=0;i--)
+         if(events[i].time==time)
+           {
+            if(events[i].name==name) return;
+            originTime=events[i].originTime;
+            originPrice=events[i].originPrice;
+            events[i].until=available;
+            break;
+           }
+      ArrayResize(events, n+1);
+      events[n].name=name; events[n].time=time; events[n].available=available;
+      events[n].originTime=originTime; events[n].originPrice=originPrice;
+      events[n].linePrice=linePrice; events[n].until=0;
+     }
+   int EventCount() { return ArraySize(events); }
+   bool EventAt(int index, datetime now, SRejectionEvent &event)
+     {
+      if(index<0 || index>=ArraySize(events) || events[index].available>now ||
+         (events[index].until>0 && now>=events[index].until)) return false;
+      event=events[index]; return true;
+     }
+   bool Latest(datetime now, SRejectionEvent &event)
+     {
+      bool found=false;
+      for(int i=ArraySize(events)-1;i>=0;i--)
+        {
+         SRejectionEvent candidate;
+         if(!EventAt(i,now,candidate)) continue;
+         if(!found || candidate.time>event.time) { event=candidate; found=true; }
+        }
+      return found;
+     }
+   int ZoneCount() { return ArraySize(zones); }
+   bool ZoneAt(int index, SRejectionLB &zone)
+     {
+      if(index<0 || index>=ArraySize(zones)) return false;
+      zone=zones[index]; return true;
+     }
+   void BeginZones()
+     {
+      for(int i=0; i<ArraySize(zones); i++) zones[i].seen=false;
+     }
+   void Zone(string id, bool bull, double low, double high, datetime created,
+             datetime mitigation, datetime choch, datetime now, bool entryVetoed = false)
+     {
+      for(int i=ArraySize(zones)-1; i>=0; i--)
+        {
+         if(zones[i].id != id || zones[i].until != 0) continue;
+         zones[i].seen=true;
+         if(zones[i].bull==bull && zones[i].low==low && zones[i].high==high &&
+            zones[i].created==created && zones[i].mitigation==mitigation && zones[i].choch==choch && zones[i].entryVetoed==entryVetoed) return;
+         zones[i].until=now;
+         break;
+        }
+      int n=ArraySize(zones); ArrayResize(zones,n+1);
+      zones[n].entryVetoed=entryVetoed;
+      zones[n].id=id; zones[n].bull=bull; zones[n].low=low; zones[n].high=high;
+      zones[n].created=created; zones[n].mitigation=mitigation; zones[n].choch=choch;
+      zones[n].available=now; zones[n].until=0; zones[n].seen=true;
+     }
+   void EndZones(datetime now)
+     {
+      for(int i=0; i<ArraySize(zones); i++)
+         if(zones[i].until==0 && !zones[i].seen) zones[i].until=now;
+     }
+   static int StructureDirection(string name)
+     {
+      if(name=="BL-CHoCH" || name=="BL-BOS" || name=="BSL-Swept") return 1;
+      if(name=="BR-CHoCH" || name=="BR-BOS" || name=="SSL-Swept") return -1;
+      return 0;
+     }
+   bool ActiveSource(const SRejectionLB &lb,bool candidateBull,datetime now,ENUM_TIMEFRAMES tf)
+     {
+      return lb.bull!=candidateBull && lb.available<=now && (lb.until==0 || now<lb.until) &&
+             (lb.mitigation==0 || now<lb.mitigation+PeriodSeconds(tf));
+     }
+   // Consult the same available/qualified LB snapshots as structural prevention.
+   bool IncomingLeg(bool candidateBull,datetime origin,double price,datetime now,
+                    ENUM_TIMEFRAMES tf,double buffer,string &id)
+     {
+      id="";
+      if(origin<=0 || origin>now) return false;
+      for(int b=ArraySize(zones)-1;b>=0;b--)
+        {
+         SRejectionLB lb=zones[b];
+         if(!ActiveSource(lb,candidateBull,now,tf)) continue;
+         if(CTradeRejection::OriginInside(origin,price,lb.created,lb.mitigation,PeriodSeconds(tf),lb.low,lb.high,buffer))
+           { id=lb.id; return true; }
+        }
+      return false;
+     }
+   // Name retained for existing callers. The veto follows an uninterrupted
+   // opposing CHoCH/BOS/sweep sequence, not just an immediately latest CHoCH.
+   STradeRejection OpposingChoch(bool candidateBull, datetime legOrigin, datetime legEnd,
+                                datetime touch, datetime now, ENUM_TIMEFRAMES tf, double buffer, bool diagnostics = false)
+     {
+      STradeRejection result=CTradeRejection::Decision(TRADE_ALLOW, REJECT_NONE);
+      if(diagnostics)
+         PrintFormat("[CHOCH AUDIT] source=%s target=%s at=%s touch=%s leg_origin=%s leg_end=%s",
+                     EnumToString(tf), candidateBull ? "BL-LB" : "BR-LB", TimeToString(now, TIME_DATE|TIME_SECONDS),
+                     TimeToString(touch, TIME_DATE|TIME_SECONDS), TimeToString(legOrigin, TIME_DATE|TIME_SECONDS),
+                     TimeToString(legEnd, TIME_DATE|TIME_SECONDS));
+      if(touch==0) return AllowWithTrace("NO_RECORDED_TOUCH", diagnostics);
+      if(now<touch) return AllowWithTrace("TOUCH_NOT_YET_AVAILABLE", diagnostics);
+      if(legOrigin==0) return AllowWithTrace("NO_MATCHING_INCOMING_LEG", diagnostics);
+      if(legOrigin>touch) return AllowWithTrace("LEG_STARTED_AFTER_RECORDED_TOUCH", diagnostics);
+      SRejectionEvent latest;
+      if(!Latest(now,latest)) return AllowWithTrace("NO_AVAILABLE_STRUCTURE", diagnostics);
+      int opposing=candidateBull ? -1 : 1;
+      if(diagnostics)
+         PrintFormat("[CHOCH AUDIT] latest=%s event=%s available=%s source_pivot=%s source_price=%.8f",
+                     latest.name, TimeToString(latest.time, TIME_DATE|TIME_SECONDS), TimeToString(latest.available, TIME_DATE|TIME_SECONDS),
+                     TimeToString(latest.originTime, TIME_DATE|TIME_SECONDS), latest.originPrice);
+      if(StructureDirection(latest.name)!=opposing)
+         return AllowWithTrace("LATEST_STRUCTURE_IS_NOT_OPPOSING", diagnostics);
+      if(legEnd>0 && latest.time>legEnd)
+         return AllowWithTrace("STRUCTURE_AFTER_TOUCHING_LEG_ENDED", diagnostics);
+      SRejectionEvent ev=latest;
+      for(int chain=0;chain<ArraySize(events);chain++)
+        {
+         // A candidate-direction event or reclassification ends the chain.
+         if(StructureDirection(ev.name)!=opposing) break;
+         if(ev.originTime>0 && ev.originTime<=legOrigin)
+            for(int b=ArraySize(zones)-1;b>=0;b--)
+              {
+               SRejectionLB lb=zones[b];
+               if(!ActiveSource(lb,candidateBull,now,tf)) continue;
+               bool produced=lb.choch==ev.time;
+               bool stemmed=false;
+               if(!produced)
+                  for(int v=b;v>=0;v--)
+                    {
+                     SRejectionLB source=zones[v];
+                     if(source.id!=lb.id || source.available>ev.available ||
+                        (source.until>0 && ev.available>=source.until)) continue;
+                     stemmed=CTradeRejection::OriginInside(ev.originTime,ev.originPrice,source.created,
+                               source.mitigation,PeriodSeconds(tf),source.low,source.high,buffer);
+                     break;
+                    }
+               if(!produced && !stemmed) continue;
+               result.action=TRADE_RETIRE_ZONE; result.reason=REJECT_OPPOSING_CHOCH_LB;
+               result.sourceTF=tf; result.opposingId=lb.id; result.eventTime=ev.time;
+               if(diagnostics)
+                  PrintFormat("[CHOCH AUDIT] decision=REJECT reason=OPPOSING_STRUCTURE_LB source=%s LB=%s latest=%s linked=%s linked_at=%s origin=%s price=%.8f",
+                              EnumToString(tf),lb.id,latest.name,ev.name,TimeToString(ev.time,TIME_DATE|TIME_SECONDS),
+                              TimeToString(ev.originTime,TIME_DATE|TIME_SECONDS),ev.originPrice);
+               return result;
+              }
+         // Event revisions are appended out of order. Select the preceding event
+         // by its structural time, using only the version available at entry.
+         SRejectionEvent previous; bool found=false;
+         for(int e=ArraySize(events)-1;e>=0;e--)
+           {
+            SRejectionEvent candidate;
+            if(!EventAt(e,now,candidate) || candidate.time>=ev.time) continue;
+            if(!found || candidate.time>previous.time) { previous=candidate; found=true; }
+           }
+         if(!found) break;
+         ev=previous;
+        }
+      return AllowWithTrace("NO_ACTIVE_OPPOSING_LB_LINKED_TO_STRUCTURE_CHAIN", diagnostics);
+     }
+
+  };
+#endif

@@ -1,0 +1,49 @@
+Pre-entry opposing-structure continuation extension
+
+Enabled only through the existing InpApplyEntryLBPolicyToPreventionExits=true path.
+Existing post-entry table verified and preserved:
+TP -> TP: 25% then 25% of remainder; TP -> SL: 25% then all remaining.
+SL -> SL: 50% then all remaining; SL -> TP: 50% then keep remainder.
+
+Extension: the latest linked opposing structure known when the trade opens may
+serve as the first event. Its adjacent opposing structure on the SAME timeframe,
+confirmed after entry, closes all remaining volume when execution price is in
+loss (buy Bid < entry, sell Ask > entry). No pre-entry partial is fabricated.
+Both M1 and setup TF are checked. A full continuation takes priority over a new
+ordinary partial on the other TF within the same processing cycle. Existing
+already-started post-entry sequences retain their timeframe and behavior.
+IND and sweep-based sources use the same existing raw causal LB history.
+Direction changes, unlinked sources, already-seen events, future-only links,
+and opposite reclassifications cannot qualify this extension.
+At profit or exact entry price, the added full-close rule does not trigger.
+
+VALIDATION
+Baseline: 294 opposing-sequence assertions passed before edits.
+Updated opposing sequence + actual live/backtest observer methods: 1028 assertions passed.
+Structural exit policy: 56 checks passed.
+Staged TP / durable broker retries: 12534 assertions passed.
+Indicator cache lifecycle: 74 checks passed.
+Opposing entry prevention: 59 checks passed; mutation regression passed.
+Entry-trigger structures: 108 assertions passed.
+All three consumers compiled: zero errors. Live has zero warnings; simulator
+and backtest EA each retain the same 12 pre-existing shadowing warnings.
+No MT5 market-data replay or real-broker order execution was performed in this task.
+
+Versions: live EA 1.50; backtest EA 1.71; simulator indicator 2.29 / cache 29.
+ZigZag headers, normal TP/BE policy, input defaults, LB qualification and entry
+prevention unchanged. No latency changes were made.
+No fixed-size trade-state or serialization layout changes.
+
+CHANGED SOURCE FILES
+Include\Custom\Marcotrades\marco_backtest.mqh
+Include\Custom\Marcotrades\marco_live_auto.mqh
+Include\Custom\Marcotrades\opposing_sequence.mqh
+Experts\Custom EAs\Backtesting\marco_backtest_ea.mq5
+Experts\Custom EAs\Marcotrades\marco_live_auto_ea.mq5
+Indicators\Custom\Marcotrades\marco_backtest_trades.mq5
+Tests\Marcotrades\run_opposing_sequence_tests.py
+
+REBUILT BINARIES
+Experts\Custom EAs\Marcotrades\marco_live_auto_ea.ex5
+Experts\Custom EAs\Backtesting\marco_backtest_ea.ex5
+Indicators\Custom\Marcotrades\marco_backtest_trades.ex5

@@ -1,0 +1,11 @@
+{
+  "fixture": "us30_20261112_m1.csv",
+  "merge": false,
+  "entry_policy": false,
+  "repetitions": 7,
+  "baseline_median_ms": 32811.972,
+  "optimized_median_ms": 7273.865,
+  "trace_equal": true,
+  "measurement": "Offline C++ adaptation of unchanged ZigZag and production M1 context; calculation time only, excludes trace I/O; concurrent builds were active.",
+  "source": "Completed first scenario of initial benchmark command; remaining repeated timings stopped in favor of parity-only runs."
+}

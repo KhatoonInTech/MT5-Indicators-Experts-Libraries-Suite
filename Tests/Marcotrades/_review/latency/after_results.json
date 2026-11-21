@@ -1,0 +1,102 @@
+[
+  {
+    "test": "run_broker_execution_tests.py",
+    "code": 0,
+    "seconds": 6.53081399993971
+  },
+  {
+    "test": "run_daily_log_tests.py",
+    "code": 1,
+    "seconds": 5.221428399905562
+  },
+  {
+    "test": "run_entry_sizing_tests.py",
+    "code": 0,
+    "seconds": 6.468817199929617
+  },
+  {
+    "test": "run_entry_trigger_structure_tests.py",
+    "code": 0,
+    "seconds": 10.04693099996075
+  },
+  {
+    "test": "run_history_context_tests.py",
+    "code": 1,
+    "seconds": 1.6746814000653103
+  },
+  {
+    "test": "run_ind_structure_tests.py",
+    "code": 0,
+    "seconds": 8.434761199983768
+  },
+  {
+    "test": "run_indicator_cache_tests.py",
+    "code": 1,
+    "seconds": 1.92450139997527
+  },
+  {
+    "test": "run_lb_cluster_tests.py",
+    "code": 1,
+    "seconds": 0.2894747999962419
+  },
+  {
+    "test": "run_lb_extension_tests.py",
+    "code": 0,
+    "seconds": 6.814062400022522
+  },
+  {
+    "test": "run_liquidity_warmup_tests.py",
+    "code": 0,
+    "seconds": 4.661882399930619
+  },
+  {
+    "test": "run_m1_touch_tests.py",
+    "code": 0,
+    "seconds": 25.11058460001368
+  },
+  {
+    "test": "run_opposing_entry_tests.py",
+    "code": 0,
+    "seconds": 15.285001099924557
+  },
+  {
+    "test": "run_opposing_sequence_tests.py",
+    "code": 0,
+    "seconds": 8.409542900044471
+  },
+  {
+    "test": "run_opposite_position_tests.py",
+    "code": 0,
+    "seconds": 8.9800398000516
+  },
+  {
+    "test": "run_pivot_entry_tests.py",
+    "code": 0,
+    "seconds": 4.460652100038715
+  },
+  {
+    "test": "run_staged_tp_tests.py",
+    "code": 0,
+    "seconds": 7.905361499986611
+  },
+  {
+    "test": "run_structure_exit_tests.py",
+    "code": 0,
+    "seconds": 7.536581099964678
+  },
+  {
+    "test": "run_structure_only_tests.py",
+    "code": 0,
+    "seconds": 24.771644499967806
+  },
+  {
+    "test": "run_symbol_units_tests.py",
+    "code": 0,
+    "seconds": 6.7791670999722555
+  },
+  {
+    "test": "run_zone_context_tests.py",
+    "code": 0,
+    "seconds": 6.292001799913123
+  }
+]

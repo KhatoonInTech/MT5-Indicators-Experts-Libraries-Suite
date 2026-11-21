@@ -1,0 +1,1 @@
+PASS: 88 shared IND before/after structure checks (both directions, causal cutoff, qualification, clustering)

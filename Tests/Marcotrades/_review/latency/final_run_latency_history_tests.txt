@@ -1,0 +1,2 @@
+1963236 differential history assertions passed
+Latest lookup microbenchmark: baseline_ms=4444.02 indexed_ms=1.511

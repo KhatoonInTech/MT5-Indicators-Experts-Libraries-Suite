@@ -1,0 +1,1 @@
+PASS: 56 structural-exit checks (both directions, causal links, time availability, overlap, precedence)

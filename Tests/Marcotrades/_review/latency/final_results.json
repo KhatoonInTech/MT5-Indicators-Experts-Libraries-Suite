@@ -1,0 +1,116 @@
+[
+  {
+    "test": "run_broker_execution_tests.py",
+    "code": 0,
+    "seconds": 6.097988900030032
+  },
+  {
+    "test": "run_calculation_pool_tests.py",
+    "code": 0,
+    "seconds": 4.777541400049813
+  },
+  {
+    "test": "run_daily_log_tests.py",
+    "code": 0,
+    "seconds": 8.978509600041434
+  },
+  {
+    "test": "run_entry_sizing_tests.py",
+    "code": 0,
+    "seconds": 6.005923999939114
+  },
+  {
+    "test": "run_entry_trigger_structure_tests.py",
+    "code": 0,
+    "seconds": 12.073357400018722
+  },
+  {
+    "test": "run_history_context_tests.py",
+    "code": 0,
+    "seconds": 16.376733299926855
+  },
+  {
+    "test": "run_ind_structure_tests.py",
+    "code": 0,
+    "seconds": 7.86172639997676
+  },
+  {
+    "test": "run_indicator_cache_tests.py",
+    "code": 0,
+    "seconds": 9.198972299927846
+  },
+  {
+    "test": "run_latency_history_tests.py",
+    "code": 0,
+    "seconds": 13.022365000098944
+  },
+  {
+    "test": "run_lb_cluster_tests.py",
+    "code": 0,
+    "seconds": 18.25621499994304
+  },
+  {
+    "test": "run_lb_extension_tests.py",
+    "code": 0,
+    "seconds": 7.0030083999736235
+  },
+  {
+    "test": "run_liquidity_warmup_tests.py",
+    "code": 0,
+    "seconds": 4.127231699996628
+  },
+  {
+    "test": "run_m1_touch_tests.py",
+    "code": 0,
+    "seconds": 24.897578800097108
+  },
+  {
+    "test": "run_opposing_entry_tests.py",
+    "code": 0,
+    "seconds": 16.441090800100937
+  },
+  {
+    "test": "run_opposing_sequence_tests.py",
+    "code": 0,
+    "seconds": 9.0788699000841
+  },
+  {
+    "test": "run_opposite_position_tests.py",
+    "code": 0,
+    "seconds": 8.544541199924424
+  },
+  {
+    "test": "run_pivot_entry_tests.py",
+    "code": 0,
+    "seconds": 3.783917599939741
+  },
+  {
+    "test": "run_staged_tp_tests.py",
+    "code": 0,
+    "seconds": 8.091842800029553
+  },
+  {
+    "test": "run_structure_exit_tests.py",
+    "code": 0,
+    "seconds": 7.097990599926561
+  },
+  {
+    "test": "run_structure_only_tests.py",
+    "code": 0,
+    "seconds": 26.83221180003602
+  },
+  {
+    "test": "run_symbol_units_tests.py",
+    "code": 0,
+    "seconds": 5.922495699953288
+  },
+  {
+    "test": "run_zone_context_tests.py",
+    "code": 0,
+    "seconds": 5.769885699963197
+  },
+  {
+    "test": "run_live_schedule_tests.py",
+    "code": 0
+  }
+]

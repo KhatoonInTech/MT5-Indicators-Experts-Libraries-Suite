@@ -1,0 +1,2 @@
+PASS: 334 LB cluster, persistence and chronological scheduling checks
+PASS: premature cluster retirement mutation rejected

@@ -3279,6 +3279,26 @@ public:
       return found;
      }
    int ZoneCount() { return ArraySize(zones); }
+   // Qualification for a fresh IND LB in a rejection-only cluster. The causal
+   // event and its immediate successor must both belong to the new origin's
+   // direction. Availability is preserved; future structures cannot qualify it.
+   datetime FreshClusterQualification(bool bull,datetime origin,datetime cause,datetime now)
+     {
+      if(origin<=0 || cause<origin) return 0;
+      int direction=bull ? 1 : -1;
+      SRejectionEvent first,next; bool haveFirst=false,haveNext=false;
+      for(int i=0;i<ArraySize(events);i++)
+        {
+         SRejectionEvent event;
+         if(!EventAt(i,now,event)) continue;
+         if(event.time==cause) { first=event; haveFirst=true; }
+         if(event.time<=cause || StructureDirection(event.name)==0) continue;
+         if(!haveNext || event.time<next.time) { next=event; haveNext=true; }
+        }
+      if(!haveFirst || !haveNext || StructureDirection(first.name)!=direction ||
+         StructureDirection(next.name)!=direction) return 0;
+      return MathMax(first.available,next.available);
+     }
    bool ZoneAt(int index, SRejectionLB &zone)
      {
       if(index<0 || index>=ArraySize(zones)) return false;
@@ -3311,6 +3331,34 @@ public:
       for(int i=0; i<ArraySize(zones); i++)
          if(zones[i].until==0 && !zones[i].seen) zones[i].until=now;
      }
+   static int StructureDirection(string name)
+     {
+      if(name=="BL-CHoCH" || name=="BL-BOS" || name=="BSL-Swept") return 1;
+      if(name=="BR-CHoCH" || name=="BR-BOS" || name=="SSL-Swept") return -1;
+      return 0;
+     }
+   bool ActiveSource(const SRejectionLB &lb,bool candidateBull,datetime now,ENUM_TIMEFRAMES tf)
+     {
+      return lb->bull!=candidateBull && lb->available<=now && (lb->until==0 || now<lb->until) &&
+             (lb->mitigation==0 || now<lb->mitigation+PeriodSeconds(tf));
+     }
+   // Consult the same available/qualified LB snapshots as structural prevention.
+   bool IncomingLeg(bool candidateBull,datetime origin,double price,datetime now,
+                    ENUM_TIMEFRAMES tf,double buffer,string &id)
+     {
+      id="";
+      if(origin<=0 || origin>now) return false;
+      for(int b=ArraySize(zones)-1;b>=0;b--)
+        {
+         SRejectionLB lb=zones[b];
+         if(!ActiveSource(lb,candidateBull,now,tf)) continue;
+         if(CTradeRejection::OriginInside(origin,price,lb->created,lb->mitigation,PeriodSeconds(tf),lb->low,lb->high,buffer))
+           { id=lb->id; return true; }
+        }
+      return false;
+     }
+   // Name retained for existing callers. The veto follows an uninterrupted
+   // opposing CHoCH/BOS/sweep sequence, not just an immediately latest CHoCH.
    STradeRejection OpposingChoch(bool candidateBull, datetime legOrigin, datetime legEnd,
                                 datetime touch, datetime now, ENUM_TIMEFRAMES tf, double buffer, bool diagnostics = false)
      {
@@ -3324,52 +3372,63 @@ public:
       if(now<touch) return AllowWithTrace("TOUCH_NOT_YET_AVAILABLE", diagnostics);
       if(legOrigin==0) return AllowWithTrace("NO_MATCHING_INCOMING_LEG", diagnostics);
       if(legOrigin>touch) return AllowWithTrace("LEG_STARTED_AFTER_RECORDED_TOUCH", diagnostics);
-      SRejectionEvent ev;
-      if(!Latest(now,ev)) return AllowWithTrace("NO_AVAILABLE_STRUCTURE", diagnostics);
+      SRejectionEvent latest;
+      if(!Latest(now,latest)) return AllowWithTrace("NO_AVAILABLE_STRUCTURE", diagnostics);
+      int opposing=candidateBull ? -1 : 1;
       if(diagnostics)
          PrintFormat("[CHOCH AUDIT] latest=%s event=%s available=%s source_pivot=%s source_price=%.8f",
-                     ev.name, TimeToString(ev.time, TIME_DATE|TIME_SECONDS), TimeToString(ev.available, TIME_DATE|TIME_SECONDS),
-                     TimeToString(ev.originTime, TIME_DATE|TIME_SECONDS), ev.originPrice);
-      if(ev.name != (candidateBull ? "BR-CHoCH" : "BL-CHoCH"))
-         return AllowWithTrace("LATEST_STRUCTURE_IS_NOT_OPPOSING_CHOCH", diagnostics);
-      // The latest CHoCH remains the structural context across intervening pullbacks.
-      // Its source pivot may precede the final touching leg; the CHoCH need not occur inside that leg.
-      // A later structure is already excluded by selecting only the latest available event above.
-      if(ev.originTime==0) return AllowWithTrace("NO_CHOCH_SOURCE_PIVOT", diagnostics);
-      if(ev.originTime>legOrigin) return AllowWithTrace("CHOCH_SOURCE_AFTER_INCOMING_LEG_ORIGIN", diagnostics);
-      if(legEnd>0 && ev.time>legEnd) return AllowWithTrace("CHOCH_AFTER_TOUCHING_LEG_ENDED", diagnostics);
-      // An IND-vetoed LB cannot be traded, but its causal opposing structure still blocks entry.
-      int knownOpposing = 0;
-      for(int b=ArraySize(zones)-1;b>=0;b--)
+                     latest.name, TimeToString(latest.time, TIME_DATE|TIME_SECONDS), TimeToString(latest.available, TIME_DATE|TIME_SECONDS),
+                     TimeToString(latest.originTime, TIME_DATE|TIME_SECONDS), latest.originPrice);
+      if(StructureDirection(latest.name)!=opposing)
+         return AllowWithTrace("LATEST_STRUCTURE_IS_NOT_OPPOSING", diagnostics);
+      if(legEnd>0 && latest.time>legEnd)
+         return AllowWithTrace("STRUCTURE_AFTER_TOUCHING_LEG_ENDED", diagnostics);
+      SRejectionEvent ev=latest;
+      for(int chain=0;chain<ArraySize(events);chain++)
         {
-         SRejectionLB lb=zones[b];
-         if(lb->bull==candidateBull || lb->available>now || (lb->until>0 && now>=lb->until)) continue;
-         knownOpposing++;
-         bool produced=lb->choch==ev.time;
-         bool stemmed=false;
-         if(!produced)
-            for(int v=b; v>=0; v--)
+         // A candidate-direction event or reclassification ends the chain.
+         if(StructureDirection(ev.name)!=opposing) break;
+         if(ev.originTime>0 && ev.originTime<=legOrigin)
+            for(int b=ArraySize(zones)-1;b>=0;b--)
               {
-               SRejectionLB source=zones[v];
-               if(source->id!=lb->id || source->available>ev.available ||
-                  (source->until>0 && ev.available>=source->until)) continue;
-               stemmed=CTradeRejection::OriginInside(ev.originTime, ev.originPrice, source->created,
-                         source->mitigation, PeriodSeconds(tf), source->low, source->high, buffer);
-               break;
+               SRejectionLB lb=zones[b];
+               if(!ActiveSource(lb,candidateBull,now,tf)) continue;
+               bool produced=lb->choch==ev.time;
+               bool stemmed=false;
+               if(!produced)
+                  for(int v=b;v>=0;v--)
+                    {
+                     SRejectionLB source=zones[v];
+                     if(source->id!=lb->id || source->available>ev.available ||
+                        (source->until>0 && ev.available>=source->until)) continue;
+                     stemmed=CTradeRejection::OriginInside(ev.originTime,ev.originPrice,source->created,
+                               source->mitigation,PeriodSeconds(tf),source->low,source->high,buffer);
+                     break;
+                    }
+               if(!produced && !stemmed) continue;
+               result->action=TRADE_RETIRE_ZONE; result->reason=REJECT_OPPOSING_CHOCH_LB;
+               result->sourceTF=tf; result->opposingId=lb->id; result->eventTime=ev.time;
+               if(diagnostics)
+                  PrintFormat("[CHOCH AUDIT] decision=REJECT reason=OPPOSING_STRUCTURE_LB source=%s LB=%s latest=%s linked=%s linked_at=%s origin=%s price=%.8f",
+                              EnumToString(tf),lb->id,latest.name,ev.name,TimeToString(ev.time,TIME_DATE|TIME_SECONDS),
+                              TimeToString(ev.originTime,TIME_DATE|TIME_SECONDS),ev.originPrice);
+               return result;
               }
-         if(diagnostics)
-            PrintFormat("[CHOCH AUDIT] opposing=%s created=%s available=%s zone=[%.8f,%.8f] causal_choch=%s produced=%s stemmed=%s",
-                        lb->id, TimeToString(lb->created, TIME_DATE|TIME_SECONDS), TimeToString(lb->available, TIME_DATE|TIME_SECONDS),
-                        lb->low, lb->high, TimeToString(lb->choch, TIME_DATE|TIME_SECONDS), produced ? "true" : "false", stemmed ? "true" : "false");
-         if(!produced && !stemmed) continue;
-         result->action=TRADE_RETIRE_ZONE; result->reason=REJECT_OPPOSING_CHOCH_LB;
-         result->sourceTF=tf; result->opposingId=lb->id; result->eventTime=ev.time;
-         if(diagnostics) Print("[CHOCH AUDIT] decision=REJECT reason=OPPOSING_CHOCH_LB");
-         return result;
+         // Event revisions are appended out of order. Select the preceding event
+         // by its structural time, using only the version available at entry.
+         SRejectionEvent previous; bool found=false;
+         for(int e=ArraySize(events)-1;e>=0;e--)
+           {
+            SRejectionEvent candidate;
+            if(!EventAt(e,now,candidate) || candidate.time>=ev.time) continue;
+            if(!found || candidate.time>previous.time) { previous=candidate; found=true; }
+           }
+         if(!found) break;
+         ev=previous;
         }
-      if(diagnostics) PrintFormat("[CHOCH AUDIT] known_opposing_LBs=%d", knownOpposing);
-      return AllowWithTrace("NO_AVAILABLE_OPPOSING_LB_LINKED_TO_CHOCH", diagnostics);
+      return AllowWithTrace("NO_ACTIVE_OPPOSING_LB_LINKED_TO_STRUCTURE_CHAIN", diagnostics);
      }
+
   };
 #endif
 
@@ -3972,6 +4031,7 @@ public:
    datetime          sweepLineTime;
    datetime          inducementOriginTime;
    datetime          causalChochTime; // Event which initiated this LB, distinct from its origin candle.
+   datetime          guardQualifiedTime; // Structural eligibility, independent of the new-entry IND veto.
 
    bool              isMitigated;
    datetime          mitigationTime;
@@ -3992,6 +4052,7 @@ public:
       sweepLineTime        = 0;
       inducementOriginTime = 0;
       causalChochTime = 0;
+      guardQualifiedTime = 0;
       isMitigated          = false;
       mitigationTime       = 0;
       mitigationBarIndex   = 0;
@@ -4271,6 +4332,28 @@ public:
             consecutive = 0;
         }
       return 0;
+     }
+
+   // IND overlap forbids opening a trade from this source; it does not erase
+   // its opposing structural context. Apply the requested structure gate before
+   // admitting it to prevention history, and never backdate availability.
+   bool GuardSourceReady(CLiquidityBlock* source,CInducementLogic* inducements,
+                         CMarketStructure* structure,datetime cutoff,datetime available,
+                         bool applyPolicy)
+     {
+      if(source==NULL || available<=0 || cutoff>available) return false;
+      if(!applyPolicy) return true;
+      if(source->guardQualifiedTime<=0)
+        {
+         datetime qualified=EntryTriggerStructureTime(source->isBullish,source->triggerType,
+                                source->sweepLineTime,inducements,structure,cutoff);
+         if(qualified<=0) return false;
+         source->guardQualifiedTime=available;
+         PrintFormat("[LB GUARD ARMED] source=%s side=%s trigger=%s structure=%s available=%s; entry remains vetoed by IND overlap",
+                     source->id,source->isBullish ? "BL" : "BR",EnumToString(source->triggerType),
+                     TimeToString(qualified,TIME_DATE|TIME_SECONDS),TimeToString(available,TIME_DATE|TIME_SECONDS));
+        }
+      return source->guardQualifiedTime<=available;
      }
 
    CLiquidityBlock*  GetContainingLiquidityBlock(CInducementZone* ind)
@@ -5263,7 +5346,8 @@ public:
      }
 
    // A stage closes a share of ORIGINAL volume, never a share of the remainder.
-   static double Exit(SMarcoTPPlan &plan, int stage, double fraction, double price, datetime time)
+   static double Exit(SMarcoTPPlan &plan, int stage, double fraction, double price, datetime time,
+                      bool normalTarget=true)
      {
       fraction = MathMin(fraction, plan.remaining);
       if(stage>=0) fraction=MathMin(fraction, plan.fraction[stage]-plan.closed[stage]);
@@ -5276,7 +5360,23 @@ public:
          plan.exitPrice[stage]=(plan.exitPrice[stage]*plan.closed[stage]+price*fraction)/(plan.closed[stage]+fraction);
          plan.closed[stage]+=fraction;
          plan.exitTime[stage]=time;
-         plan.breakeven=true;
+         // Only the normal, entry-time TP allocation is subject to this gate.
+         // Structure exits can redistribute fractions and LB extensions have
+         // their own stop rules; preserve their existing later-TP behaviour.
+         bool otherScenario=!normalTarget || plan.extensionCount>0 ||
+                            plan.structureClosed[0]>0 || plan.structureClosed[1]>0 ||
+                            plan.sequence.closed[0]>0 || plan.sequence.closed[1]>0;
+         // Until another scenario intervenes, fractions are the frozen entry
+         // allocations: 50/25/25 or 75/25. The exception is two fully closed
+         // quarter targets: together they protect the remaining half at BE.
+         // A touch or an incomplete broker execution does not complete a stage.
+         int completedQuarters=0;
+         for(int i=0;i<plan.count;i++)
+            if(MathAbs(plan.fraction[i]-0.25)<1e-9 &&
+               plan.closed[i]+1e-9>=plan.fraction[i]) completedQuarters++;
+         if(otherScenario || completedQuarters>=2 || (plan.fraction[stage]>=0.5 &&
+                              plan.closed[stage]+1e-9>=plan.fraction[stage]))
+            plan.breakeven=true;
         }
       return reward;
      }
@@ -5375,7 +5475,7 @@ public:
             if(plan.vicinityTime[i]>0 &&
                plan.closed[i]+1e-9<plan.fraction[i])
               {
-               Exit(plan,i,plan.fraction[i]-plan.closed[i],close,time);
+               Exit(plan,i,plan.fraction[i]-plan.closed[i],close,time,false);
                lastExit=close;
               }
      }
@@ -5523,12 +5623,57 @@ public:
       return false;
      }
 
+   // The first linked event may already be known when the position opens.
+   // Consult its entry-time version, never a link/label discovered afterwards.
+   // No historical partial is invented: only its adjacent post-entry opposing
+   // event can request a full close, and only at an executable losing price.
+   static bool PreEntryContinuation(CTradeRejectionHistory &history, int slot,
+                                     ENUM_TIMEFRAMES tf, int direction, double entry,
+                                     double executionPrice, datetime opened, datetime now,
+                                     SMarcoOpposingSequence &state, SMarcoSequenceSignal &result)
+     {
+      if(state.step!=0 || state.pending || now<=opened || direction*(executionPrice-entry)>=0) return false;
+      SRejectionEvent first; bool found=false;
+      for(int i=0;i<history.EventCount();i++)
+        {
+         SRejectionEvent event;
+         if(!history.EventAt(i,opened,event) || Direction(event.name)==0) continue;
+         if(!found || event.time>first.time) { first=event; found=true; }
+        }
+      string id;
+      if(!found || first.time>=opened || Direction(first.name)!=-direction ||
+         !Source(history,first,-direction,tf,id)) return false;
+      // A later reclassification reversing the first event cancels its chain.
+      bool stillOpposing=false;
+      SRejectionEvent next; found=false;
+      for(int i=0;i<history.EventCount();i++)
+        {
+         SRejectionEvent event;
+         if(!history.EventAt(i,now,event)) continue;
+         if(event.time==first.time) stillOpposing=Direction(event.name)==-direction;
+         if(event.time<=first.time || Direction(event.name)==0) continue;
+         if(!found || event.time<next.time) { next=event; found=true; }
+        }
+      if(!stillOpposing || !found || next.available<=opened || next.time<=state.seen[slot] ||
+         Direction(next.name)!=-direction) return false;
+      state.seen[slot]=next.time;
+      state.step=2; state.tf=(int)tf; state.firstEvent=first.time; state.firstProfit=false;
+      state.pending=true; state.share=1.0; state.requestedLots=0;
+      result->action=2; result->step=2; result->tf=(int)tf; result->eventTime=next.time;
+      result->lbId=id; result->share=1.0; result->profit=false;
+      PrintFormat("[PRE-ENTRY OPPOSING CONTINUATION] source=%s LB=%s first=%s opened=%s second=%s region=SL share=100%%",
+                  EnumToString(tf),id,TimeToString(first.time,TIME_DATE|TIME_SECONDS),
+                  TimeToString(opened,TIME_DATE|TIME_SECONDS),TimeToString(next.time,TIME_DATE|TIME_SECONDS));
+      return true;
+     }
+
    static SMarcoSequenceSignal Advance(CTradeRejectionHistory &history, SMarcoOpposingSequence &state,
                                        int slot, ENUM_TIMEFRAMES tf, int direction, double entry,
-                                       double executionPrice, datetime opened, datetime now)
+                                       double executionPrice, datetime opened, datetime now, bool checkPreEntry=true)
      {
       SMarcoSequenceSignal result; ZeroMemory(result);
       if(state.pending || state.step>=2 || (state.step==1 && state.tf!=(int)tf)) return result;
+      if(checkPreEntry && PreEntryContinuation(history,slot,tf,direction,entry,executionPrice,opened,now,state,result)) return result;
       // Select by event time, not insertion order: label revisions are appended
       // to history but must never become another first/second structure->
       for(int pass=0;pass<history.EventCount();pass++)
@@ -5723,15 +5868,15 @@ public:
                                   available, (datetime)ms->all_event_origin_times.At(e), ms->all_event_origin_prices.At(e),
                                   ms->all_event_prices.At(e));
       rejectionHistory.BeginZones();
-      // Entry-vetoed raw sources remain guardrails only when the optional entry policy is disabled.
-      if(!applyEntryPolicyToPreventionExits)
-         for(int b=0;b<lbs->m_exit_sources.Total();b++)
-           {
-            CLiquidityBlock* source=(CLiquidityBlock*)lbs->m_exit_sources.At(b);
-            if(source!=NULL)
-               rejectionHistory.Zone(source->id,source->isBullish,source->zoneLow,source->zoneHigh,source->createdTime,
-                            source->mitigationTime,source->causalChochTime,available,true);
-           }
+      // An IND-vetoed source can protect against opposing entries after its
+      // structural gate qualifies; it remains unavailable as an entry setup.
+      for(int b=0;b<lbs->m_exit_sources.Total();b++)
+        {
+         CLiquidityBlock* source=(CLiquidityBlock*)lbs->m_exit_sources.At(b);
+         if(lbs->GuardSourceReady(source,ind,ms,barTime,available,applyEntryPolicyToPreventionExits))
+            rejectionHistory.Zone(source->id,source->isBullish,source->zoneLow,source->zoneHigh,source->createdTime,
+                                  source->mitigationTime,source->causalChochTime,available,true);
+        }
       for(int b = 0; b < lbs->m_liquidity_blocks.Total(); b++)
         {
          CLiquidityBlock* lb = (CLiquidityBlock*)lbs->m_liquidity_blocks.At(b);

@@ -1,0 +1,703 @@
+{
+  "status": "Rollback complete to pre-latency source snapshot",
+  "baseline_source_files_verified": 141,
+  "restored_files": 15,
+  "removed_new_files": 8,
+  "successful_rebuilds": 32,
+  "sources": [
+    {
+      "file": "Include/Custom/General/Anchored_VWAP.mqh",
+      "sha256": "9fa8746c6b2baafff79951b025b033dc7bbe28d4c9adad1a8d238daf98e35b42"
+    },
+    {
+      "file": "Include/Custom/General/bar_replay.mqh",
+      "sha256": "3ccabf2b819e62696e5e9645ad15da4edc7fb443a0919b2ad7afdeff30813530"
+    },
+    {
+      "file": "Include/Custom/General/daily_log.mqh",
+      "sha256": "e78604e968c9fbb4ba523dc1d2c034600f6a59b94b03ccfb214639fb99d510ae"
+    },
+    {
+      "file": "Include/Custom/General/mq5_dashboard.mqh",
+      "sha256": "931a3eb03d511dab7f8cbc788f39f0a4848051a0d576f590432265de1ab2c6e0"
+    },
+    {
+      "file": "Include/Custom/General/mql_plotting.mqh",
+      "sha256": "37260d0b1d2664971319315e991b2599059c667328105012e4e93f43321c63d7"
+    },
+    {
+      "file": "Include/Custom/General/poc_analyzer.mqh",
+      "sha256": "d4ca36baf27bd52f2776878abb2c99364e49ed1425c88cec95f1b98518269ce8"
+    },
+    {
+      "file": "Include/Custom/General/PropFirmAccountHelper.mqh",
+      "sha256": "f45f2ca282b2916265c242d58d78047a69b2d8c6b81c861098bacb0f6e084ed4"
+    },
+    {
+      "file": "Include/Custom/General/report.mqh",
+      "sha256": "4a64b5b71de5724e2a4ced2d7066fc8f32b50376d4f3736cdb31444a945afc57"
+    },
+    {
+      "file": "Include/Custom/General/scoring_engine.mqh",
+      "sha256": "74bf0b2c1a1dc9ed05c6099f9543d619788bdf2b6ccfe9b8af5df40954b38f20"
+    },
+    {
+      "file": "Include/Custom/General/session_detector.mqh",
+      "sha256": "77c1e8a22d09614f835e54307790d3d063e04174edb2e86bad7e1e766dba1c92"
+    },
+    {
+      "file": "Include/Custom/General/teams_alert.mqh",
+      "sha256": "52f2f9fc0ebc4700a87dd62c28231cb1febd3084cf4b0119f0dfb76026ce67c3"
+    },
+    {
+      "file": "Include/Custom/General/WA_agent.mqh",
+      "sha256": "3019c74063a252f84b474775559303bdec1ad05d9497b79db459b3d1a72cd528"
+    },
+    {
+      "file": "Include/Custom/General/xauusd_heatmap.mqh",
+      "sha256": "fabe50db855d8aa8a2dc28155cfdc899412fd05a3d325ac68c000cca7931aa99"
+    },
+    {
+      "file": "Include/Custom/Guardrails/Guardrails_Core.mqh",
+      "sha256": "f1728fdb1bf6fb6f50c03fa9baa9ffc8a4a00d283a782b6b5935b1826ce71b42"
+    },
+    {
+      "file": "Include/Custom/Guardrails/Guardrails_Core_Execution.mqh",
+      "sha256": "6d391a7dc4c7ec894428bb1a819ef872d661dcf5e43b47fe23dfd3e333048367"
+    },
+    {
+      "file": "Include/Custom/Guardrails/Guardrails_Core_Init.mqh",
+      "sha256": "9414c5c3e6e691842e8dbe090898ed24c278362465e92fb1b57b7eb959328d3b"
+    },
+    {
+      "file": "Include/Custom/Guardrails/Guardrails_Core_Management.mqh",
+      "sha256": "4fe96316d7c3c0d0c9eb3834dd829d67d87650a4d9f53f8655e0141c9c8e790f"
+    },
+    {
+      "file": "Include/Custom/Guardrails/Guardrails_Core_OLD.mqh",
+      "sha256": "ff0b58a47af9fdee98edcfa07737b9941f23b6d2c33936a3dc81e426dc6a9a0e"
+    },
+    {
+      "file": "Include/Custom/Guardrails/Guardrails_Core_Risk.mqh",
+      "sha256": "91d7b7d8a937a5719bf35e46436b40c622408a64e6631c0cbd5470e462c16a68"
+    },
+    {
+      "file": "Include/Custom/Guardrails/Guardrails_Core_SMC.mqh",
+      "sha256": "40361641f42e4b7baa9ec9b1454d8a203039b8e8e1b104fa0a09a009c08a617e"
+    },
+    {
+      "file": "Include/Custom/Guardrails/Guardrails_GUI.mqh",
+      "sha256": "b213d0405d71525f2f093b5d817a42bacd60b898e9069a314ce29457e34cc3b1"
+    },
+    {
+      "file": "Include/Custom/Guardrails/Guardrails_Management.mqh",
+      "sha256": "e43117886b0875b09147b398f06526932299153918cc36ffa1c35f845bf30ac7"
+    },
+    {
+      "file": "Include/Custom/Guardrails/Guardrails_Protection.mqh",
+      "sha256": "d1bdf08a9e8120303b1828287a795c9da7e2f199bfd170032405425f102955b1"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/broker_execution.mqh",
+      "sha256": "91f7d310b002b2e4c7fd3b6e9599f1fb0582fba3e816b277ae222e39bcb231c5"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/Guarded_Liquidity.mqh",
+      "sha256": "db838b2e45388314d303669ff9e9929ff08c2c4e243f13fdcc8c42b6ea4c4730"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/history_context.mqh",
+      "sha256": "78186348e193eeeac2cc458bda103a92aaeebc537129335506ab5711dc04cda3"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/indicator_finance.mqh",
+      "sha256": "f2f2333c2830123e08570fa1930258b3ede8b360ad52ed0c11235090fb6a68f2"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/Inducements.mqh",
+      "sha256": "70eb96504ab20b68bdc206046504ac41b2e4e0f0f0e3d4de5c7c03c62b575d02"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/lb_entry_clusters.mqh",
+      "sha256": "40150e04720ea73f52369bd0acf990fb73a6690b6683688cb177d21153ebd67f"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/lb_entry_clusters_live.mqh",
+      "sha256": "3d4437f32733f3d6411ae1a59a7979ce3d261815f3bfa3248f2cdfe3c0660afa"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/lb_extension.mqh",
+      "sha256": "aa9de5a910f45d586b322d3a16b2f0dfb7d3b1dfb6c7e00a68cdb764fe0812d4"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/liquidity_blocks.mqh",
+      "sha256": "0e92f8feb8ae6bc37b5f274dd08cdda6413aa14c4ea2fbeb0b84645a3439dd7a"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/liquidity_swept_alerting.mqh",
+      "sha256": "eae441363908d064cf3005c20e45cce18e825831be9d63a2e9f2d80dd9765c08"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/liquidity_swept_backtesting.mqh",
+      "sha256": "e16b1f4f9699803a994000b62a7df9baf7d857a7b1de09c3a05dca8d292b996d"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/m1_ind_entry.mqh",
+      "sha256": "96c4cbdc5f03601dd0b9f42da39bc0f37c329b7375edd65f30ff284c98037b42"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/marco_backtest.mqh",
+      "sha256": "a06ad25d5e85fd0fa7941110f61a499d51b2a88d138f3179ef4368099a84c219"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/marco_core.mqh",
+      "sha256": "3f4ccd68c64dd5ea2532622d75492b99f34b79f7e9d95faf511a30e0d9586183"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/marco_live.mqh",
+      "sha256": "34850bd862d89689622674332e42786cb0b74c83237fceaab902deb19ebfa85a"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/marco_live_auto.mqh",
+      "sha256": "4cb61c2d8135e9b3d82d579f83d9b238e25e1a08f731b4b0e523159aca482110"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/opposing_sequence.mqh",
+      "sha256": "e7a390aa03a8f03e4b32c11ef285eade9394067a407c22adaa238a5dd2eca5b2"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/pivot_entry.mqh",
+      "sha256": "fc8d6e5ee2c6bca3180047e62723ad46205ff2429d425eaebf5c70ecd502b940"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/raw_exit_context.mqh",
+      "sha256": "bc1c4eea59e23d7afac8ee04b3b0a1caa443fe7262cb42b0f62d26d339995723"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/risk_capital.mqh",
+      "sha256": "5d658ffbc64b8a2e2513e25162848fb5d5961d1317c9ada8b79c3347fcba569b"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/staged_tp.mqh",
+      "sha256": "80477a7fd9c736e38bacfb5aab919d3d4a25b20b4c597fd6c89db7562889a8e8"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/staged_tp_live.mqh",
+      "sha256": "d73c7fe3f49cb191dd0c837aa1470158d0410e353bc6ff6df3bbdf33ed0d01d0"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/structure_exit.mqh",
+      "sha256": "23d4cc48976bb53d90b5b533cab2a74665a6538525de6c22092b0ba362193cbc"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/symbol_units.mqh",
+      "sha256": "60219dbd05739a26269061368ed52df6f9be028cbcf51dcdc6520c950c6ce4da"
+    },
+    {
+      "file": "Include/Custom/Marcotrades/trade_rejection.mqh",
+      "sha256": "9f9c38a236a0057f3e3a52dc3b3e2cb97e2a97c7b3f07fd9a584d8e54cb81a0e"
+    },
+    {
+      "file": "Include/Custom/ZigZag/backtest.mqh",
+      "sha256": "b1865dbbbbd60cb3961e3081c6e49b82c5dc4e24213cec0bcf07572ec0915434"
+    },
+    {
+      "file": "Include/Custom/ZigZag/bestest.mqh",
+      "sha256": "cbdb599b3887a596c45d31aa8d66c2ebf49d221c0c2a29c9e678197a11b02292"
+    },
+    {
+      "file": "Include/Custom/ZigZag/breaker_blocks.mqh",
+      "sha256": "95c488310059f754363e7020e5f2e996983f82093b6782081477755325a0f5a7"
+    },
+    {
+      "file": "Include/Custom/ZigZag/demand_supply.mqh",
+      "sha256": "18f387fcbbeab09cbf7d67b096f7cf1f99628f8cb8406ebacd694cc97a0c6bb0"
+    },
+    {
+      "file": "Include/Custom/ZigZag/entry_model.mqh",
+      "sha256": "31d78dcb0312d1a3407b22754150c38d5982bba71e4231cf544d7485d4a903b2"
+    },
+    {
+      "file": "Include/Custom/ZigZag/flipzone.mqh",
+      "sha256": "ef36ef19c712fd8f08f0045e74ee700e1b061e07d95a5c72999669153949c835"
+    },
+    {
+      "file": "Include/Custom/ZigZag/liquidity.mqh",
+      "sha256": "071735a3fdd5a9e35f548ca4e040c909527c83b460a7fb59372b009dba09dde0"
+    },
+    {
+      "file": "Include/Custom/ZigZag/market_structure.mqh",
+      "sha256": "097a520be2c18b2ae8ac2ac1116660924dcf6cc7005614970238389f2bd8c4dd"
+    },
+    {
+      "file": "Include/Custom/ZigZag/order_blocks.mqh",
+      "sha256": "bd3e7e930fa88e1cb55bd0f62154c09694a323a26347b1ec280e63247d601ad2"
+    },
+    {
+      "file": "Include/Custom/ZigZag/swing_pois.mqh",
+      "sha256": "915f77a1cea6d76ba61248f0a7d77effbef228dc02afe89bac1edcee2201e56f"
+    },
+    {
+      "file": "Include/Custom/ZigZag/swing_poi_proximities.mqh",
+      "sha256": "b2d36915dfe87054b0e203c4e80ad1a1cbfeee00dc63abfdba764d4deff0a3a3"
+    },
+    {
+      "file": "Include/Custom/ZigZag/teams_alert.mqh",
+      "sha256": "6cf7b35ff681b7d75782d7de42ef4d809c7696f79c3f5ce3960e3a91299cc252"
+    },
+    {
+      "file": "Include/Custom/ZigZag/ZigZag.mqh",
+      "sha256": "949bc8de05d8731e0ccfb0ef70e429a0e182a6fa1eddd56b5564863a97d152a5"
+    },
+    {
+      "file": "Include/Custom/ZigZag/zone_mitigation.mqh",
+      "sha256": "3469a0a12714dfe8565ed1cf740a98638d4ce14d56e83cbc01128a8d20142bcd"
+    },
+    {
+      "file": "Include/Custom/ZigZag/zone_touch.mqh",
+      "sha256": "802116795328b2cf8173ece41f5aa4f05a4bcab579ec4ff81299ec80787c8ede"
+    },
+    {
+      "file": "Include/Custom/ZigZag/Tools/DateTime.mqh",
+      "sha256": "4ca9f9c4afd7d2efe0116f47f7441c38abd99d1e5b0e7f74f7fa2110a508c1e8"
+    },
+    {
+      "file": "Experts/Custom EAs/Alerting System/LIQUIDITY_SWEPT.mq5",
+      "sha256": "a8c1736f78d1fa7116125e2616c7b25a367a1dd4fd8ba77e6caa2582af587a43"
+    },
+    {
+      "file": "Experts/Custom EAs/Alerting System/OandaHeatmapEA.mq5",
+      "sha256": "105bc6f22f60e67d3db5d8183f41943eb33135ecc1ebfd97566217e44b989f2a"
+    },
+    {
+      "file": "Experts/Custom EAs/Alerting System/SwingPOI_proximities.mq5",
+      "sha256": "7f123733d8620ea598b21f1d530aa8eb11d1159612fa6b7ab65a046b7872ba46"
+    },
+    {
+      "file": "Experts/Custom EAs/Alerting System/Zone Mitigation.mq5",
+      "sha256": "2e907c9c0410a8c486e7974447cd0adc49ab5bff96db3ba60dd8a9f8823e6b76"
+    },
+    {
+      "file": "Experts/Custom EAs/Alerting System/zone_touch.mq5",
+      "sha256": "8af359f112c233d6f2dfec7d0b3dc50ee7206e1850a5243d86a3df23e4ee5d5b"
+    },
+    {
+      "file": "Experts/Custom EAs/Backtesting/backtest.mq5",
+      "sha256": "c392f2dc5afac1f9b61237046fe9da233c5e5b8ce06f3b125ad7cdabef027fd4"
+    },
+    {
+      "file": "Experts/Custom EAs/Backtesting/bestest.mq5",
+      "sha256": "d9572dc4f142372d8e7b710790552dabb9d6a0fa32954b1817b582ae8b81dfe5"
+    },
+    {
+      "file": "Experts/Custom EAs/Backtesting/liquidity_swept.mq5",
+      "sha256": "0439f833f215f308bed23140ccb71d524b12a7f375becf734213752a06c63a48"
+    },
+    {
+      "file": "Experts/Custom EAs/Backtesting/marco_backtest_ea.mq5",
+      "sha256": "d28fe7099e33a320688a8be219a66caa51f088520552fd38f2420b34d32d7d2c"
+    },
+    {
+      "file": "Experts/Custom EAs/Guardrails/Guardrails_Management.mq5",
+      "sha256": "3c113cf892e0911ee150564846dfae4a1729d491886f957759e2d6333eedabf0"
+    },
+    {
+      "file": "Experts/Custom EAs/Guardrails/GUARDRAIS PROTECTION.mq5",
+      "sha256": "af4a0f85d159e37f3d20512a375c14aca415ed0a287fa1137d7c3a02a6d5a4a5"
+    },
+    {
+      "file": "Experts/Custom EAs/Marcotrades/Guarded_Liquidity.mq5",
+      "sha256": "8132be1b3c0bf3cd216a070d1aa660519526b626c9cbbc698befd766ab9f6707"
+    },
+    {
+      "file": "Experts/Custom EAs/Marcotrades/Marco_DaVinci_EA.mq5",
+      "sha256": "212d750a93a344a068b9918acb044f968f2d1565b28284d95086e4d88e9ca8c5"
+    },
+    {
+      "file": "Experts/Custom EAs/Marcotrades/marco_live_auto_ea.mq5",
+      "sha256": "755043a7ddae040bb5ab9e3a3d938d31eb148784e90b91de1eb305a51682cc1b"
+    },
+    {
+      "file": "Experts/Custom EAs/Marcotrades/marco_live_ea.mq5",
+      "sha256": "4e8d4b70fa42e3ac269082813b2c05961184d76b2b5fc7754500b93240607f9d"
+    },
+    {
+      "file": "Experts/Custom EAs/POI_Detector/backtest.mq5",
+      "sha256": "5544df1cc43bf8740e2e94961b4394f5f15f1d6e83f0185748e9336ce5a052c2"
+    },
+    {
+      "file": "Experts/Custom EAs/POI_Detector/gold_killer_setup.mq5",
+      "sha256": "ebd1730288301a3fbe120bd7d995b9c7f48390b7064ffe2a728a2692c063f151"
+    },
+    {
+      "file": "Experts/Custom EAs/POI_Detector/POI_Alerts.mq5",
+      "sha256": "1bea545ac870401990e9dce1c449b4a8e097836b2e2bccf23f3dca5a69f2e3d5"
+    },
+    {
+      "file": "Experts/Custom EAs/POI_Detector/POI_Detector.mq5",
+      "sha256": "ac0e8bdcbf094cd036f2ea4461f1a1f75d25c5d85b2758939e271dad767ed47e"
+    },
+    {
+      "file": "Experts/Custom EAs/POI_Detector/Trade_Setup_Detector.mq5",
+      "sha256": "4a6a3c982cf0a4ee5182d333a08251897041e733be44aec65d507fc3cf556976"
+    },
+    {
+      "file": "Experts/Custom EAs/POI_Detector/Zone Mitigation.mq5",
+      "sha256": "39172da6f8a883ee7637a6b36c795e499288f68dfededcde8f7b1bf73b129c01"
+    },
+    {
+      "file": "Experts/Custom EAs/POI_Detector/Zone Touch.mq5",
+      "sha256": "580b11a0ba6673a55bb027d0cbf5290f88a8998d672227ff079bb919361321df"
+    },
+    {
+      "file": "Indicators/Custom/General/Anchored_VWAP.mq5",
+      "sha256": "7a78f36bc95f88b75edb04da8dab57c3564dafe3bc1e6654f7bb911176606f14"
+    },
+    {
+      "file": "Indicators/Custom/General/bar_replay.mq5",
+      "sha256": "73bfc67cc699a736545d807bbd093a5b368816d365894e3d1b6ac37f25ef6d0f"
+    },
+    {
+      "file": "Indicators/Custom/General/session_detector.mq5",
+      "sha256": "7f45a67aa360f0a933fbda4ffb812d90d81b20a32988d92ca0a7fa235bbb8158"
+    },
+    {
+      "file": "Indicators/Custom/HEATMAP/heatmap.mq5",
+      "sha256": "587915817f9b6b3f4cc6f12590c91f7893f6c0c9bdc41db98df5a1f361418528"
+    },
+    {
+      "file": "Indicators/Custom/HEATMAP/Heatmap_Nuclear.mq5",
+      "sha256": "45be8be041cfd78e0fa8e413f2044ab8186285a9d5d154aeb57064fdce539701"
+    },
+    {
+      "file": "Indicators/Custom/HEATMAP/xauusd_heatmap.mq5",
+      "sha256": "f2a698b29c63fff8546bb67286d942763a0c6c74feb3d55e38a5a9a891050a71"
+    },
+    {
+      "file": "Indicators/Custom/HEATMAP/xauusd_heatmap_1.mq5",
+      "sha256": "cd83f8d053fb7174929dadc5d5497b5442f67d8a22ff9752bb0b4fdedb09a0d5"
+    },
+    {
+      "file": "Indicators/Custom/Marcotrades/Inducements.mq5",
+      "sha256": "2557cb8f761d6a3cf9d9752b9c77647ba8e83783b2b0e5c20a9d4be849243de8"
+    },
+    {
+      "file": "Indicators/Custom/Marcotrades/liquiduity_block.mq5",
+      "sha256": "55de5f1c0bdb0b9b7f7cef1b3196377d5786a9aa1f31fe5862690069278b9dd3"
+    },
+    {
+      "file": "Indicators/Custom/Marcotrades/marco_backtest_trades.mq5",
+      "sha256": "8f726c5f66bf196e9f18f57e35f4be8e5785d453c59da0ec8578566a4db768c2"
+    },
+    {
+      "file": "Indicators/Custom/Marcotrades/Marco_Liquidity_Visualizer.mq5",
+      "sha256": "7148e4a7e6394db59067eed364151e7bb30f9ee735bb27b70ba3e8133a991a93"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/BreakerBlocks.mq5",
+      "sha256": "abf2773caf66cdc888652ab09f3bf2f91c023e52197ef922972772f7c93fa9cf"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/DemandSupply.mq5",
+      "sha256": "1e94b720dc827432e3672c4428144bc17f574b697ac150e67a4c3240cdea2b69"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/Demand_Supply.mq5",
+      "sha256": "e869438b54b5605b3db470e5b32115620daa4c7a4cc46d13eda548c7cc3605d7"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/FlipZone.mq5",
+      "sha256": "c76024fa5c85b7a6b6e847201bbd9214c729b7f79e442b3fc85379a38d669c88"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/Full Market Structure.mq5",
+      "sha256": "10d4ad980264fa24007241a062b5019095aca1aae14a1179fd9be14f7ac0fd7b"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/liquidity.mq5",
+      "sha256": "6200aa781ad1ae663260144a3170cbd9a9826e45f143265f688a8658496ec70a"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/Market Structure.mq5",
+      "sha256": "19d0e2f860751c2a6063cd1d32c6fbcc81e2f60ca4371436c72b6e39a2d5e539"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/MarketSessionDaySeparator.mq5",
+      "sha256": "19d0e2f860751c2a6063cd1d32c6fbcc81e2f60ca4371436c72b6e39a2d5e539"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/Oderblock.mq5",
+      "sha256": "987628eb8c9bd0be57bb3b18315e2a909e711e00672811d356441b7426f97f9e"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/session_detector.mq5",
+      "sha256": "a2f8de97252d0dfd57b6e287dd5add650660061700fbe2a5cf8b3a6a15741b0b"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/SwingPOIs.mq5",
+      "sha256": "555fb1982cd370c930b615875814bd66c39a44f18cf0953e48120dcdf97c81b3"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/Test_MarketStructure.mq5",
+      "sha256": "dc4461b66a83524edf759c3403c5ced4458b0c05f39d6f93a12744957ae3d1cd"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/ZigZag.mq5",
+      "sha256": "377555e0e3e6119ecf2a268d4be8fe0a365a4d35cdcc6464735bfefeffd125ce"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag - OLD/Oderblock.mq5",
+      "sha256": "abbdd79fa4ce63be9577e16553fe5a097f04bfd4dc8f5b0aab92086577c81b5e"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag - OLD/SwingPOIs.mq5",
+      "sha256": "8d804158a0a2ad24c76cce34c0aec565bd598f70c69aebd95982fa2046357065"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag - OLD/Test_MarketStructure.mq5",
+      "sha256": "4e88d768409589b32e7c4c55227d1f3d26b14336e607bd19b8c315c6fd2e2e28"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag - OLD/ZigZag.mq5",
+      "sha256": "95073522a19c72fce112c8ec64a7f481b893ceab1853dfc486127887eded8589"
+    },
+    {
+      "file": "Tools/instrument_daily_logging.py",
+      "sha256": "47a69c76fd3f117f07eaa13a374949c6c7896e3ec9d53adbec080caa4092b335"
+    },
+    {
+      "file": "Tools/wire_opposing_sequence.py",
+      "sha256": "5564cfb8eb569f5bb72c8f6f1fa9ed6ccb62839ad3ec21da70ee44c5ce21736d"
+    },
+    {
+      "file": "Tools/Marcotrades/import_broker_rejections.py",
+      "sha256": "fa3e994142943bfdb4d688f26196cac98a01ece2bdaa4466a2f5463275803e03"
+    },
+    {
+      "file": "Tests/Marcotrades/replay_us30_context.py",
+      "sha256": "4aabd4526223a94ab58ca879af70b241f4e8f23f78f9a405aaa4b0a37330fc45"
+    },
+    {
+      "file": "Tests/Marcotrades/replay_us30_no_cluster.py",
+      "sha256": "53585a60c8733d58236aa796061cdc02a566b4411e3dfc70b2bdb72a83c51def"
+    },
+    {
+      "file": "Tests/Marcotrades/run_broker_execution_tests.py",
+      "sha256": "e3419267897a250fa20e7c281fead8e655e1e5cc7a842dac82c5e7238b33f248"
+    },
+    {
+      "file": "Tests/Marcotrades/run_daily_log_tests.py",
+      "sha256": "f720525a3332b4c415d787296386092c9a89f8982f54610159e8ec6a683ba474"
+    },
+    {
+      "file": "Tests/Marcotrades/run_entry_sizing_tests.py",
+      "sha256": "f06781d5fb439f9c70bfbcfd78e7358123085324b86aec18e8b1344c9a785492"
+    },
+    {
+      "file": "Tests/Marcotrades/run_entry_trigger_structure_tests.py",
+      "sha256": "1063aa6c2abac7279a081ad043a09f970f99d3fb6b8dc1587ba0c2a8731a50c2"
+    },
+    {
+      "file": "Tests/Marcotrades/run_history_context_tests.py",
+      "sha256": "f6b139da5bddfda5ed4a75d608cec85414d3753efe1fd4b0be5b600fe5ae22f2"
+    },
+    {
+      "file": "Tests/Marcotrades/run_indicator_cache_tests.py",
+      "sha256": "e4aff7ca73e34211d5d9b5e34a40bcffc964075df19a76cc09ff5a21a9375a2e"
+    },
+    {
+      "file": "Tests/Marcotrades/run_ind_structure_tests.py",
+      "sha256": "b4239ec2a5ae0cbf2dd8753df5cf4ccc37f131e1c7fe642e9afcd795765f4f39"
+    },
+    {
+      "file": "Tests/Marcotrades/run_lb_cluster_tests.py",
+      "sha256": "a67bb494408c5fddd81ab8b481913d83feb95f24ef233c85017ed08547a654d3"
+    },
+    {
+      "file": "Tests/Marcotrades/run_lb_extension_tests.py",
+      "sha256": "66ebe65b9ab3301ca120d37684fd19776f242c286af2693d885210e08fa75349"
+    },
+    {
+      "file": "Tests/Marcotrades/run_liquidity_warmup_tests.py",
+      "sha256": "b220d979e6d0e5c916adc6e18c10073a315800249e3af7cadef2397fd729a31e"
+    },
+    {
+      "file": "Tests/Marcotrades/run_m1_touch_tests.py",
+      "sha256": "0541336a42dbfd5f53a03b2c9945912f03f5ea06e79351136ee20fc095c5ec1c"
+    },
+    {
+      "file": "Tests/Marcotrades/run_opposing_entry_tests.py",
+      "sha256": "140f24be2843182a01a8ed6f1c38169510e46ab1844558280f82c85e009f575e"
+    },
+    {
+      "file": "Tests/Marcotrades/run_opposing_sequence_tests.py",
+      "sha256": "1ad96d38ad67d2c1de2ae88f37e1194f1680bc916014d29f97e809e863d7cc56"
+    },
+    {
+      "file": "Tests/Marcotrades/run_opposite_position_tests.py",
+      "sha256": "c6ef629dcf3a2c7bd9c59f618785cf524ed55e9a7d9ad4f3c7654ddf543e4010"
+    },
+    {
+      "file": "Tests/Marcotrades/run_pivot_entry_tests.py",
+      "sha256": "44a2a0b004113a9800ddf4fb03c650da6fa48f65b3f38f3056bd58b9cc2e83d9"
+    },
+    {
+      "file": "Tests/Marcotrades/run_staged_tp_tests.py",
+      "sha256": "33a6904c609ba42f43024c807f7978ef3539d634ed43997ead8b4dd706c2e95e"
+    },
+    {
+      "file": "Tests/Marcotrades/run_structure_exit_tests.py",
+      "sha256": "d011b1dba34fe8bdcd32052dbe706df1a333dd49902b26120cad3d1dd2dc2b6d"
+    },
+    {
+      "file": "Tests/Marcotrades/run_structure_only_tests.py",
+      "sha256": "1460d746dbabf2247a0c40a7dde7d924baa65a19bf31c126a0e2d5b042caf116"
+    },
+    {
+      "file": "Tests/Marcotrades/run_symbol_units_tests.py",
+      "sha256": "3a2393932df3e62c2ecd73c1cb9e34515aa2a576bf3253a597488988bb1210ce"
+    },
+    {
+      "file": "Tests/Marcotrades/run_zone_context_tests.py",
+      "sha256": "f0b1cef9aec1935b75c5f2441683f2bed17df9ebd4eca14b2fba4e42683e0c2e"
+    },
+    {
+      "file": "Tests/Marcotrades/staged_tp_cases.cpp",
+      "sha256": "56f8d3b132702290837e8129c04a224cea36ccd601eb765f7e6d9ee4fd00ba52"
+    },
+    {
+      "file": "Tests/Marcotrades/staged_tp_mocks.cpp",
+      "sha256": "aee2996a103fecb7e241595a2f388e131774d790939cf593ecff641e50fc1260"
+    }
+  ],
+  "binaries": [
+    {
+      "file": "Experts/Custom EAs/Alerting System/LIQUIDITY_SWEPT.ex5",
+      "sha256": "5fc89e6bda50b4056e1cc543ea7ccd18cd4a3ac4c0ecbffe116a08cf1c59ddc6"
+    },
+    {
+      "file": "Experts/Custom EAs/Alerting System/OandaHeatmapEA.ex5",
+      "sha256": "e28fffce0463dd885aa84ca4a5e88f8b5c96fb074314f2998e2f22f83c0ae85f"
+    },
+    {
+      "file": "Experts/Custom EAs/Alerting System/SwingPOI_proximities.ex5",
+      "sha256": "a3df88a361440bd4601e248e1184bcb04e001f02a20b65f15000f3c7d6630102"
+    },
+    {
+      "file": "Experts/Custom EAs/Alerting System/Zone Mitigation.ex5",
+      "sha256": "44ae8fc559096eb1b89f633b08eabb3335124758c22d026bd085a40bd3e883d2"
+    },
+    {
+      "file": "Experts/Custom EAs/Alerting System/zone_touch.ex5",
+      "sha256": "de919fe36061eb2be24195457d52b968c46c7fe526bab0dc7e03a1f77763c26b"
+    },
+    {
+      "file": "Experts/Custom EAs/Backtesting/backtest.ex5",
+      "sha256": "55796b2704008e7889032aac16256f0e65c856087db61f30d0bc42af4d953bc3"
+    },
+    {
+      "file": "Experts/Custom EAs/Backtesting/bestest.ex5",
+      "sha256": "0406ec49cbbaa375d3cb2738197f0df34bc9937fef367849cd42e3e10a2f799a"
+    },
+    {
+      "file": "Experts/Custom EAs/Backtesting/marco_backtest_ea.ex5",
+      "sha256": "c119fca49266f047d3b0b71491464a4bc7f32ca09a7bb9ff50b305aed2614d63"
+    },
+    {
+      "file": "Experts/Custom EAs/Guardrails/Guardrails_Management.ex5",
+      "sha256": "d6e08e61f36b36a45d08c5c62aa1e3b8586c2e1a125afa6cf2eafcb12d686546"
+    },
+    {
+      "file": "Experts/Custom EAs/Guardrails/GUARDRAIS PROTECTION.ex5",
+      "sha256": "4392a95fc614b0200beefbf139c512dfcb2d612e94fa643c4be1c000ad94600f"
+    },
+    {
+      "file": "Experts/Custom EAs/Marcotrades/Guarded_Liquidity.ex5",
+      "sha256": "688a4b68a860ad190f53b2cb57dfdc5248ab27244783860bc7f4ee8e2754d2f9"
+    },
+    {
+      "file": "Experts/Custom EAs/Marcotrades/Marco_DaVinci_EA.ex5",
+      "sha256": "c5659ec1015899db176a7f00db50719d7a4d8a1feed4c82c245fd7624a63c8aa"
+    },
+    {
+      "file": "Experts/Custom EAs/Marcotrades/marco_live_auto_ea.ex5",
+      "sha256": "c2e5199fdc8a8cf971d99a3a6b2ef83c1d9f47b1e2311011b518f44646242f98"
+    },
+    {
+      "file": "Experts/Custom EAs/Marcotrades/marco_live_ea.ex5",
+      "sha256": "f6df88abb89b8202b885b0726e112056d4750f8dc34635659d295f5fcc6334ab"
+    },
+    {
+      "file": "Indicators/Custom/General/Anchored_VWAP.ex5",
+      "sha256": "5a9039100eeeb0337f15f4f0ebc260a188f18598920ef05899f259e35d34ba66"
+    },
+    {
+      "file": "Indicators/Custom/General/bar_replay.ex5",
+      "sha256": "734e33fb1e6d20cf02039cc4ec0f52f14f8db497f7e1454576c5e143ba87b349"
+    },
+    {
+      "file": "Indicators/Custom/General/session_detector.ex5",
+      "sha256": "c2c92cd349fb47f3af3748af460d941ea9d8e307ec8b989f470d87af071d5c81"
+    },
+    {
+      "file": "Indicators/Custom/HEATMAP/heatmap.ex5",
+      "sha256": "b23eb176343f3b0a47cd4d1c9fae1a3108781297ce4395876d36e53268a8459b"
+    },
+    {
+      "file": "Indicators/Custom/HEATMAP/Heatmap_Nuclear.ex5",
+      "sha256": "ca681da36c4ec06f7fd69c8822ef1aeab6eb2d2f9a91c42fb7e6dd131e5bf6a4"
+    },
+    {
+      "file": "Indicators/Custom/HEATMAP/xauusd_heatmap_1.ex5",
+      "sha256": "95815f5b4deb067cce34d7aca86f0093bac412ab2c5d6af94dd8f9eb19cdde40"
+    },
+    {
+      "file": "Indicators/Custom/Marcotrades/liquiduity_block.ex5",
+      "sha256": "f2b5a9daf9dfa663dc41288188abc42e4456f9b27bfa6fd92abf27bf8798f15a"
+    },
+    {
+      "file": "Indicators/Custom/Marcotrades/marco_backtest_trades.ex5",
+      "sha256": "5869c90eac1f5c76064a893cd889b33baf9d76327dd8312fa7c045326ffb9cb9"
+    },
+    {
+      "file": "Indicators/Custom/Marcotrades/Marco_Liquidity_Visualizer.ex5",
+      "sha256": "302c77f4339a1fe1f8c9a90ed52dce8f6ac7c9832c79a2efacbf68d01008e084"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/BreakerBlocks.ex5",
+      "sha256": "8434eeea64bbdabbfac63f16ae01f726241ccd94411e4186409ffcc0e67338e9"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/Demand_Supply.ex5",
+      "sha256": "8fffe4e082b4acaa1f2788828b950c89a0af22872af656a54743f1061c386877"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/FlipZone.ex5",
+      "sha256": "0d835e308d03f93a719669459cc5080af01caa20d64ae1eb8a3282296a871a20"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/Full Market Structure.ex5",
+      "sha256": "11645f4a4df983d377c2047a411d9da6f715808fe180628cc2874ef78bd79641"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/liquidity.ex5",
+      "sha256": "04ebf50b72b00e21cec8cdbc0c13090e130add9a459ac66ed97163ad6a8ea538"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/Oderblock.ex5",
+      "sha256": "348e9decab3fc0ca0db21a54d6a487fb5ae3681919da912bd988b15c9ac61ff3"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/SwingPOIs.ex5",
+      "sha256": "38b5daa3fc5e5b7a62e0ba359d3aeb041858446377b57b8b24737cb89c9ca8f3"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/Test_MarketStructure.ex5",
+      "sha256": "0c2786c287ff2774827c1e24e9bb0fce64d1cf64c40b08aa616634019a134d4c"
+    },
+    {
+      "file": "Indicators/Custom/ZigZag/ZigZag.ex5",
+      "sha256": "dc10dc02e3e569cf0596e9c6e92075bbc9b0d1f0bdfec2f0534d8649661f80ed"
+    }
+  ]
+}
