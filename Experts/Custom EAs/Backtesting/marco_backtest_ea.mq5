@@ -1,4 +1,4 @@
-﻿#define MARCO_LOG_PROGRAM "marco_backtest_ea"
+#define MARCO_LOG_PROGRAM "marco_backtest_ea"
 #include <Custom\General\daily_log.mqh>
 //+------------------------------------------------------------------+
 //|                                     marco_backtest_ea.mq5        |
@@ -8,7 +8,7 @@
 //|                 With Overlapping Trade Concurrency Control       |
 //+------------------------------------------------------------------+
 #property copyright "Marcotrades SMC Architecture"
-#property version   "1.73"
+#property version   "1.75"
 
 #include <Custom\Marcotrades\marco_backtest.mqh>
 #include <Custom\General\WA_agent.mqh>
@@ -24,8 +24,8 @@ enum ENUM_SL_LOCATION
 #endif
 
 input group "=== Strategy Simulator Config ==="
-input datetime        InpStartWindow              = D'2026.11.16 00:00'; // Backtest Start Window (Date/Time)
-input datetime        InpEndWindow                = D'2026.11.16 23:59'; // Backtest End Window (0 for Current Time)
+input datetime        InpStartWindow              = D'2026.11.18 00:00'; // Backtest Start Window (Date/Time)
+input datetime        InpEndWindow                = D'2026.11.18 23:59'; // Backtest End Window (0 for Current Time)
 input double          InpStartingCapital          = 500;               // Simulated Starting Capital ($)
 input double          InpMaxRiskPercent           = 25.0;                // Risk per trade (% of selected capital)
 input ENUM_MARCO_RISK_CAPITAL InpRiskCapital = RISK_CAPITAL_FREE_MARGIN; // Capital used by InpMaxRiskPercent

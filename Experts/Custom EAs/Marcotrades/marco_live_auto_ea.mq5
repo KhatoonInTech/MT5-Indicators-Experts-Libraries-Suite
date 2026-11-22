@@ -8,7 +8,7 @@
 //|                 With Daily CSV Journal & Dynamic TP Priorities   |
 //+------------------------------------------------------------------+
 #property copyright "Marcotrades SMC Architecture"
-#property version   "1.52"
+#property version   "1.54"
 
 #include <Custom\Marcotrades\marco_live_auto.mqh>
 

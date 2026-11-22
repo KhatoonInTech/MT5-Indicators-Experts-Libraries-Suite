@@ -152,7 +152,7 @@ int main(){
  assert(!p.breakeven);CMarcoStagedTP::Exit(p,2,p.fraction[2],110,1001);assert(p.breakeven);
  // Existing v4 state upgrades without restoring an already tightened stop.
  reset();p=plan();p.breakeven=true;save(p);
- auto &v4=files[CMarcoLiveStagedTP::Path(magic,identifier)];int32_t v4version=4;
+ auto &v4=files[CMarcoLiveStagedTP::Path(magic,identifier)];v4.resize(436);int32_t v4version=4;
  std::memcpy(v4.data(),&v4version,4);assert(load().plan.breakeven);
  reset();save(plan());enabled=false;bid=ask=140;manage(trade);eq(sends,0);
  enabled=true;files[CMarcoLiveStagedTP::Path(magic,identifier)].resize(10);manage(trade);eq(sends,0);
@@ -236,6 +236,6 @@ int main(){
  // A v1 state remains readable and upgrades on the next save.
  reset();save(plan());auto &old=files[CMarcoLiveStagedTP::Path(magic,identifier)];old.resize(256);
  int32_t version=1;std::memcpy(old.data(),&version,4);state=load();eq(state.structureAction,0);eq(state.plan.structureClosed[0],0);
- assert(CMarcoLiveStagedTP::Save(magic,identifier,state));eq(files[CMarcoLiveStagedTP::Path(magic,identifier)].size(),436);
+ assert(CMarcoLiveStagedTP::Save(magic,identifier,state));eq(files[CMarcoLiveStagedTP::Path(magic,identifier)].size(),448);
  std::cout<<"PASS: "<<checks<<" assertions; staged TP, structural exits, half-remaining sizing, durable broker retries and v1 migration\n";
 }

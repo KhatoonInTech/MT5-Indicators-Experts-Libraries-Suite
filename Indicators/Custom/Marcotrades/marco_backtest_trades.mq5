@@ -1,8 +1,8 @@
-#define MARCO_LOG_PROGRAM "marco_backtest_trades"
+﻿#define MARCO_LOG_PROGRAM "marco_backtest_trades"
 #include <Custom\General\daily_log.mqh>
 // Independent chart indicator: simulates its own trades and draws risk/reward areas.
 #property copyright "Marcotrades"
-#property version   "2.31"
+#property version   "2.33"
 #property indicator_chart_window
 #property indicator_buffers 0
 #property indicator_plots   0
@@ -226,7 +226,7 @@ bool SaveSimulationCache()
    int file=FileOpen(temp,FILE_WRITE|FILE_BIN|FILE_UNICODE);
    if(file==INVALID_HANDLE) return false;
    STradeCacheHeader header; ZeroMemory(header);
-   header.magic=0x4D545243; header.version=31;
+   header.magic=0x4D545243; header.version=33;
    header.nextTF=g_nextTF; header.waitAttempts=g_waitAttempts; header.skipped=g_skipped;
    header.totalTrades=g_totalTrades; header.wins=g_wins; header.losses=g_losses;
    header.records=ArraySize(g_trades);
@@ -283,7 +283,7 @@ bool LoadSimulationCache()
    STradeCacheHeader header; ZeroMemory(header);
    string key,progress;
    bool ok=FileReadStruct(file,header)==sizeof(header);
-   if(ok) ok=(header.finished || (header.nextTF==0 && header.records==0 && header.overlapRecords==0)) && header.magic==0x4D545243 && header.version==31 && header.nextTF>=0 && header.nextTF<=ArraySize(g_setupTFs) &&
+   if(ok) ok=(header.finished || (header.nextTF==0 && header.records==0 && header.overlapRecords==0)) && header.magic==0x4D545243 && header.version==33 && header.nextTF>=0 && header.nextTF<=ArraySize(g_setupTFs) &&
              header.records>=0 && header.records<=1000000 && header.overlapRecords>=0 && header.overlapRecords<=1000000 &&
              (ulong)header.records*sizeof(STradeCacheRecord)+(ulong)header.overlapRecords*sizeof(STradeCacheOverlap)<=FileSize(file) &&
              header.windowEnd>InpStartWindow && header.vicinityTF>0 &&

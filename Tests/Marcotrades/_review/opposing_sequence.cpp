@@ -463,6 +463,8 @@ struct SMarcoTPPlan
    int extensionCount;
    datetime extensionTime;
    SMarcoOpposingSequence sequence;
+   datetime reversalEntryEvent; // Exact M1 CHoCH used after an opposing-LB wait.
+   bool reversalEntryDone;      // Its immediate continuation has been resolved.
   };
 
 // Kept outside the fixed-size plan so indicator cache records remain serializable.
@@ -894,6 +896,117 @@ public:
   };
 #endif
 
+#ifndef MARCO_OPPOSING_ENTRY_WAIT_MQH
+#define MARCO_OPPOSING_ENTRY_WAIT_MQH
+
+
+// Per-setup wait; never represents a fill or consumes an LB cluster.
+struct SMarcoOpposingEntryWait
+  {
+   bool required, waiting;
+   datetime since, sourceEvent;
+   int sourceTF;
+   string sourceId;
+  };
+
+class CMarcoOpposingEntryWait
+  {
+public:
+   static bool Vicinity(double price,double low,double high,double buffer)
+     {
+      return MathIsValidNumber(price) && price>0 && low<=high && buffer>=0 &&
+             price>=low-buffer && price<=high+buffer;
+     }
+
+   static bool OpposingSource(CTradeRejectionHistory &history,bool bull,datetime now,
+                              ENUM_TIMEFRAMES tf,SRejectionEvent &event,string &id)
+     {
+      if(!history.Latest(now,event) || CMarcoOpposingSequence::Direction(event.name)!=(bull ? -1 : 1))
+         return false;
+      SRejectionEvent linked=event;
+      for(int pass=0;pass<history.EventCount();pass++)
+        {
+         // A source may first be registered on the second structure. Use only
+         // its currently available version, without backdating its availability.
+         for(int z=history.ZoneCount()-1;z>=0;z--)
+           {
+            SRejectionLB lb;
+            if(!history.ZoneAt(z,lb) || !history.ActiveSource(lb,bull,now,tf)) continue;
+            if(lb.choch==linked.time ||
+               (lb.available<=linked.available && CTradeRejection::OriginInside(linked.originTime,linked.originPrice,
+                   lb.created,lb.mitigation,PeriodSeconds(tf),lb.low,lb.high,0)))
+              { id=lb.id; return true; }
+           }
+         SRejectionEvent previous; bool found=false;
+         for(int i=0;i<history.EventCount();i++)
+           {
+            SRejectionEvent candidate;
+            if(!history.EventAt(i,now,candidate) || candidate.time>=linked.time) continue;
+            if(!found || candidate.time>previous.time) { previous=candidate; found=true; }
+           }
+         if(!found || CMarcoOpposingSequence::Direction(previous.name)!=(bull ? -1 : 1)) break;
+         linked=previous;
+        }
+      return false;
+     }
+
+   static bool Begin(SMarcoOpposingEntryWait &state,CTradeRejectionHistory &history,
+                     bool bull,datetime now,ENUM_TIMEFRAMES tf)
+     {
+      if(state.waiting) return true;
+      if(state.required) { state.waiting=true; state.since=now; return true; }
+      SRejectionEvent event; string id;
+      if(!OpposingSource(history,bull,now,tf,event,id)) return false;
+      state.required=true; state.waiting=true; state.since=now; state.sourceEvent=event.time;
+      state.sourceTF=(int)tf; state.sourceId=id;
+      return true;
+     }
+
+   // Vicinity belongs to the CHoCH swing, not its break candle or fill price.
+   static bool Ready(SMarcoOpposingEntryWait &state,CTradeRejectionHistory &m1,bool bull,
+                     datetime now,double low,double high,double buffer,
+                     SRejectionEvent &event)
+     {
+      if(!state.waiting || !m1.Latest(now,event) || event.name!=(bull ? "BL-CHoCH" : "BR-CHoCH") ||
+         event.time<state.since-state.since%60 || event.available<=state.since || event.available>now || now>=event.available+60 ||
+         event.originTime<=0 || event.originTime>event.time ||
+         !Vicinity(event.originPrice,low,high,buffer)) return false;
+      return true;
+     }
+
+   // Only the exact M1 CHoCH used by this entry can activate this extension.
+   // Revisions are read as-of now; an old chart label cannot supply future data.
+   static bool FailedEntry(CTradeRejectionHistory &m1,SMarcoTPPlan &plan,
+                           datetime opened,datetime now,double price,SMarcoSequenceSignal &signal)
+     {
+      if(plan.reversalEntryEvent<=0 || plan.reversalEntryDone || now<=opened) return false;
+      SRejectionEvent first,next; bool haveFirst=false,haveNext=false;
+      for(int i=0;i<m1.EventCount();i++)
+        {
+         SRejectionEvent event;
+         if(!m1.EventAt(i,now,event)) continue;
+         if(event.time==plan.reversalEntryEvent) { first=event; haveFirst=true; }
+         if(event.time<=plan.reversalEntryEvent || CMarcoOpposingSequence::Direction(event.name)==0) continue;
+         if(!haveNext || event.time<next.time) { next=event; haveNext=true; }
+        }
+      if(!haveFirst || !haveNext || next.available<=opened) return false;
+      if(next.name==(plan.direction==1 ? "BL-BOS" : "BR-BOS"))
+        { plan.reversalEntryDone=true; return false; }
+      if(first.name!=(plan.direction==1 ? "SSL-Swept" : "BSL-Swept") ||
+         CMarcoOpposingSequence::Direction(next.name)!=-plan.direction) return false;
+      plan.reversalEntryDone=true;
+      if(plan.direction*(price-plan.entry)>=0) return false;
+      plan.sequence.step=2; plan.sequence.tf=(int)PERIOD_M1;
+      plan.sequence.firstEvent=plan.reversalEntryEvent; plan.sequence.firstProfit=false;
+      plan.sequence.pending=true; plan.sequence.share=1.0; plan.sequence.requestedLots=0;
+      signal.action=2; signal.step=2; signal.tf=(int)PERIOD_M1;
+      signal.eventTime=next.time; signal.lbId="M1 entry CHoCH reclassified as sweep";
+      signal.share=1.0; signal.profit=false;
+      return true;
+     }
+  };
+#endif
+
 #ifndef MARCO_STAGED_TP_LIVE_MQH
 #define MARCO_STAGED_TP_LIVE_MQH
 
@@ -936,7 +1049,7 @@ public:
       string path=Path(magic,identifier), temp=path+".tmp";
       int f=FileOpen(temp,FILE_WRITE|FILE_BIN|FILE_UNICODE);
       if(f==INVALID_HANDLE) return false;
-      FileWriteInteger(f,5); FileWriteInteger(f,state.plan.count); FileWriteInteger(f,state.plan.direction);
+      FileWriteInteger(f,6); FileWriteInteger(f,state.plan.count); FileWriteInteger(f,state.plan.direction);
       FileWriteDouble(f,state.plan.entry); FileWriteDouble(f,state.plan.initialSL);
       FileWriteDouble(f,state.plan.remaining); FileWriteDouble(f,state.plan.realizedR);
       FileWriteInteger(f,state.plan.breakeven ? 1 : 0);
@@ -972,8 +1085,10 @@ public:
          FileWriteDouble(f,state.plan.sequence.closed[i]); FileWriteDouble(f,state.plan.sequence.price[i]);
          FileWriteLong(f,(long long)state.plan.sequence.time[i]);
         }
+      FileWriteLong(f,(long long)state.plan.reversalEntryEvent);
+      FileWriteInteger(f,state.plan.reversalEntryDone ? 1 : 0);
       FileFlush(f);
-      bool complete=FileTell(f)==(ulong)(436+keys*2);
+      bool complete=FileTell(f)==(ulong)(448+keys*2);
       FileClose(f);
       return complete && FileMove(temp,0,path,FILE_REWRITE);
      }
@@ -984,7 +1099,7 @@ public:
       if(f==INVALID_HANDLE) return false;
       ulong size=FileSize(f); int version=FileReadInteger(f);
       if(!((version==1 && size==256) || (version==2 && size==308) ||
-           (version==3 && size>=332 && size<=2000332) || ((version==4 || version==5) && size>=436 && size<=2000436))) { FileClose(f); return false; }
+           (version==3 && size>=332 && size<=2000332) || ((version==4 || version==5) && size>=436 && size<=2000436) || (version==6 && size>=448 && size<=2000448))) { FileClose(f); return false; }
       state.plan.count=FileReadInteger(f); state.plan.direction=FileReadInteger(f);
       state.plan.entry=FileReadDouble(f); state.plan.initialSL=FileReadDouble(f);
       state.plan.remaining=FileReadDouble(f); state.plan.realizedR=FileReadDouble(f);
@@ -1014,7 +1129,7 @@ public:
          state.plan.protectedSL=FileReadDouble(f); state.plan.extensionCount=FileReadInteger(f);
          state.plan.extensionTime=(datetime)FileReadLong(f);
          int keys=FileReadInteger(f);
-         if(keys<0 || keys>1000000 || size!=(ulong)((version>=4 ? 436 : 332)+keys*2)) { FileClose(f); return false; }
+         if(keys<0 || keys>1000000 || size!=(ulong)((version>=6 ? 448 : (version>=4 ? 436 : 332))+keys*2)) { FileClose(f); return false; }
          if(keys>0) state.extension.seen=FileReadString(f,keys);
          if(StringLen(state.extension.seen)!=keys) { FileClose(f); return false; }
         }
@@ -1038,6 +1153,8 @@ public:
          state.plan.sequence.seen[0]=TimeCurrent(); state.plan.sequence.seen[1]=TimeCurrent();
          if(state.plan.structureClosed[0]>0 || state.plan.structureClosed[1]>0) state.plan.sequence.step=2;
         }
+      if(version>=6)
+        { state.plan.reversalEntryEvent=(datetime)FileReadLong(f); state.plan.reversalEntryDone=FileReadInteger(f)!=0; }
       FileClose(f);
       bool valid=state.plan.count>=2 && state.plan.count<=3 && MathAbs(state.plan.direction)==1 && state.lots>0 &&
              (state.pendingStage==-1 || (state.pendingStage>=0 && state.pendingStage<state.plan.count) ||
@@ -1045,7 +1162,7 @@ public:
               (version>=5 && state.pendingStage>=7 && state.pendingStage<7+state.plan.count)) &&
              state.structureAction>=0 && state.structureAction<=2 && state.plan.sequence.step>=0 && state.plan.sequence.step<=2 &&
              (!state.plan.sequence.pending || (state.plan.sequence.step>0 && state.plan.sequence.share>0 && state.plan.sequence.share<=1));
-      return valid && (version>=5 || Save(magic,identifier,state));
+      return valid && (version>=6 || Save(magic,identifier,state));
      }
 
    static void Breakeven(CTrade &trade, ulong identifier, const SMarcoLiveTPState &state)
@@ -1258,6 +1375,12 @@ class LiveObserver { public: int m_entryTF=ENTRY_TF_M1,m_tradeTF=PERIOD_M3; Entr
    SMarcoSequenceSignal ObserveOpposingSequence(SMarcoTPPlan &plan, datetime opened, datetime now, double price)
      {
       SMarcoSequenceSignal signal; ZeroMemory(signal);
+      if(m1LBContext!=NULL && CMarcoOpposingEntryWait::FailedEntry(m1LBContext->rawExitHistory,plan,opened,now,price,signal))
+        {
+         PrintFormat("[ENTRY CHOCH FAILED] entry_event=%s reversal=%s region=SL close=100%%",
+                     TimeToString(plan.reversalEntryEvent,TIME_DATE|TIME_SECONDS),TimeToString(signal.eventTime,TIME_DATE|TIME_SECONDS));
+         return signal;
+        }
       bool preferM1=m_entryTF==ENTRY_TF_M1;
       // A full pre-entry continuation on either TF takes precedence over
       // starting an ordinary post-entry partial on the other TF in this cycle.
@@ -1294,6 +1417,12 @@ class BacktestObserver { public: int m_entryTF=ENTRY_TF_M1,m_tradeTF=PERIOD_M3; 
    SMarcoSequenceSignal ObserveOpposingSequence(SMarcoTPPlan &plan, datetime opened, datetime now, double price)
      {
       SMarcoSequenceSignal signal; ZeroMemory(signal);
+      if(m1LBContext!=NULL && CMarcoOpposingEntryWait::FailedEntry(m1LBContext->rawExitHistory,plan,opened,now,price,signal))
+        {
+         PrintFormat("[ENTRY CHOCH FAILED] entry_event=%s reversal=%s region=SL close=100%%",
+                     TimeToString(plan.reversalEntryEvent,TIME_DATE|TIME_SECONDS),TimeToString(signal.eventTime,TIME_DATE|TIME_SECONDS));
+         return signal;
+        }
       bool preferM1=m_entryTF==ENTRY_TF_M1;
       // A full pre-entry continuation on either TF takes precedence over
       // starting an ordinary post-entry partial on the other TF in this cycle.
@@ -1513,7 +1642,7 @@ int main(){
   // Upgrade v3 once; later loads must not move the observation cursor forward.
   reset(d);save(plan(d));auto &old=files[CMarcoLiveStagedTP::Path(magic,identifier)];old.resize(332);
   int32_t v3=3;std::memcpy(old.data(),&v3,4);auto migrated=load();
-  eq(migrated.plan.sequence.seen[0],1000);eq(files[CMarcoLiveStagedTP::Path(magic,identifier)].size(),436);
+  eq(migrated.plan.sequence.seen[0],1000);eq(files[CMarcoLiveStagedTP::Path(magic,identifier)].size(),448);
   clockNow=2000;eq(load().plan.sequence.seen[0],1000);
  }
  std::cout<<checks<<" opposing-sequence assertions passed\n";

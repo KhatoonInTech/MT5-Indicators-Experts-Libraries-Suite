@@ -40,7 +40,7 @@ public:
       string path=Path(magic,identifier), temp=path+".tmp";
       int f=FileOpen(temp,FILE_WRITE|FILE_BIN|FILE_UNICODE);
       if(f==INVALID_HANDLE) return false;
-      FileWriteInteger(f,5); FileWriteInteger(f,state.plan.count); FileWriteInteger(f,state.plan.direction);
+      FileWriteInteger(f,6); FileWriteInteger(f,state.plan.count); FileWriteInteger(f,state.plan.direction);
       FileWriteDouble(f,state.plan.entry); FileWriteDouble(f,state.plan.initialSL);
       FileWriteDouble(f,state.plan.remaining); FileWriteDouble(f,state.plan.realizedR);
       FileWriteInteger(f,state.plan.breakeven ? 1 : 0);
@@ -76,8 +76,10 @@ public:
          FileWriteDouble(f,state.plan.sequence.closed[i]); FileWriteDouble(f,state.plan.sequence.price[i]);
          FileWriteLong(f,(long)state.plan.sequence.time[i]);
         }
+      FileWriteLong(f,(long)state.plan.reversalEntryEvent);
+      FileWriteInteger(f,state.plan.reversalEntryDone ? 1 : 0);
       FileFlush(f);
-      bool complete=FileTell(f)==(ulong)(436+keys*2);
+      bool complete=FileTell(f)==(ulong)(448+keys*2);
       FileClose(f);
       return complete && FileMove(temp,0,path,FILE_REWRITE);
      }
@@ -88,7 +90,7 @@ public:
       if(f==INVALID_HANDLE) return false;
       ulong size=FileSize(f); int version=FileReadInteger(f);
       if(!((version==1 && size==256) || (version==2 && size==308) ||
-           (version==3 && size>=332 && size<=2000332) || ((version==4 || version==5) && size>=436 && size<=2000436))) { FileClose(f); return false; }
+           (version==3 && size>=332 && size<=2000332) || ((version==4 || version==5) && size>=436 && size<=2000436) || (version==6 && size>=448 && size<=2000448))) { FileClose(f); return false; }
       state.plan.count=FileReadInteger(f); state.plan.direction=FileReadInteger(f);
       state.plan.entry=FileReadDouble(f); state.plan.initialSL=FileReadDouble(f);
       state.plan.remaining=FileReadDouble(f); state.plan.realizedR=FileReadDouble(f);
@@ -118,7 +120,7 @@ public:
          state.plan.protectedSL=FileReadDouble(f); state.plan.extensionCount=FileReadInteger(f);
          state.plan.extensionTime=(datetime)FileReadLong(f);
          int keys=FileReadInteger(f);
-         if(keys<0 || keys>1000000 || size!=(ulong)((version>=4 ? 436 : 332)+keys*2)) { FileClose(f); return false; }
+         if(keys<0 || keys>1000000 || size!=(ulong)((version>=6 ? 448 : (version>=4 ? 436 : 332))+keys*2)) { FileClose(f); return false; }
          if(keys>0) state.extension.seen=FileReadString(f,keys);
          if(StringLen(state.extension.seen)!=keys) { FileClose(f); return false; }
         }
@@ -142,6 +144,8 @@ public:
          state.plan.sequence.seen[0]=TimeCurrent(); state.plan.sequence.seen[1]=TimeCurrent();
          if(state.plan.structureClosed[0]>0 || state.plan.structureClosed[1]>0) state.plan.sequence.step=2;
         }
+      if(version>=6)
+        { state.plan.reversalEntryEvent=(datetime)FileReadLong(f); state.plan.reversalEntryDone=FileReadInteger(f)!=0; }
       FileClose(f);
       bool valid=state.plan.count>=2 && state.plan.count<=3 && MathAbs(state.plan.direction)==1 && state.lots>0 &&
              (state.pendingStage==-1 || (state.pendingStage>=0 && state.pendingStage<state.plan.count) ||
@@ -149,7 +153,7 @@ public:
               (version>=5 && state.pendingStage>=7 && state.pendingStage<7+state.plan.count)) &&
              state.structureAction>=0 && state.structureAction<=2 && state.plan.sequence.step>=0 && state.plan.sequence.step<=2 &&
              (!state.plan.sequence.pending || (state.plan.sequence.step>0 && state.plan.sequence.share>0 && state.plan.sequence.share<=1));
-      return valid && (version>=5 || Save(magic,identifier,state));
+      return valid && (version>=6 || Save(magic,identifier,state));
      }
 
    static void Breakeven(CTrade &trade, ulong identifier, const SMarcoLiveTPState &state)

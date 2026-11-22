@@ -26,6 +26,8 @@ struct SMarcoTPPlan
    int extensionCount;
    datetime extensionTime;
    SMarcoOpposingSequence sequence;
+   datetime reversalEntryEvent; // Exact M1 CHoCH used after an opposing-LB wait.
+   bool reversalEntryDone;      // Its immediate continuation has been resolved.
   };
 
 // Kept outside the fixed-size plan so indicator cache records remain serializable.

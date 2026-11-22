@@ -1,0 +1,3 @@
+# Local diagnostic replays, generated harnesses, build logs and review artifacts.
+# Keep maintained regression tests outside this directory.
+/Tests/Marcotrades/_review/

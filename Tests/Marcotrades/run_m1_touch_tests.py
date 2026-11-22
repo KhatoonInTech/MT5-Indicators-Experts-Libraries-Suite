@@ -72,7 +72,8 @@ struct CInducementLogic {List<CInducementZone*> m_zones;};
 struct CMarketStructure {List<string> all_event_names;List<datetime> all_event_times;};
 struct Context {CMarcoIndEntryFilter indEntry;int rejectionHistory=0;void Update(datetime,double,double,double,double,ZigZag*,double){}};
 struct SLivePivotConfirmation {datetime pivotTime=0;double price=0;bool isHigh=false;datetime availableTime=0;};
-struct Zone {SMarcoPivotWatch pivotWatch{};SMarcoPivotEntry pivotEntry{};SMarcoIndWait indWait{};string id="LB_BEAR_1794450000";bool isBullish=false,isMitigated=false;int touchCount=0;
+struct OpposingWait {bool required=false;};
+struct Zone {OpposingWait opposingWait{};SMarcoPivotWatch pivotWatch{};SMarcoPivotEntry pivotEntry{};SMarcoIndWait indWait{};string id="LB_BEAR_1794450000";bool isBullish=false,isMitigated=false;int touchCount=0;
  datetime confirmedTime=13*3600+5*60,entryTriggerTime=13*3600+5*60,m1TouchTime=0,m1ConfirmTime=0,m1PivotTime=0,mitigationTime=0;
  double zoneLow=7607.79,zoneHigh=7612.80,m1PivotPrice=0;};
 '''
@@ -93,6 +94,9 @@ for name in ('CheckIndWaitBoundary','CaptureSetupIndContext','IndEntryReady','Sk
 prefix = mock + policy + r'''
 class Engine {public:
  string m_symbol="US500m";int m_entryTF=ENTRY_TF_M1,m_tradeTF=PERIOD_M5,m_entryBarCount=0,m_htf_lb_count=1;
+ bool m_applyEntryPolicyToPreventionExits=false;double m_last_entry_close=0;
+ void ObserveOpposingEntryBar(int,datetime,double,double,double,double){}
+ void ObserveOpposingEntry(int,datetime,double,double,datetime,int){}
  double m_slBufferPips=50;datetime m_last_entry_bar=0;ZigZag zigzag;ZigZag* zzEntry=&zigzag;
  Context* m1LBContext=nullptr;std::vector<Zone> m_htf_lbs{Zone{}};
  CMarcoIndEntryFilter m_setupIndEntry;
@@ -385,6 +389,19 @@ int main(){
   check(e.SkipIndEntryPrice(0,900,100,pt,ct));check(z.indWait.waiting);
   check(!e.GetM1EntryPivot(0,960,pt,px,ct)); // Replacement never bypasses IND/CHoCH wait.
  }
+ // Special reversal entries always use M1 plus setup-TF IND checks, even
+ // with ordinary entry TF set to the setup TF. Keep the supplied CHoCH pivot.
+ for(bool buy:{false,true})for(int source:{0,1})for(int mode:{IND_ENTRY_PRICE,IND_ENTRY_PIVOT,IND_ENTRY_EITHER}){
+  Engine e;Context ctx;e.m1LBContext=&ctx;e.m_entryTF=ENTRY_TF_LB;e.m_applyEntryPolicyToPreventionExits=true;
+  auto &z=e.m_htf_lbs[0];z.isBullish=buy;z.zoneLow=80;z.zoneHigh=120;z.opposingWait.required=true;
+  auto &ind=source==0 ? e.m_setupIndEntry : ctx.indEntry;
+  CMarcoIndEntryFilter::Configure((ENUM_MARCO_IND_ENTRY_FILTER)mode);
+  ind.Begin(95,105);ind.Zone("special-ind",buy,95,105,240);ind.End(240);
+  check(e.SkipIndPivot(0,240,100,360)==(mode!=IND_ENTRY_PRICE));
+  CMarcoIndEntryFilter::Reset(z.indWait);
+  check(e.SkipIndEntryPrice(0,360,100,240,360)==(mode!=IND_ENTRY_PIVOT));
+  if(mode!=IND_ENTRY_PIVOT){check(z.indWait.rejectedPivot==240);check(z.indWait.rejectedAvailable==360);}
+ }
  CMarcoPivotEntry::Configure(ENTRY_AFTER_CONFIRMATION);
  std::cout<<"PASS: "<<checks<<" M1/setup IND, waiting, first-pivot and expiry checks (both directions)\n";
 }
@@ -392,7 +409,6 @@ int main(){
 with tempfile.TemporaryDirectory(prefix='marco_m1_touch_') as directory:
     cpp, binary = Path(directory)/'test.cpp', Path(directory)/'test.exe'
     cpp.write_text(prefix + methods + cases, encoding='utf-8')
-    (root/'Tests/Marcotrades/_review/dual_ind_test.cpp').write_text(prefix + methods + cases,encoding='utf-8')
     compiler = shutil.which('g++') or r'C:\MinGW\bin\g++.exe'
     subprocess.run([compiler, '-std=c++17', '-O2', str(cpp), '-o', str(binary)], check=True)
     subprocess.run([str(binary)], check=True)

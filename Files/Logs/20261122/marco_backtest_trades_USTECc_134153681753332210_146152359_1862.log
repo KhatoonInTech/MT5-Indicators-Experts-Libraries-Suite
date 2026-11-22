@@ -1,0 +1,50 @@
+2026.11.22 12:06:28 [USTECc,PERIOD_M15] [LIFECYCLE] Started marco_backtest_trades
+2026.11.22 12:06:28 [USTECc,PERIOD_M15] [PRE-INIT MESSAGES]
+
+2026.11.22 12:06:28 [USTECc,PERIOD_M15] [BROKER REPLAY] Loaded 6 recorded rejections; exact symbol/TF/LB/entry-minute matching. Unrecorded attempts remain simulated.
+2026.11.22 12:06:28 [USTECc,PERIOD_M15] [INDICATOR SIMULATION] InpSendWhatsAppAlert is unsupported: MT5 forbids WebRequest in indicators. No message will be sent.
+2026.11.22 12:06:28 [USTECc,PERIOD_M15] [INDICATOR SIMULATION] Independent chart-symbol simulation. Broker-specification profit/margin estimates may differ from broker-side calculations. No orders are sent.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [PIP UNITS] USTECc: pip=0.10000000 tick=0.01000000 SL buffer=75.00000000 pips -> 7.50000000 price; stops round outward to ticks.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIM CONFIG] USTECc setup=PERIOD_M2 point=0.01000000 entry_mode=1 IND_pivot=off IND_price=on proximity=0.10000000 merge=on cluster=0.50000000 expand=off ZZ=0.00100000/1/Absolute TP_spread=off vicinity=off
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [HISTORY WARMUP] USTECc PERIOD_M2: context from 2026.11.17 00:00:00; trades from 2026.11.18 00:00:00. Previous-day bars do not create simulated trades.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIMULATION] USTECc PERIOD_M2: closed-candle signals, next-bar bid/ask open, fixed spread=1.12000000; commission/swap not modeled.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [PIP UNITS] USTECc: pip=0.10000000 tick=0.01000000 SL buffer=75.00000000 pips -> 7.50000000 price; stops round outward to ticks.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIM CONFIG] USTECc setup=PERIOD_M3 point=0.01000000 entry_mode=1 IND_pivot=off IND_price=on proximity=0.10000000 merge=on cluster=0.50000000 expand=off ZZ=0.00100000/1/Absolute TP_spread=off vicinity=off
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [HISTORY WARMUP] USTECc PERIOD_M3: context from 2026.11.17 00:00:00; trades from 2026.11.18 00:00:00. Previous-day bars do not create simulated trades.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIMULATION] USTECc PERIOD_M3: closed-candle signals, next-bar bid/ask open, fixed spread=1.12000000; commission/swap not modeled.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [PIP UNITS] USTECc: pip=0.10000000 tick=0.01000000 SL buffer=75.00000000 pips -> 7.50000000 price; stops round outward to ticks.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIM CONFIG] USTECc setup=PERIOD_M4 point=0.01000000 entry_mode=1 IND_pivot=off IND_price=on proximity=0.10000000 merge=on cluster=0.50000000 expand=off ZZ=0.00100000/1/Absolute TP_spread=off vicinity=off
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [HISTORY WARMUP] USTECc PERIOD_M4: context from 2026.11.17 00:00:00; trades from 2026.11.18 00:00:00. Previous-day bars do not create simulated trades.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIMULATION] USTECc PERIOD_M4: closed-candle signals, next-bar bid/ask open, fixed spread=1.12000000; commission/swap not modeled.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [PIP UNITS] USTECc: pip=0.10000000 tick=0.01000000 SL buffer=75.00000000 pips -> 7.50000000 price; stops round outward to ticks.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIM CONFIG] USTECc setup=PERIOD_M5 point=0.01000000 entry_mode=1 IND_pivot=off IND_price=on proximity=0.10000000 merge=on cluster=0.50000000 expand=off ZZ=0.00100000/1/Absolute TP_spread=off vicinity=off
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [HISTORY WARMUP] USTECc PERIOD_M5: context from 2026.11.17 00:00:00; trades from 2026.11.18 00:00:00. Previous-day bars do not create simulated trades.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIMULATION] USTECc PERIOD_M5: closed-candle signals, next-bar bid/ask open, fixed spread=1.12000000; commission/swap not modeled.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [PIP UNITS] USTECc: pip=0.10000000 tick=0.01000000 SL buffer=75.00000000 pips -> 7.50000000 price; stops round outward to ticks.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIM CONFIG] USTECc setup=PERIOD_M10 point=0.01000000 entry_mode=1 IND_pivot=off IND_price=on proximity=0.10000000 merge=on cluster=0.50000000 expand=off ZZ=0.00100000/1/Absolute TP_spread=off vicinity=off
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [HISTORY WARMUP] USTECc PERIOD_M10: context from 2026.11.17 00:00:00; trades from 2026.11.18 00:00:00. Previous-day bars do not create simulated trades.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIMULATION] USTECc PERIOD_M10: closed-candle signals, next-bar bid/ask open, fixed spread=1.12000000; commission/swap not modeled.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [PIP UNITS] USTECc: pip=0.10000000 tick=0.01000000 SL buffer=75.00000000 pips -> 7.50000000 price; stops round outward to ticks.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIM CONFIG] USTECc setup=PERIOD_M12 point=0.01000000 entry_mode=1 IND_pivot=off IND_price=on proximity=0.10000000 merge=on cluster=0.50000000 expand=off ZZ=0.00100000/1/Absolute TP_spread=off vicinity=off
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [HISTORY WARMUP] USTECc PERIOD_M12: context from 2026.11.17 00:00:00; trades from 2026.11.18 00:00:00. Previous-day bars do not create simulated trades.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIMULATION] USTECc PERIOD_M12: closed-candle signals, next-bar bid/ask open, fixed spread=1.12000000; commission/swap not modeled.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [PIP UNITS] USTECc: pip=0.10000000 tick=0.01000000 SL buffer=75.00000000 pips -> 7.50000000 price; stops round outward to ticks.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIM CONFIG] USTECc setup=PERIOD_M15 point=0.01000000 entry_mode=1 IND_pivot=off IND_price=on proximity=0.10000000 merge=on cluster=0.50000000 expand=off ZZ=0.00100000/1/Absolute TP_spread=off vicinity=off
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [HISTORY WARMUP] USTECc PERIOD_M15: context from 2026.11.17 00:00:00; trades from 2026.11.18 00:00:00. Previous-day bars do not create simulated trades.
+2026.11.22 12:06:37 [USTECc,PERIOD_M15] [SIMULATION] USTECc PERIOD_M15: closed-candle signals, next-bar bid/ask open, fixed spread=1.12000000; commission/swap not modeled.
+2026.11.22 12:07:18 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 3m zone=Demand / Supply_BEAR_1794960360 origin=2026.11.18 00:06 known=2026.11.18 00:51 bounds=27390.14000000..27431.13000000 before=BULLISH after=BULLISH; not an inducement.
+2026.11.22 12:07:18 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 4m zone=Demand / Supply_BEAR_1794960480 origin=2026.11.18 00:08 known=2026.11.18 00:52 bounds=27391.15000000..27431.13000000 before=BULLISH after=BULLISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.
+2026.11.22 12:07:19 [USTECc,PERIOD_M15] [IND STRUCTURE REJECT] 1m zone=Demand / Supply_BULL_1794962700 origin=2026.11.18 00:45 known=2026.11.18 01:00 bounds=27387.39000000..27404.64000000 before=BEARISH after=BEARISH; not an inducement.

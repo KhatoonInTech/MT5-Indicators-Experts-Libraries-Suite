@@ -25,6 +25,7 @@
 #include <Custom\Marcotrades\broker_execution.mqh>
 #include <Custom\Marcotrades\structure_exit.mqh>
 #include <Custom\Marcotrades\opposing_sequence.mqh>
+#include <Custom\Marcotrades\opposing_entry_wait.mqh>
 #include <Custom\Marcotrades\raw_exit_context.mqh>
 #include <Custom\Marcotrades\lb_extension.mqh>
 #include <Custom\Marcotrades\symbol_units.mqh>
@@ -367,6 +368,7 @@ struct SLiveHTFLB
    SMarcoIndWait     indWait;
    SMarcoPivotEntry  pivotEntry;
    SMarcoPivotWatch  pivotWatch;
+   SMarcoOpposingEntryWait opposingWait;
    datetime          rejectionTouchTime;
    datetime          rejectionHTFTouchTime;
    datetime          m1PivotTime;
@@ -397,6 +399,7 @@ public:
    CTradeRejectionHistory m_htfRawExit;
    int               m_entryBarCount;
    datetime          m_last_entry_bar;
+   double m_last_entry_close;
 
    double            m_riskPercent;
    double            m_slBufferPips;
@@ -487,7 +490,7 @@ public:
       zzEntry = NULL;
       m1LBContext = NULL;
       m_entryBarCount = 0;
-      m_last_entry_bar = 0;
+      m_last_entry_bar = 0; m_last_entry_close=0;
       zzHtf       = NULL;
       msHtf       = NULL;
       dsHtf       = NULL;
@@ -853,7 +856,7 @@ public:
       zzEntry = NULL;
       m1LBContext = NULL;
       m_entryBarCount = 0;
-      m_last_entry_bar = 0;
+      m_last_entry_bar = 0; m_last_entry_close=0;
       ArrayResize(m_m1PivotConfirmations, 0);
       // Observe M1 rejection context in both entry modes.
       Settings* entrySettings = new Settings(m_zzDev, m_zzDepth, clrNONE, false, false, false, false, m_priceDiff);
@@ -866,15 +869,20 @@ public:
      {
       if(zzEntry == NULL || barTime <= m_last_entry_bar || GetPipSize(m_symbol) <= 0.0)
          return;
+      if(m_applyEntryPolicyToPreventionExits)
+         for(int k=0;k<m_htf_lb_count;k++) ObserveOpposingEntryBar(k,barTime,open,high,low,close);
       zzEntry.update(high, low, barTime, volume, m_entryBarCount++, true, false);
       if(m1LBContext != NULL)
          m1LBContext.Update(barTime, open, high, low, close, zzEntry, GetPipSize(m_symbol));
       CaptureM1PivotConfirmations(zzEntry, barTime + PeriodSeconds(PERIOD_M1));
-      m_last_entry_bar = barTime;
+      m_last_entry_bar = barTime; m_last_entry_close=close;
+      if(m_applyEntryPolicyToPreventionExits)
+         for(int k=0;k<m_htf_lb_count;k++)
+            ObserveOpposingEntry(k,barTime+60,close,close,barTime+60,PERIOD_M1);
       if(CMarcoPivotEntry::Enabled())
          for(int k=0;k<m_htf_lb_count;k++)
            {
-            if(ObservePivotEntryRange(k,barTime,low,high)) continue;
+            if(m_htf_lbs[k].opposingWait.required || ObservePivotEntryRange(k,barTime,low,high)) continue;
             datetime pivot=0,confirmed=0; double price=0;
             if(m_entryTF==ENTRY_TF_M1 && m_htf_lbs[k].m1TouchTime>0)
                GetLatestEntryPivot(k,barTime+PeriodSeconds(PERIOD_M1),zzEntry,true,pivot,price,confirmed);
@@ -963,6 +971,12 @@ public:
    SMarcoSequenceSignal ObserveOpposingSequence(SMarcoTPPlan &plan, datetime opened, datetime now, double price)
      {
       SMarcoSequenceSignal signal; ZeroMemory(signal);
+      if(m1LBContext!=NULL && CMarcoOpposingEntryWait::FailedEntry(m1LBContext.rawExitHistory,plan,opened,now,price,signal))
+        {
+         PrintFormat("[ENTRY CHOCH FAILED] entry_event=%s reversal=%s region=SL close=100%%",
+                     TimeToString(plan.reversalEntryEvent,TIME_DATE|TIME_SECONDS),TimeToString(signal.eventTime,TIME_DATE|TIME_SECONDS));
+         return signal;
+        }
       bool preferM1=m_entryTF==ENTRY_TF_M1;
       // A full pre-entry continuation on either TF takes precedence over
       // starting an ordinary post-entry partial on the other TF in this cycle.
@@ -1007,9 +1021,78 @@ public:
          m_htf_lbs[k].rejectionHTFTouchTime = MathMax(m_htf_lbs[k].rejectionHTFTouchTime, knownAt);
      }
 
+   void ObserveOpposingEntry(int k,datetime sampleBar,double low,double high,datetime now,ENUM_TIMEFRAMES tf)
+     {
+      if(!m_applyEntryPolicyToPreventionExits || !m_htf_lbs[k].sourceActive ||
+         CTradeRejection::Used(m_htf_lbs[k].touchCount,m_htf_lbs[k].isMitigated) ||
+         m_htf_lbs[k].entryTriggerTime<=0 ||
+         sampleBar<m_htf_lbs[k].entryTriggerTime+PeriodSeconds(m_tradeTF)) return;
+      double buffer=m_slBufferPips*GetPipSize(m_symbol);
+      SMarcoOpposingEntryWait state=m_htf_lbs[k].opposingWait;
+      if(state.waiting && now<state.since) return;
+      // A reversal may close beyond the band after its swing formed inside it.
+      // Retain this wait while the setup is valid; Resolve checks that exact swing.
+      if(state.waiting || !CTradeRejection::Intersects(low,high,m_htf_lbs[k].zoneLow-buffer,m_htf_lbs[k].zoneHigh+buffer)) return;
+      bool armed=false;
+      if(tf==PERIOD_M1 && m1LBContext!=NULL)
+         armed=CMarcoOpposingEntryWait::Begin(state,m1LBContext.rawExitHistory,m_htf_lbs[k].isBullish,now,PERIOD_M1);
+      else if(tf==m_tradeTF)
+         armed=CMarcoOpposingEntryWait::Begin(state,m_htfRawExit,m_htf_lbs[k].isBullish,now,m_tradeTF);
+      if(!armed) return;
+      m_htf_lbs[k].opposingWait=state;
+      ZeroMemory(m_htf_lbs[k].pivotEntry); ZeroMemory(m_htf_lbs[k].pivotWatch);
+      m_htf_lbs[k].m1PivotTime=0; m_htf_lbs[k].m1PivotPrice=0; m_htf_lbs[k].m1ConfirmTime=0;
+      PrintFormat("[OPPOSING LB WAIT] %s %s LB=%s source=%s opposing=%s since=%s; awaiting fresh M1 %s with swing inside setup+SL-buffer.",
+                  m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,EnumToString((ENUM_TIMEFRAMES)state.sourceTF),
+                  state.sourceId,TimeToString(now,TIME_DATE|TIME_SECONDS),m_htf_lbs[k].isBullish ? "BL-CHoCH" : "BR-CHoCH");
+     }
+
+   // Reconstruct a closed M1 candle using the simulator's existing OHLC path.
+   // Consult pre-candle histories so a touch before its closing CHoCH is not lost.
+   void ObserveOpposingEntryBar(int k,datetime barTime,double open,double high,double low,double close)
+     {
+      if(!m_applyEntryPolicyToPreventionExits || m_htf_lbs[k].opposingWait.since>barTime) return;
+      double prices[4]; prices[0]=open; prices[1]=close>=open ? low : high;
+      prices[2]=close>=open ? high : low; prices[3]=close;
+      double buffer=m_slBufferPips*GetPipSize(m_symbol);
+      double bottom=m_htf_lbs[k].zoneLow-buffer,top=m_htf_lbs[k].zoneHigh+buffer;
+      for(int p=0;p<4;p++)
+        {
+         if(p>0 && (prices[p-1]<bottom || prices[p-1]>top) &&
+            MathMin(prices[p-1],prices[p])<=top && MathMax(prices[p-1],prices[p])>=bottom)
+           {
+            double crossing=prices[p-1]<bottom ? bottom : top;
+            ObserveOpposingEntry(k,barTime,crossing,crossing,barTime,m_tradeTF);
+            ObserveOpposingEntry(k,barTime,crossing,crossing,barTime,PERIOD_M1);
+           }
+         ObserveOpposingEntry(k,barTime,prices[p],prices[p],barTime,m_tradeTF);
+         ObserveOpposingEntry(k,barTime,prices[p],prices[p],barTime,PERIOD_M1);
+        }
+     }
+
+   bool ResolveOpposingEntry(int k,datetime now,double executionPrice,SRejectionEvent &event)
+     {
+      if(!m_applyEntryPolicyToPreventionExits || m1LBContext==NULL || zzEntry==NULL ||
+         !m_htf_lbs[k].sourceActive || CTradeRejection::Used(m_htf_lbs[k].touchCount,m_htf_lbs[k].isMitigated)) return false;
+      double buffer=m_slBufferPips*GetPipSize(m_symbol);
+      if(!CMarcoOpposingEntryWait::Ready(m_htf_lbs[k].opposingWait,m1LBContext.rawExitHistory,
+            m_htf_lbs[k].isBullish,now,m_htf_lbs[k].zoneLow,m_htf_lbs[k].zoneHigh,buffer,event) ||
+         event.time!=m_last_entry_bar || !MathIsValidNumber(executionPrice) || executionPrice<=0) return false;
+      // Confirm the exact swing still exists; do not enter on a replaced pivot.
+      for(int p=zzEntry.pivots.Total()-1;p>=0;p--)
+        {
+         Pivot* pivot=(Pivot*)zzEntry.pivots.At(p);
+         if(pivot==NULL || pivot==zzEntry.projection || pivot.end==NULL || StringFind(pivot.ln,"ZZ_Proj")>=0) continue;
+         if(pivot.isHigh==m_htf_lbs[k].isBullish || pivot.end.time!=event.originTime) continue;
+         return MathAbs(pivot.end.price-event.originPrice)<=SymbolInfoDouble(m_symbol,SYMBOL_POINT)*0.1;
+        }
+      return false;
+     }
+
    bool CheckChochRejection(int k, datetime now, ZigZag* zz, ENUM_TIMEFRAMES tf,
                             CTradeRejectionHistory &history)
      {
+      if(m_applyEntryPolicyToPreventionExits && m_htf_lbs[k].opposingWait.required) return false;
       datetime touch = tf == PERIOD_M1 ? m_htf_lbs[k].rejectionTouchTime : m_htf_lbs[k].rejectionHTFTouchTime;
       if(zz == NULL || touch == 0 ||
          CTradeRejection::Used(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated)) return false;
@@ -1040,6 +1123,17 @@ public:
       STradeRejection result = history.OpposingChoch(m_htf_lbs[k].isBullish, origin, legEnd,
                         touch, now, tf, m_slBufferPips * GetPipSize(m_symbol));
       if(result.action != TRADE_RETIRE_ZONE) return false;
+      if(m_applyEntryPolicyToPreventionExits)
+        {
+         m_htf_lbs[k].opposingWait.required=true; m_htf_lbs[k].opposingWait.waiting=true;
+         m_htf_lbs[k].opposingWait.since=now; m_htf_lbs[k].opposingWait.sourceEvent=result.eventTime;
+         m_htf_lbs[k].opposingWait.sourceTF=(int)tf; m_htf_lbs[k].opposingWait.sourceId=result.opposingId;
+         ZeroMemory(m_htf_lbs[k].pivotEntry); ZeroMemory(m_htf_lbs[k].pivotWatch);
+         m_htf_lbs[k].m1PivotTime=0; m_htf_lbs[k].m1PivotPrice=0; m_htf_lbs[k].m1ConfirmTime=0;
+         PrintFormat("[OPPOSING LB WAIT] %s %s LB=%s opposing=%s; retirement replaced by M1 CHoCH wait.",
+                     m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,result.opposingId);
+         return true;
+        }
       m_htf_lbs[k].opposingRejectedAt=now;
       m_clusterSyncedBar=0; // Persist the rejection before another setup can enter.
       CTradeRejection::Retire(m_htf_lbs[k].touchCount, m_htf_lbs[k].isMitigated, m_htf_lbs[k].mitigationTime, now);
@@ -1056,12 +1150,17 @@ public:
       for(int k = 0; k < m_htf_lb_count; k++)
         {
          ObserveRejectionTouch(k, barTime, low, high, available, tf);
-         CheckChochRejection(k, available, zz, tf, history);
+         // Policy waits are observed on the M1 path and executable quotes.
+         // An HTF close processed first must not predate/overwrite an M1 touch
+         // within that candle, or expose its new structure to earlier M1 bars.
+         if(!m_applyEntryPolicyToPreventionExits)
+            CheckChochRejection(k, available, zz, tf, history);
         }
      }
 
    bool              BlockM1OpposingLeg(int k, datetime now)
      {
+      if(m_applyEntryPolicyToPreventionExits && m_htf_lbs[k].opposingWait.required) return true;
       if(m_entryTF != ENTRY_TF_M1 || m1LBContext == NULL || zzEntry == NULL ||
          m_htf_lbs[k].m1TouchTime == 0 || now < m_htf_lbs[k].m1TouchTime)
          return false;
@@ -1144,7 +1243,7 @@ public:
    bool IndEntryReady(int k, datetime pivot, double price, datetime available, datetime now)
      {
       if(!CMarcoIndEntryFilter::Enabled() || !m_htf_lbs[k].indWait.waiting) return true;
-      if(m_entryTF==ENTRY_TF_M1)
+      if(m_entryTF==ENTRY_TF_M1 || (m_applyEntryPolicyToPreventionExits && m_htf_lbs[k].opposingWait.required))
          return m1LBContext!=NULL && m1LBContext.indEntry.Ready(m_htf_lbs[k].indWait,
                    m_htf_lbs[k].isBullish,pivot,price,available,m_htf_lbs[k].zoneLow,m_htf_lbs[k].zoneHigh,now);
       return m_setupIndEntry.Ready(m_htf_lbs[k].indWait,m_htf_lbs[k].isBullish,
@@ -1155,7 +1254,8 @@ public:
      {
       if(!CMarcoIndEntryFilter::CheckPivot() || pivot<=0) return false;
       bool bull=m_htf_lbs[k].isBullish, blocked=false;
-      ENUM_TIMEFRAMES entryTF=m_entryTF==ENTRY_TF_M1 ? PERIOD_M1 : m_tradeTF;
+      ENUM_TIMEFRAMES entryTF=(m_entryTF==ENTRY_TF_M1 ||
+         (m_applyEntryPolicyToPreventionExits && m_htf_lbs[k].opposingWait.required)) ? PERIOD_M1 : m_tradeTF;
       string id="";
       if(m_setupIndEntry.SkipPivot(m_htf_lbs[k].indWait,bull,pivot,price,available,id,entryTF))
         {
@@ -1180,7 +1280,9 @@ public:
      {
       if(!CMarcoIndEntryFilter::CheckPrice()) return false;
       bool bull=m_htf_lbs[k].isBullish, blocked=false;
-      if(m_entryTF==ENTRY_TF_M1)
+      bool reversalEntry=m_applyEntryPolicyToPreventionExits && m_htf_lbs[k].opposingWait.required;
+      bool useM1=reversalEntry || m_entryTF==ENTRY_TF_M1;
+      if(!reversalEntry && m_entryTF==ENTRY_TF_M1)
         { pivot=m_htf_lbs[k].m1PivotTime; confirmed=m_htf_lbs[k].m1ConfirmTime; }
       string id="";
       m_setupIndEntry.Audit(m_symbol,m_tradeTF,bull,now,entry,m_tradeTF);
@@ -1190,7 +1292,7 @@ public:
          PrintFormat("[IND PRICE WAIT] %s setup=%s source=%s IND=%s entry=%.8f",
                      m_symbol,EnumToString(m_tradeTF),EnumToString(m_tradeTF),id,entry);
         }
-      if(m_entryTF==ENTRY_TF_M1 && m_tradeTF!=PERIOD_M1 && m1LBContext!=NULL)
+      if(useM1 && m_tradeTF!=PERIOD_M1 && m1LBContext!=NULL)
         {
          m1LBContext.indEntry.Audit(m_symbol,m_tradeTF,bull,now,entry,PERIOD_M1);
          if(m1LBContext.indEntry.SkipPrice(m_htf_lbs[k].indWait,bull,pivot,confirmed,now,entry,id))
@@ -1203,9 +1305,9 @@ public:
       if(!blocked) return false;
       PrintFormat("[IND WAIT] %s setup=%s LB=%s: waiting for a new %s CHoCH and pivot beyond blocking INDs.",
                   m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,
-                  EnumToString(m_entryTF==ENTRY_TF_M1 ? PERIOD_M1 : m_tradeTF));
+                  EnumToString(useM1 ? PERIOD_M1 : m_tradeTF));
       m_htf_lbs[k].m1PivotTime=0; m_htf_lbs[k].m1PivotPrice=0; m_htf_lbs[k].m1ConfirmTime=0;
-      if(m_entryTF==ENTRY_TF_M1 && m1LBContext!=NULL)
+      if(useM1 && m1LBContext!=NULL)
          CheckIndWaitBoundary(k,now,m1LBContext.indEntry.lastLow,m1LBContext.indEntry.lastHigh);
       else CheckIndWaitBoundary(k,now,m_setupIndEntry.lastLow,m_setupIndEntry.lastHigh);
       return true;
@@ -1900,9 +2002,9 @@ public:
                      if(SymbolInfoTick(m_symbol,quote))
                        {
                         datetime seen0=state.plan.sequence.seen[0],seen1=state.plan.sequence.seen[1];
-                        int previousStep=state.plan.sequence.step;
+                        int previousStep=state.plan.sequence.step; bool previousReversalDone=state.plan.reversalEntryDone;
                         SMarcoSequenceSignal sequence=ObserveOpposingSequence(state.plan,m_trades[i].openTime,TimeCurrent(),state.plan.direction==1 ? quote.bid : quote.ask);
-                        bool advanced=previousStep!=state.plan.sequence.step || seen0!=state.plan.sequence.seen[0] || seen1!=state.plan.sequence.seen[1];
+                        bool advanced=previousReversalDone!=state.plan.reversalEntryDone || previousStep!=state.plan.sequence.step || seen0!=state.plan.sequence.seen[0] || seen1!=state.plan.sequence.seen[1];
                         if(advanced && !CMarcoLiveStagedTP::Save(m_magic,m_trades[i].positionId,state))
                           { Print("[OPPOSING SEQUENCE ERROR] Cannot save event progress; no close submitted."); continue; }
                         if(sequence.step>0)
@@ -2262,6 +2364,7 @@ public:
                      m_htf_lbs[sz].m1TouchTime = 0;
                      ZeroMemory(m_htf_lbs[sz].pivotEntry);
                      ZeroMemory(m_htf_lbs[sz].pivotWatch);
+                   ZeroMemory(m_htf_lbs[sz].opposingWait);
                      CMarcoIndEntryFilter::Reset(m_htf_lbs[sz].indWait);
                      m_htf_lbs[sz].rejectionTouchTime = 0;
                      m_htf_lbs[sz].rejectionHTFTouchTime = 0;
@@ -2529,6 +2632,7 @@ public:
                   m_htf_lbs[sz].m1TouchTime = 0;
                   ZeroMemory(m_htf_lbs[sz].pivotEntry);
                   ZeroMemory(m_htf_lbs[sz].pivotWatch);
+                     ZeroMemory(m_htf_lbs[sz].opposingWait);
                   CMarcoIndEntryFilter::Reset(m_htf_lbs[sz].indWait);
                   m_htf_lbs[sz].rejectionTouchTime = 0;
                   m_htf_lbs[sz].rejectionHTFTouchTime = 0;
@@ -2980,7 +3084,9 @@ public:
               }
            }
 
-            if(CMarcoPivotEntry::Enabled())
+            ObserveOpposingEntry(k,TimeCurrent(),bid,bid,TimeCurrent(),m_tradeTF);
+            ObserveOpposingEntry(k,TimeCurrent(),bid,bid,TimeCurrent(),PERIOD_M1);
+            if(!m_htf_lbs[k].opposingWait.required && CMarcoPivotEntry::Enabled())
               {
                if(ObservePivotEntryRange(k,TimeCurrent(),bid,bid)) continue;
                datetime latestPivot=0,latestConfirmed=0; double latestPrice=0;
@@ -3000,7 +3106,15 @@ public:
          datetime firstPivotConfirmTime = 0;
          int pivotTouches = 0;
          ZigZag* entryZigZag = zzHtf;
-         if(m_entryTF == ENTRY_TF_M1)
+         bool reversalEntry=m_applyEntryPolicyToPreventionExits && m_htf_lbs[k].opposingWait.required;
+         SRejectionEvent reversalEvent;
+         if(reversalEntry)
+           {
+            if(!ResolveOpposingEntry(k,TimeCurrent(),isBull ? ask : bid,reversalEvent)) continue;
+            firstPivotTime=reversalEvent.originTime; firstPivotPrice=reversalEvent.originPrice;
+            firstPivotConfirmTime=reversalEvent.available; pivotTouches=1; entryZigZag=zzEntry;
+           }
+         else if(m_entryTF == ENTRY_TF_M1)
            {
             // Bid defines chart pivots in both directions; executable entry remains Ask/ Bid.
             ArmM1Entry(k, scanTick.time, bid, bid);
@@ -3072,9 +3186,9 @@ public:
 
            }
 
-         if(!CMarcoPivotEntry::Quote(m_htf_lbs[k].pivotEntry,isBull,bid)) continue;
+         if(!reversalEntry && !CMarcoPivotEntry::Quote(m_htf_lbs[k].pivotEntry,isBull,bid)) continue;
 
-         if(m_entryTF!=ENTRY_TF_M1 &&
+         if((reversalEntry || m_entryTF!=ENTRY_TF_M1) &&
             (SkipIndPivot(k,firstPivotTime,firstPivotPrice,firstPivotConfirmTime) ||
              !IndEntryReady(k,firstPivotTime,firstPivotPrice,firstPivotConfirmTime,TimeCurrent()) ||
              SkipIndEntryPrice(k,TimeCurrent(),isBull ? ask : bid,firstPivotTime,firstPivotConfirmTime))) continue;
@@ -3083,7 +3197,7 @@ public:
          if(!entryAllowed || m_clusterSyncedBar==0)
             continue;
          // Opposing Leg Filter (Anti-Bait Trap Guard)
-         if(IsLegComingFromOppositeLB(isBull, firstPivotTime, entryZigZag, buffer, TimeCurrent()))
+         if(!reversalEntry && IsLegComingFromOppositeLB(isBull, firstPivotTime, entryZigZag, buffer, TimeCurrent()))
            {
             PrintFormat("🛑 [%s] %s Trade BLOCKED: Touching pivot follows a ZigZag leg coming straight from an opposing %s zone! Skipping.",
                         m_symbol, setupNomenclature, isBull ? "BR-LB" : "BL-LB");
@@ -3098,7 +3212,7 @@ public:
             continue;
          ask = entryTick.ask;
          bid = entryTick.bid;
-         if(CMarcoPivotEntry::Enabled())
+         if(!m_htf_lbs[k].opposingWait.required && CMarcoPivotEntry::Enabled())
            {
             MqlRates forming[];
             if(CopyRates(m_symbol,PERIOD_M1,0,1,forming)!=1) continue;
@@ -3109,7 +3223,13 @@ public:
                ObservePivotEntryRange(k,entryTick.time,bid,bid) ||
                m_htf_lbs[k].pivotWatch.invalid) continue;
            }
-         if(!CMarcoPivotEntry::Quote(m_htf_lbs[k].pivotEntry,isBull,bid)) continue;
+         if(!reversalEntry && !CMarcoPivotEntry::Quote(m_htf_lbs[k].pivotEntry,isBull,bid)) continue;
+         if(reversalEntry)
+           {
+            MqlRates forming[];
+            if(CopyRates(m_symbol,PERIOD_M1,0,1,forming)!=1 || forming[0].time!=reversalEvent.available ||
+               !ResolveOpposingEntry(k,entryTick.time,isBull ? ask : bid,reversalEvent)) continue;
+           }
          double entryPx = isBull ? ask : bid;
          // The executable quote is refreshed after overlap checks; apply the same veto again.
          if(CheckIndWaitBoundary(k,entryTick.time,bid,ask) ||
@@ -3117,7 +3237,7 @@ public:
          double slPx    = 0.0;
 
          // Dynamic SL Placement, aligned outward to the broker's price grid.
-         double slReference = (m_slLocation == SL_LOCATION_CONFIRM_PIVOT && firstPivotPrice > 0.0) ?
+         double slReference = ((reversalEntry || m_slLocation == SL_LOCATION_CONFIRM_PIVOT) && firstPivotPrice > 0.0) ?
                               firstPivotPrice : (isBull ? zLow : zHigh);
          if(!CMarcoSymbolUnits::BufferedStop(m_symbol, slReference, m_slBufferPips, isBull, slPx)) continue;
          if(CTradeRejection::InvalidSL(isBull, entryPx, slPx))
@@ -3132,6 +3252,14 @@ public:
          double tpSpread=m_adjustTPForSpread ? MathMax(0.0,ask-bid) : 0.0;
          double tickSize=SymbolInfoDouble(m_symbol,SYMBOL_TRADE_TICK_SIZE);
          if(!CMarcoStagedTP::Build(plan,isBull,entryPx,slPx,lbTP,indTP,m_fallbackRR,(int)m_tpPriority1,tpSpread,tickSize,digits)) continue;
+         if(reversalEntry)
+           {
+            plan.reversalEntryEvent=reversalEvent.time;
+            PrintFormat("[M1 REVERSAL ENTRY READY] %s %s LB=%s CHoCH=%s swing=%s pivot=%.8f entry=%.8f SL=%.8f",
+                        m_symbol,EnumToString(m_tradeTF),m_htf_lbs[k].id,
+                        TimeToString(reversalEvent.time,TIME_DATE|TIME_SECONDS),
+                        TimeToString(reversalEvent.originTime,TIME_DATE|TIME_SECONDS),firstPivotPrice,entryPx,slPx);
+           }
          int primary=CMarcoStagedTP::Primary(plan);
          int tpPriority=(int)m_tpPriority1+1;
          double rrRatio=MathAbs(plan.price[primary]-entryPx)/riskDist;

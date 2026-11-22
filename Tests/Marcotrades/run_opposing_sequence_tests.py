@@ -12,7 +12,7 @@ string EnumToString(int x){return std::to_string(x);}
 string TimeToString(datetime x,int){return std::to_string(x);}
 template<class...T>void Print(T...){}
 ''')
-for name in ('trade_rejection.mqh','staged_tp.mqh','opposing_sequence.mqh','staged_tp_live.mqh'):
+for name in ('trade_rejection.mqh','staged_tp.mqh','opposing_sequence.mqh','opposing_entry_wait.mqh','staged_tp_live.mqh'):
     source=(root/'Include/Custom/Marcotrades'/name).read_text(encoding='utf-8-sig')
     source=re.sub(r'^#include.*$','',source,flags=re.M)
     source=re.sub(r'\blong\b','long long',source)
@@ -214,7 +214,7 @@ int main(){
   // Upgrade v3 once; later loads must not move the observation cursor forward.
   reset(d);save(plan(d));auto &old=files[CMarcoLiveStagedTP::Path(magic,identifier)];old.resize(332);
   int32_t v3=3;std::memcpy(old.data(),&v3,4);auto migrated=load();
-  eq(migrated.plan.sequence.seen[0],1000);eq(files[CMarcoLiveStagedTP::Path(magic,identifier)].size(),436);
+  eq(migrated.plan.sequence.seen[0],1000);eq(files[CMarcoLiveStagedTP::Path(magic,identifier)].size(),448);
   clockNow=2000;eq(load().plan.sequence.seen[0],1000);
  }
  std::cout<<checks<<" opposing-sequence assertions passed\n";
